@@ -225,19 +225,16 @@ export function TradePanel({ token }: TradePanelProps) {
               {opt}%
             </Button>
           ))}
-          <div className="flex items-center gap-1">
-            <Input
-              className="w-16 text-center"
-              inputMode="decimal"
-              placeholder="Custom"
-              value={customSlippage}
-              onChange={(e) => handleCustomSlippageChange(e.target.value)}
-              autoComplete="off"
-              spellCheck={false}
-              aria-label="Custom slippage"
-            />
-            <span className="text-sm text-muted-foreground">%</span>
-          </div>
+          <Input
+            className="w-20 text-center"
+            inputMode="decimal"
+            placeholder="Custom%"
+            value={customSlippage ? `${customSlippage}` : ''}
+            onChange={(e) => handleCustomSlippageChange(e.target.value.replace('%', ''))}
+            autoComplete="off"
+            spellCheck={false}
+            aria-label="Custom slippage"
+          />
         </div>
       </div>
 

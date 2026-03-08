@@ -11,7 +11,6 @@ import { ChartIntervalSelector } from '@/components/trading/ChartIntervalSelecto
 import { TradePanel } from '@/components/trading/TradePanel'
 import { TradesTable } from '@/components/trading/TradesTable'
 import { HoldersTable } from '@/components/trading/HoldersTable'
-import { BondingCurveCard } from '@/components/trading/BondingCurveCard'
 import { MilestoneStatusCard } from '@/components/trading/MilestoneStatusCard'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
@@ -164,7 +163,6 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
 
         <div className="w-full lg:w-80 flex flex-col gap-4">
           <TradePanel token={token} />
-          <BondingCurveCard bondingPercent={token.market_info.bonding_percent} />
           <MilestoneStatusCard
             completed={token.market_info.milestone_completed}
             total={token.market_info.milestone_total}
