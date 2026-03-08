@@ -1,13 +1,15 @@
-export type MilestoneStatus = 'pending' | 'in_verification' | 'completed' | 'failed';
+export type MilestoneStatus = 'completed' | 'in_verification' | 'submitted' | 'pending' | 'failed'
 
-export interface IMilestone {
-  id: string;
-  title: string;
-  description: string;
-  allocation_percent: number;
-  status: MilestoneStatus;
-  deadline?: string;
-  proof_url?: string;
-  created_at?: string;
-  updated_at?: string;
+export interface IMilestoneInfo {
+  milestone_id: string
+  order: number
+  title: string
+  description: string
+  fund_allocation_percent: number
+  fund_release_amount: string
+  status: MilestoneStatus
+  funds_released: boolean
+  evidence_uri: string | null
+  submitted_at: number | null
+  verified_at: number | null
 }
