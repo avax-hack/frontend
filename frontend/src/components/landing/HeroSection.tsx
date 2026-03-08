@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 
 export function HeroSection() {
   return (
-    <section className="flex flex-col items-center gap-6 py-24 text-center">
+    <section className="flex flex-col items-center gap-6 py-12 text-center">
       <h1 className="text-4xl font-extrabold tracking-tight md:text-5xl lg:text-6xl">
         EASY TO LAUNCH.{' '}
         <span className="bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">

@@ -4,9 +4,10 @@ import { useProjectList } from '@/features/project/hooks'
 import { ProjectCard } from '@/components/common/ProjectCard'
 import { SkeletonCard } from '@/components/common/SkeletonCard'
 import { EmptyState } from '@/components/common/EmptyState'
+import { Button } from '@/components/ui/button'
 
 export default function ExplorePage() {
-  const { data, isLoading } = useProjectList('recent')
+  const { data, isLoading, isError, refetch } = useProjectList('recent')
   const projects = data?.projects ?? []
 
   return (
@@ -23,6 +24,13 @@ export default function ExplorePage() {
           {Array.from({ length: 6 }, (_, i) => (
             <SkeletonCard key={i} />
           ))}
+        </div>
+      ) : isError ? (
+        <div className="flex flex-col items-center gap-4 py-12">
+          <p className="text-sm text-destructive">Something went wrong</p>
+          <Button variant="outline" onClick={() => refetch()}>
+            Try again
+          </Button>
         </div>
       ) : projects.length === 0 ? (
         <EmptyState

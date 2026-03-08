@@ -11,10 +11,13 @@ export function useFeaturedProjects() {
   })
 }
 
-export function useProjectList(sortType?: string) {
+export function useProjectList(
+  sortType?: string,
+  params?: { page?: number; limit?: number },
+) {
   return useQuery({
-    queryKey: projectKeys.list(sortType ?? 'recent'),
-    queryFn: () => getProjectList(sortType),
+    queryKey: projectKeys.list(sortType ?? 'recent', params),
+    queryFn: () => getProjectList(sortType, params),
   })
 }
 

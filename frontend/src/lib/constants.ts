@@ -23,11 +23,18 @@ export const avalanche = defineChain({
   },
 });
 
+function parseAddress(value: string | undefined): `0x${string}` | undefined {
+  if (!value) return undefined;
+  if (/^0x[0-9a-fA-F]{40}$/.test(value)) return value as `0x${string}`;
+  console.error(`Invalid contract address: ${value}`);
+  return undefined;
+}
+
 export const CONTRACT_ADDRESSES = {
-  ido: process.env.NEXT_PUBLIC_IDO_CONTRACT as `0x${string}` | undefined,
-  lpManager: process.env.NEXT_PUBLIC_LP_MANAGER_CONTRACT as `0x${string}` | undefined,
-  usdc: process.env.NEXT_PUBLIC_USDC_ADDRESS as `0x${string}` | undefined,
-  uniswapV4Router: process.env.NEXT_PUBLIC_UNISWAP_V4_ROUTER as `0x${string}` | undefined,
+  ido: parseAddress(process.env.NEXT_PUBLIC_IDO_CONTRACT),
+  lpManager: parseAddress(process.env.NEXT_PUBLIC_LP_MANAGER_CONTRACT),
+  usdc: parseAddress(process.env.NEXT_PUBLIC_USDC_ADDRESS),
+  uniswapV4Router: parseAddress(process.env.NEXT_PUBLIC_UNISWAP_V4_ROUTER),
 } as const;
 
 export const SNOWTRACE_URL = process.env.NEXT_PUBLIC_SNOWTRACE_URL ?? 'https://snowtrace.io';
@@ -41,11 +48,4 @@ export const LAUNCHPAD_LINKS = [
 
 export const TRADING_LINKS = [
   { href: '/trading', label: 'Trading' },
-] as const;
-
-/** @deprecated Use LAUNCHPAD_LINKS and TRADING_LINKS instead */
-export const NAV_LINKS = [
-  { href: '/', label: 'Home' },
-  ...LAUNCHPAD_LINKS,
-  ...TRADING_LINKS,
 ] as const;

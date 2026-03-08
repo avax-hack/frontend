@@ -17,8 +17,8 @@ const variantClasses: Record<StatusBadgeProps['variant'], string> = {
 }
 
 const sizeClasses: Record<NonNullable<StatusBadgeProps['size']>, string> = {
-  sm: 'text-[10px] px-1.5 py-0',
-  md: 'text-xs px-2 py-0.5',
+  sm: 'text-[10px] px-2 py-0',
+  md: 'text-xs px-2 py-1',
 }
 
 export function StatusBadge({ label, variant, size = 'md' }: StatusBadgeProps) {

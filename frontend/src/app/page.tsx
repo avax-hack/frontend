@@ -16,6 +16,8 @@ export default function HomePage() {
 
       {featured.isLoading ? (
         <SkeletonCard />
+      ) : featured.isError ? (
+        <p className="text-sm text-destructive">Something went wrong</p>
       ) : featured.data?.projects?.length ? (
         <FeaturedCarousel projects={featured.data.projects} />
       ) : null}
@@ -28,6 +30,11 @@ export default function HomePage() {
               <SkeletonCard key={i} />
             ))}
           </div>
+        </section>
+      ) : projectList.isError ? (
+        <section className="flex flex-col gap-4">
+          <h2 className="text-2xl font-bold">Active Projects</h2>
+          <p className="text-sm text-destructive">Something went wrong</p>
         </section>
       ) : (
         <ActiveProjectsGrid
