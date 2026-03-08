@@ -12,13 +12,16 @@ const DEFAULT_PROJECT_INFO: ProjectInfoValues = {
   twitterUrl: undefined,
   telegramUrl: undefined,
   githubUrl: undefined,
-  targetRaise: 0,
-  tokenSupply: 0,
+  idoTokenAmount: 0,
+  tokenPrice: 0,
+  deadline: '',
 }
 
 const DEFAULT_MILESTONES: MilestoneValues[] = [
-  { title: '', description: '', allocation: 50 },
-  { title: '', description: '', allocation: 50 },
+  { title: '', description: '' },
+  { title: '', description: '' },
+  { title: '', description: '' },
+  { title: '', description: '' },
 ]
 
 interface CreateProjectState {

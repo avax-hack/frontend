@@ -1,62 +1,41 @@
 'use client'
 
-import { useFormContext, useFieldArray } from 'react-hook-form'
-import { PlusIcon, TrashIcon } from 'lucide-react'
+import { useFormContext } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
 import type { MilestonesFormValues } from '@/features/launch/schemas'
 
-const MAX_MILESTONES = 6
-const MIN_MILESTONES = 2
+const MILESTONE_LABELS = [
+  'Milestone 1',
+  'Milestone 2',
+  'Milestone 3',
+  'Milestone 4',
+]
 
 export function MilestoneStep() {
   const {
     register,
-    control,
-    watch,
     formState: { errors },
   } = useFormContext<MilestonesFormValues>()
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'milestones',
-  })
-
-  const milestones = watch('milestones')
-  const totalAllocation = milestones?.reduce(
-    (sum, m) => sum + (Number(m?.allocation) || 0),
-    0
-  ) ?? 0
-
-  const canAdd = fields.length < MAX_MILESTONES
-  const canRemove = fields.length > MIN_MILESTONES
-
-  // Root-level milestones errors (e.g., "allocations must sum to 100%")
+  // Root-level milestones errors
   const rootError = errors.milestones?.root?.message ?? errors.milestones?.message
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Milestones</h2>
-        <div
-          className={cn(
-            'text-sm font-medium',
-            totalAllocation === 100 ? 'text-green-500' : 'text-destructive'
-          )}
-          aria-live="polite"
-        >
-          Total: {totalAllocation}%{' '}
-          {totalAllocation !== 100 && '(must equal 100%)'}
-        </div>
+        <p className="text-sm text-muted-foreground">
+          4 milestones · 25% each
+        </p>
       </div>
 
       {rootError && (
@@ -65,25 +44,15 @@ export function MilestoneStep() {
         </p>
       )}
 
-      {fields.map((field, index) => {
+      {MILESTONE_LABELS.map((label, index) => {
         const fieldErrors = errors.milestones?.[index]
         return (
-          <Card key={field.id}>
+          <Card key={label}>
             <CardHeader className="flex-row items-center justify-between">
-              <CardTitle className="text-base">
-                Milestone {index + 1}
-              </CardTitle>
-              {canRemove && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-xs"
-                  onClick={() => remove(index)}
-                  aria-label={`Remove milestone ${index + 1}`}
-                >
-                  <TrashIcon className="size-4 text-destructive" />
-                </Button>
-              )}
+              <CardTitle className="text-base">{label}</CardTitle>
+              <Badge variant="outline" className="shrink-0">
+                25%
+              </Badge>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               {/* Title */}
@@ -124,49 +93,10 @@ export function MilestoneStep() {
                   </p>
                 )}
               </div>
-
-              {/* Allocation */}
-              <div className="flex flex-col gap-2">
-                <Label htmlFor={`milestones.${index}.allocation`}>
-                  Fund Allocation (%) <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id={`milestones.${index}.allocation`}
-                  type="number"
-                  inputMode="decimal"
-                  placeholder="25…"
-                  min={1}
-                  max={100}
-                  autoComplete="off"
-                  aria-invalid={!!fieldErrors?.allocation}
-                  {...register(`milestones.${index}.allocation`, {
-                    valueAsNumber: true,
-                  })}
-                />
-                {fieldErrors?.allocation && (
-                  <p className="text-sm text-destructive" role="alert">
-                    {fieldErrors.allocation.message}
-                  </p>
-                )}
-              </div>
             </CardContent>
           </Card>
         )
       })}
-
-      {canAdd && (
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() =>
-            append({ title: '', description: '', allocation: 0 })
-          }
-          className="gap-2"
-        >
-          <PlusIcon className="size-4" aria-hidden="true" />
-          Add Milestone
-        </Button>
-      )}
     </div>
   )
 }

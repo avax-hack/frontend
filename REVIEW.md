@@ -1,28 +1,127 @@
-# Phase 2 Re-Review
+# Phase 3 Plan Review — OpenLaunch Frontend
 
-## Verdict: FIX
+## Verdict: REVISE
 
-## Original Issues — Resolution Status
-- C1: ✅ `src/features/launch/schemas.ts` now matches spec-critical constraints: `ticker` is `min(2)/max(10)`, `description` is `min(20)`, and `targetRaise` is `min(1000)`.
-- C2: ✅ Targeted assertion cleanup is done in `src/features/launch/store.ts` and `src/features/launch/hooks.ts` (no unsafe `as SomeType` assertions remain there). In `StepIndicator.tsx`, the prior `as 1 | 2 | 3` is removed; only `as const` remains, which is allowed by `frontend.md`.
-- C3: ✅ Logo-required gating is now enforced in `goNext` (`src/features/launch/hooks.ts`) and surfaced inline via `externalError` in `src/components/launch/LogoUpload.tsx`.
-- I1: ✅ `src/components/project-detail/InvestPanel.tsx` now handles all `ProjectStatus` union states (`funding`, `active`, `completed`, `failed`) plus disconnected wallet state.
-- I2: ✅ `src/components/launch/LogoUpload.tsx` now uses a semantic `<button type="button">` for the upload trigger.
-- I3: ✅ Checked files (`ProjectOverview.tsx`, `MilestoneRoadmap.tsx`, `ReviewStep.tsx`) no longer use prohibited margin utilities from the prior findings; spacing is using gap/padding patterns.
-- I4: ✅ `src/components/project-detail/MilestoneRoadmap.tsx` uses `text-xs` for the fund-release label (no `text-[10px]`).
-- I5: ❌ `src/components/launch/ReviewStep.tsx` still has index-based fallback keying: `key={m.title || `milestone-${i}`}`. This is not fully stable and can still cause reconciliation issues if title is empty/duplicate or order changes.
-- I6: ✅ `src/app/launch/page.tsx` `beforeunload` handler now sets `e.returnValue = ''` in addition to `preventDefault()`.
-- M1: ✅ `src/components/project-detail/FundingProgress.tsx` `<p>` uses `leading-[1.2]`.
+The current Phase 3 plan is close, but it has several design gaps that will likely cause rework (provider order, session restore path, and incomplete CR-9 launch/API flow).
 
-## New Issues Found (if any)
-- [src/components/launch/ProjectInfoStep.tsx] UI constraints are now inconsistent with updated schema/spec: ticker input still has `maxLength={6}` while schema allows up to 10.
-- [src/components/launch/ProjectInfoStep.tsx] Ticker availability hint logic still checks `debouncedTicker.length >= 3`; schema now allows 2-char tickers, so UX/validation messaging is misaligned.
-- [src/components/launch/ProjectInfoStep.tsx] Description placeholder still says `min 100 characters`, but schema now requires 20+.
-- [src/components/launch/ProjectInfoStep.tsx] Target raise input still uses `min={10_000}` while schema enforces `>= 1_000`; form UI blocks valid schema values.
+---
 
-## Build: PASS
-- `npm run build` completed successfully (Next.js production build passes).
-- Non-blocking warnings observed (pre-existing): unused var in `ProjectCard.tsx`, and several `@next/next/no-img-element` warnings.
+## 1) Coverage vs Feature Spec (C-3, D-11, D-14, CR-9)
 
-## Summary
-Most Phase 2 fixes were applied correctly, including all three critical items and almost all important/minor items. However, one original important issue remains unresolved (`I5` stable keys in `ReviewStep`), and there are newly visible UI/schema mismatches in `ProjectInfoStep` that can block valid user inputs or present outdated guidance. Not ready to ship yet; recommend one more fix pass and quick re-check.
+### What is covered well
+- **C-3 Wallet Auth**: nonce → sign → session intent is present.
+- **D-11 Investment Flow**: modal + tx pending/success/fail flow is planned.
+- **D-14 Claim Refund**: failed-state button + refund action is planned.
+
+### Gaps to fix
+- **CR-9 is only partially covered**. Spec says final launch is **API + smart contract deploy + wallet signature**. Plan currently emphasizes deploy stub/redirect but does not explicitly include:
+  - `POST /project/create` integration (`withCredentials` / cookie auth)
+  - Payload mapping from existing launch form store to API schema
+  - Handling response (`project_id`, `transaction_hash`) and post-success routing
+
+**Required change:** add explicit CR-9 implementation task for `POST /project/create` service + mutation + error states + success routing.
+
+---
+
+## 2) Dependencies / blocked_by
+
+Current `blocked_by` is too coarse (everything blocked only by P3-1).
+
+### Recommended dependency adjustments
+- **P3-2 (Auth UI)** blocked_by: `P3-1` ✅
+- **P3-3 (Investment Flow)** blocked_by: `P3-1` ✅
+- **P3-4 (Refund)** blocked_by: `P3-1`, **`P3-3`** (shared tx state/pattern)
+- **P3-5 (Launch Integration)** blocked_by: `P3-1`, and explicit launch API task (or split from P3-5)
+- Add dedicated **mock integration task** and make feature tasks depend on it where needed for local validation
+
+Rationale: this avoids hidden coupling and reduces merge conflicts/rework.
+
+---
+
+## 3) Auth flow design (nonce → sign → session)
+
+The high-level flow is correct, but important implementation details are missing.
+
+### Must-have additions
+1. **Session restore path** should use authenticated endpoint (spec includes `GET /account/get_account` with cookie).
+2. **Wallet/account lifecycle handling**:
+   - on wallet disconnect → clear session state
+   - on wallet account change → clear old session and require re-auth
+3. **Chain ID handling**:
+   - include `chain_id` from connected wallet
+   - define behavior on wrong chain (switch prompt or explicit error)
+4. **Loop prevention** for auto-sign:
+   - avoid repeated signature prompts on rerender/navigation
+   - gate with one-shot guard / explicit state machine
+5. **401/session expired handling**:
+   - clear auth store
+   - prompt re-auth for gated actions
+
+---
+
+## 4) Mock mode strategy (backend-free operation)
+
+Current plan is not sufficient for full backend-free QA.
+
+### Missing mock pieces
+- `/auth/nonce`
+- `/auth/session`
+- `/auth/delete_session`
+- `/account/get_account` (for restore)
+- `/project/create` (for CR-9)
+
+Also add:
+- In-memory mock session state so login/logout/restore behaves consistently.
+- At least one **failed project fixture** to test D-14 Claim Refund path.
+
+Without these, Phase 3 cannot be fully testable in mock mode.
+
+---
+
+## 5) Provider ordering vs frontend.md
+
+Planned order in HANDOFF:
+- `QueryProvider > WalletProvider > SessionProvider`
+
+This conflicts with `frontend.md` provider rule:
+- `SessionProvider > WagmiProvider > QueryClientProvider > RainbowKitProvider > SocketProvider`
+
+**Required change:** refactor provider composition to follow frontend rule (or update rule explicitly if project-standard differs). Current proposed order should not be approved as-is.
+
+---
+
+## 6) Missing edge cases
+
+Add explicit acceptance criteria for:
+- Nonce/session API network failure
+- User rejects message signature (wallet error 4001)
+- User rejects tx signature for invest/refund/launch
+- Session expiry during action (401 mid-flow)
+- Wallet disconnect/account switch during pending flow
+- Double-submit prevention (disable button while pending)
+- Safe recovery UX (retry path, clear error toast/message)
+
+---
+
+## 7) Scope sizing
+
+Overall scope is reasonable for Phase 3, but **P3-1 is oversized/underspecified** (services + hooks + store + provider + ordering).
+
+**Suggested sizing fix:** split P3-1 into smaller deliverables:
+- P3-1a Auth services/store/hook
+- P3-1b SessionProvider + restore + account-change handling
+- P3-1c Provider order refactor
+
+This will improve reviewability and reduce integration risk.
+
+---
+
+## Summary of required revisions before approval
+
+1. Add explicit CR-9 API integration (`POST /project/create`) + payload/response/error handling.
+2. Correct provider order per `frontend.md`.
+3. Define session restore via `GET /account/get_account`.
+4. Add wallet lifecycle + 401/session-expiry behavior.
+5. Expand mock-mode endpoint coverage (including auth restore and project create).
+6. Tighten `blocked_by` graph to reflect real dependencies.
+7. Add edge-case acceptance criteria for reject/error/expiry/double-submit paths.

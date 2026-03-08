@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { formatUSD, formatNumber } from '@/lib/utils'
+import { formatNumber } from '@/lib/utils'
 import type { ProjectInfoValues, MilestoneValues } from '@/features/launch/schemas'
 
 interface ReviewStepProps {
@@ -53,6 +53,9 @@ export function ReviewStep({
     { label: 'Telegram', url: projectInfo.telegramUrl, icon: GlobeIcon },
     { label: 'GitHub', url: projectInfo.githubUrl, icon: GithubIcon },
   ].filter((l) => l.url)
+
+  // Compute total raise for display
+  const totalRaise = projectInfo.idoTokenAmount * projectInfo.tokenPrice
 
   return (
     <div className="flex flex-col gap-6">
@@ -106,15 +109,27 @@ export function ReviewStep({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-xs text-muted-foreground">Target Raise</p>
+              <p className="text-xs text-muted-foreground">IDO Token Amount</p>
               <p className="text-sm font-medium">
-                {formatUSD(projectInfo.targetRaise)}
+                {formatNumber(projectInfo.idoTokenAmount, 0)}
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Token Supply</p>
+              <p className="text-xs text-muted-foreground">Token Price (USDC)</p>
               <p className="text-sm font-medium">
-                {formatNumber(projectInfo.tokenSupply, 0)}
+                ${projectInfo.tokenPrice}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Total Raise</p>
+              <p className="text-sm font-medium">
+                ${formatNumber(totalRaise, 2)}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Deadline</p>
+              <p className="text-sm font-medium">
+                {projectInfo.deadline ? new Date(projectInfo.deadline).toLocaleDateString() : '—'}
               </p>
             </div>
           </div>
@@ -155,13 +170,13 @@ export function ReviewStep({
       {/* Milestones */}
       <Card>
         <CardHeader>
-          <CardTitle>Milestones ({milestones.length})</CardTitle>
+          <CardTitle>Milestones (4)</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-3">
             {milestones.map((m, i) => (
               <div
-                key={`${m.title}-${m.allocation}-${i}`}
+                key={`milestone-${i}`}
                 className="flex items-center justify-between gap-3 rounded-lg border px-4 py-3"
               >
                 <div className="flex min-w-0 flex-col gap-1">
@@ -171,7 +186,7 @@ export function ReviewStep({
                   </p>
                 </div>
                 <Badge variant="outline" className="shrink-0">
-                  {m.allocation}%
+                  25%
                 </Badge>
               </div>
             ))}

@@ -55,6 +55,11 @@ export function ProjectInfoStep({
     }
   }, [tickerCheck, debouncedTicker, setError, clearErrors, errors.ticker?.type])
 
+  // Compute minimum deadline (tomorrow)
+  const tomorrow = new Date()
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  const minDeadline = tomorrow.toISOString().split('T')[0]
+
   return (
     <div className="flex flex-col gap-6">
       {/* Project Name */}
@@ -238,47 +243,76 @@ export function ProjectInfoStep({
         </div>
       </fieldset>
 
-      {/* Target Raise */}
+      {/* IDO Token Amount */}
       <div className="flex flex-col gap-2">
-        <Label htmlFor="targetRaise">
-          Target Raise (USD) <span className="text-destructive">*</span>
+        <Label htmlFor="idoTokenAmount">
+          IDO Token Amount <span className="text-destructive">*</span>
         </Label>
+        <p className="text-xs text-muted-foreground">
+          Number of tokens to sell in the IDO
+        </p>
         <Input
-          id="targetRaise"
-          type="number"
-          inputMode="decimal"
-          placeholder="100,000…"
-          min={1_000}
-          max={10_000_000}
-          autoComplete="off"
-          aria-invalid={!!errors.targetRaise}
-          {...register('targetRaise', { valueAsNumber: true })}
-        />
-        {errors.targetRaise && (
-          <p className="text-sm text-destructive" role="alert">
-            {errors.targetRaise.message}
-          </p>
-        )}
-      </div>
-
-      {/* Token Supply */}
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="tokenSupply">
-          Token Supply <span className="text-destructive">*</span>
-        </Label>
-        <Input
-          id="tokenSupply"
+          id="idoTokenAmount"
           type="number"
           inputMode="decimal"
           placeholder="1,000,000…"
           min={1}
           autoComplete="off"
-          aria-invalid={!!errors.tokenSupply}
-          {...register('tokenSupply', { valueAsNumber: true })}
+          aria-invalid={!!errors.idoTokenAmount}
+          {...register('idoTokenAmount', { valueAsNumber: true })}
         />
-        {errors.tokenSupply && (
+        {errors.idoTokenAmount && (
           <p className="text-sm text-destructive" role="alert">
-            {errors.tokenSupply.message}
+            {errors.idoTokenAmount.message}
+          </p>
+        )}
+      </div>
+
+      {/* Token Price (USDC) */}
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="tokenPrice">
+          Token Price (USDC) <span className="text-destructive">*</span>
+        </Label>
+        <p className="text-xs text-muted-foreground">
+          Price per token in USDC (e.g. 0.05 = $0.05)
+        </p>
+        <Input
+          id="tokenPrice"
+          type="number"
+          inputMode="decimal"
+          placeholder="0.05…"
+          min={0.000001}
+          step="any"
+          autoComplete="off"
+          aria-invalid={!!errors.tokenPrice}
+          {...register('tokenPrice', { valueAsNumber: true })}
+        />
+        {errors.tokenPrice && (
+          <p className="text-sm text-destructive" role="alert">
+            {errors.tokenPrice.message}
+          </p>
+        )}
+      </div>
+
+      {/* Deadline */}
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="deadline">
+          IDO Deadline <span className="text-destructive">*</span>
+        </Label>
+        <p className="text-xs text-muted-foreground">
+          The date the IDO ends
+        </p>
+        <Input
+          id="deadline"
+          type="date"
+          min={minDeadline}
+          autoComplete="off"
+          aria-invalid={!!errors.deadline}
+          {...register('deadline')}
+        />
+        {errors.deadline && (
+          <p className="text-sm text-destructive" role="alert">
+            {errors.deadline.message}
           </p>
         )}
       </div>

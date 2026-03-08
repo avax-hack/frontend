@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { FormProvider } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ArrowLeftIcon, ArrowRightIcon, LoaderIcon, RocketIcon, XIcon } from 'lucide-react'
-import { parseEther, parseUnits } from 'viem'
+import { parseUnits } from 'viem'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -91,13 +91,13 @@ export default function LaunchPage() {
         website: projectInfo.websiteUrl || null,
         twitter: projectInfo.twitterUrl || null,
         github: projectInfo.githubUrl || null,
-        target_raise: parseEther(String(projectInfo.targetRaise)).toString(),
-        token_supply: parseEther(String(projectInfo.tokenSupply)).toString(),
+        target_raise: parseUnits(String(projectInfo.idoTokenAmount * projectInfo.tokenPrice), 6).toString(),
+        token_supply: parseUnits(String(projectInfo.idoTokenAmount), 18).toString(),
         milestones: milestones.map((m, i) => ({
           order: i + 1,
           title: m.title,
           description: m.description,
-          fund_allocation_percent: m.allocation,
+          fund_allocation_percent: 25,
         })),
       }
 
@@ -119,15 +119,10 @@ export default function LaunchPage() {
         name: projectInfo.name,
         symbol: projectInfo.ticker,
         tokenURI: '',
-        idoTokenAmount: parseUnits(String(projectInfo.tokenSupply), 18),
-        tokenPrice: (() => {
-          const tokenSupplyBig = BigInt(projectInfo.tokenSupply)
-          return tokenSupplyBig > BigInt(0)
-            ? parseUnits(String(projectInfo.targetRaise), 6) / tokenSupplyBig
-            : BigInt(0)
-        })(),
-        deadline: BigInt(Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60),
-        milestonePercentages: milestones.map(m => BigInt(m.allocation)),
+        idoTokenAmount: parseUnits(String(projectInfo.idoTokenAmount), 18),
+        tokenPrice: parseUnits(String(projectInfo.tokenPrice), 6),
+        deadline: BigInt(Math.floor(new Date(projectInfo.deadline).getTime() / 1000)),
+        milestonePercentages: [BigInt(2500), BigInt(2500), BigInt(2500), BigInt(2500)],
         salt,
       }
 

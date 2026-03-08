@@ -104,8 +104,10 @@ export function useCreateProjectForm(): CreateProjectForm {
     projectInfoForm.reset()
     milestonesForm.reset({
       milestones: [
-        { title: '', description: '', allocation: 50 },
-        { title: '', description: '', allocation: 50 },
+        { title: '', description: '' },
+        { title: '', description: '' },
+        { title: '', description: '' },
+        { title: '', description: '' },
       ],
     })
   }, [store, projectInfoForm, milestonesForm])

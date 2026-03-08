@@ -31,13 +31,15 @@ export const projectInfoSchema = z.object({
   twitterUrl: optionalUrl,
   telegramUrl: optionalUrl,
   githubUrl: optionalUrl,
-  targetRaise: z
-    .number({ message: 'Target raise is required' })
-    .min(1_000, 'Minimum target raise is $1,000')
-    .max(10_000_000, 'Maximum target raise is $10,000,000'),
-  tokenSupply: z
-    .number({ message: 'Token supply is required' })
-    .min(1, 'Token supply must be at least 1'),
+  idoTokenAmount: z
+    .number({ message: 'IDO token amount is required' })
+    .min(1, 'IDO token amount must be at least 1'),
+  tokenPrice: z
+    .number({ message: 'Token price is required' })
+    .min(0.000001, 'Token price must be at least 0.000001'),
+  deadline: z
+    .string({ message: 'Deadline is required' })
+    .min(1, 'Deadline is required'),
 })
 
 export type ProjectInfoValues = z.infer<typeof projectInfoSchema>
@@ -46,27 +48,15 @@ export type ProjectInfoValues = z.infer<typeof projectInfoSchema>
 export const milestoneSchema = z.object({
   title: z.string().trim().min(1, 'Title is required'),
   description: z.string().trim().min(1, 'Description is required'),
-  allocation: z
-    .number({ message: 'Allocation is required' })
-    .min(1, 'Allocation must be at least 1%')
-    .max(100, 'Allocation cannot exceed 100%'),
 })
 
 export type MilestoneValues = z.infer<typeof milestoneSchema>
 
-// --- Milestones Form Schema (object wrapping the array for react-hook-form) ---
+// --- Milestones Form Schema (exactly 4 milestones) ---
 export const milestonesFormSchema = z.object({
   milestones: z
     .array(milestoneSchema)
-    .min(2, 'At least 2 milestones are required')
-    .max(6, 'Maximum 6 milestones allowed')
-    .refine(
-      (milestones) => {
-        const sum = milestones.reduce((acc, m) => acc + (m.allocation || 0), 0)
-        return sum === 100
-      },
-      { message: 'Milestone allocations must sum to 100%' }
-    ),
+    .length(4, 'Exactly 4 milestones are required'),
 })
 
 export type MilestonesFormValues = z.infer<typeof milestonesFormSchema>
@@ -76,15 +66,7 @@ export const createProjectSchema = z.object({
   projectInfo: projectInfoSchema,
   milestones: z
     .array(milestoneSchema)
-    .min(2, 'At least 2 milestones are required')
-    .max(6, 'Maximum 6 milestones allowed')
-    .refine(
-      (milestones) => {
-        const sum = milestones.reduce((acc, m) => acc + (m.allocation || 0), 0)
-        return sum === 100
-      },
-      { message: 'Milestone allocations must sum to 100%' }
-    ),
+    .length(4, 'Exactly 4 milestones are required'),
 })
 
 export type CreateProjectValues = z.infer<typeof createProjectSchema>
