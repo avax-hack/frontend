@@ -14,7 +14,8 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
-import { LAUNCHPAD_LINKS, TRADING_LINKS } from '@/lib/constants'
+import { LAUNCHPAD_LINKS, TRADING_LINKS, defaultChain } from '@/lib/constants'
+import { FaucetButton } from '@/components/common/FaucetButton'
 import { useAuth } from '@/features/auth/hooks'
 
 const ConnectButton = dynamic(
@@ -166,8 +167,13 @@ export function Header() {
           </nav>
         </div>
 
-        {/* Right: Wallet + Mobile Menu */}
+        {/* Right: Faucet + Wallet + Mobile Menu */}
         <div className="flex items-center gap-3">
+          {defaultChain.testnet && (
+            <div className="hidden md:block">
+              <FaucetButton />
+            </div>
+          )}
           <div className="hidden md:block">
             {walletSection}
           </div>
@@ -231,6 +237,7 @@ export function Header() {
               {/* Spacer to push wallet to bottom */}
               <div className="flex-1" />
               <div className="flex flex-col gap-3">
+                {defaultChain.testnet && <FaucetButton />}
                 {walletSection}
               </div>
             </SheetContent>
