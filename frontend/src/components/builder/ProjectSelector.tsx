@@ -3,10 +3,10 @@
 import { Skeleton } from '@/components/ui/skeleton'
 import { ChevronDownIcon } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
-import type { IProjectInfo, IProjectMarketInfo } from '@/types/project'
+import type { ICreatedProjectItem } from '@/features/builder/types'
 
 interface ProjectSelectorProps {
-  projects: { project_info: IProjectInfo; market_info: IProjectMarketInfo }[] | undefined
+  projects: ICreatedProjectItem[] | undefined
   selectedProjectId: string | undefined
   onSelect: (projectId: string) => void
   isLoading: boolean
@@ -40,7 +40,7 @@ export function ProjectSelector({
     return null // handled by parent with empty state
   }
 
-  const selected = projects.find((p) => p.project_info.project_id === selectedProjectId)
+  const selected = projects.find((p) => p.project_id === selectedProjectId)
 
   return (
     <div ref={ref} className="relative w-full max-w-sm">
@@ -54,11 +54,11 @@ export function ProjectSelector({
       >
         <div className="flex flex-col min-w-0">
           <span className="font-medium truncate">
-            {selected?.project_info.name ?? 'Select a project'}
+            {selected?.name ?? 'Select a project'}
           </span>
           {selected && (
             <span className="text-xs text-muted-foreground">
-              {selected.project_info.symbol}
+              {selected.symbol}
             </span>
           )}
         </div>
@@ -72,32 +72,32 @@ export function ProjectSelector({
         >
           {projects.map((project) => (
             <button
-              key={project.project_info.project_id}
+              key={project.project_id}
               type="button"
               role="option"
-              aria-selected={project.project_info.project_id === selectedProjectId}
+              aria-selected={project.project_id === selectedProjectId}
               className={`flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-secondary/50 ${
-                project.project_info.project_id === selectedProjectId ? 'bg-secondary/30' : ''
+                project.project_id === selectedProjectId ? 'bg-secondary/30' : ''
               }`}
               onClick={() => {
-                onSelect(project.project_info.project_id)
+                onSelect(project.project_id)
                 setOpen(false)
               }}
             >
-              {project.project_info.image_uri ? (
+              {project.image_uri ? (
                 <img
-                  src={project.project_info.image_uri}
+                  src={project.image_uri}
                   alt=""
                   className="size-8 rounded-full"
                 />
               ) : (
                 <div className="size-8 rounded-full bg-secondary flex items-center justify-center text-xs font-bold">
-                  {project.project_info.symbol.charAt(0)}
+                  {project.symbol.charAt(0)}
                 </div>
               )}
               <div className="flex flex-col min-w-0">
-                <span className="font-medium truncate">{project.project_info.name}</span>
-                <span className="text-xs text-muted-foreground">{project.project_info.symbol}</span>
+                <span className="font-medium truncate">{project.name}</span>
+                <span className="text-xs text-muted-foreground">{project.symbol}</span>
               </div>
             </button>
           ))}

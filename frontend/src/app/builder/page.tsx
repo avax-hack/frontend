@@ -62,19 +62,21 @@ function BuilderContent({ accountId }: { accountId: string }) {
   const { data: overview, isLoading: overviewLoading } = useBuilderOverview(selectedProjectId)
   const { data: projectDetail, isLoading: detailLoading } = useProjectDetail(selectedProjectId ?? '')
 
+  const projects = createdProjects?.data
+
   // Auto-select first project
   useEffect(() => {
     if (
       !selectedProjectId &&
-      createdProjects?.data &&
-      createdProjects.data.length > 0
+      projects &&
+      projects.length > 0
     ) {
-      setSelectedProjectId(createdProjects.data[0].project_info.project_id)
+      setSelectedProjectId(projects[0].project_id)
     }
-  }, [createdProjects, selectedProjectId])
+  }, [projects, selectedProjectId])
 
   // No projects state (B-13)
-  if (!projectsLoading && (!createdProjects?.data || createdProjects.data.length === 0)) {
+  if (!projectsLoading && (!projects || projects.length === 0)) {
     return (
       <div className="px-4 py-6 mx-auto max-w-5xl">
         <h1 className="text-2xl font-bold">Builder Dashboard</h1>
@@ -99,7 +101,7 @@ function BuilderContent({ accountId }: { accountId: string }) {
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">Builder Dashboard</h1>
         <ProjectSelector
-          projects={createdProjects?.data}
+          projects={projects}
           selectedProjectId={selectedProjectId}
           onSelect={setSelectedProjectId}
           isLoading={projectsLoading}

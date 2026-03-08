@@ -1,11 +1,17 @@
 import type { IProjectInfo, IProjectMarketInfo } from '@/types/project'
 
-// GET /profile/tokens/created/:accountId
+// GET /profile/tokens/created/:accountId — item shape
+export interface ICreatedProjectItem {
+  project_id: string
+  name: string
+  symbol: string
+  image_uri: string
+  status: string
+  created_at: number
+}
+
 export interface IAccountCreatedTokenData {
-  data: {
-    project_info: IProjectInfo
-    market_info: IProjectMarketInfo
-  }[]
+  data: ICreatedProjectItem[]
   total_count: number
 }
 
