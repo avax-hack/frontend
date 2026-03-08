@@ -79,11 +79,7 @@ export function TokenCard({ token }: TokenCardProps) {
           </div>
         </div>
 
-        {market_info.market_type === 'CURVE' ? (
-          <ProgressBar percent={market_info.bonding_percent} size="sm" showLabel />
-        ) : (
-          <StatusBadge label="DEX" variant="green" />
-        )}
+        <ProgressBar percent={market_info.bonding_percent} size="sm" showLabel />
       </Card>
     </Link>
   )
