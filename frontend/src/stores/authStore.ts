@@ -1,15 +1,16 @@
-import { create } from 'zustand';
+import { create } from 'zustand'
+import type { IAccountInfo } from '@/types/common'
 
 interface AuthState {
-  isAuthenticated: boolean;
-  address: string | null;
-  setAuthenticated: (address: string) => void;
-  clearAuth: () => void;
+  account: IAccountInfo | null
+  isAuthenticated: boolean
+  setAccount: (account: IAccountInfo) => void
+  clearAccount: () => void
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
+  account: null,
   isAuthenticated: false,
-  address: null,
-  setAuthenticated: (address) => set({ isAuthenticated: true, address }),
-  clearAuth: () => set({ isAuthenticated: false, address: null }),
-}));
+  setAccount: (account) => set({ account, isAuthenticated: true }),
+  clearAccount: () => set({ account: null, isAuthenticated: false }),
+}))
