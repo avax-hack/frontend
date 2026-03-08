@@ -19,7 +19,7 @@ export function FundingProgress({ project }: FundingProgressProps) {
   return (
     <div className="flex flex-col gap-2">
       <ProgressBar percent={percent} color={getProgressColor(percent)} size="lg" />
-      <p className="text-sm text-muted-foreground">
+      <p className="text-sm leading-[1.2] text-muted-foreground">
         {Math.round(percent)}% — {formatWeiToUSD(market_info.total_committed)} raised
       </p>
     </div>

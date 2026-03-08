@@ -17,9 +17,10 @@ export function InvestPanel({ project }: InvestPanelProps) {
   const { openConnectModal } = useConnectModal()
   const [amount, setAmount] = useState('')
 
+  const isActive = market_info.status === 'active'
   const isFundingComplete = market_info.status === 'completed' || market_info.funded_percent >= 100
   const isFailed = market_info.status === 'failed'
-  const isFunding = market_info.status === 'funding' && !isFundingComplete
+  const isFunding = market_info.status === 'funding' && !isFundingComplete && !isActive
 
   const numericAmount = parseFloat(amount)
   const isValidAmount = !isNaN(numericAmount) && numericAmount >= 10
@@ -63,6 +64,16 @@ export function InvestPanel({ project }: InvestPanelProps) {
             <p className="text-sm text-muted-foreground">This project has failed</p>
             <Button disabled variant="destructive" size="lg" aria-label="Claim Refund">
               Claim Refund
+            </Button>
+          </div>
+        )}
+
+        {/* Active project — milestone phase, no more investment */}
+        {isConnected && isActive && (
+          <div className="flex w-full items-center justify-between">
+            <p className="text-sm text-muted-foreground">This project is in its active milestone phase</p>
+            <Button disabled size="lg" aria-label="Funding Closed">
+              Funding Closed
             </Button>
           </div>
         )}

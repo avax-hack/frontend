@@ -54,14 +54,14 @@ export function MilestoneRoadmap({ milestones }: MilestoneRoadmapProps) {
                   </span>
 
                   {/* Fund release label (D-6) */}
-                  <span className="text-[10px] text-muted-foreground">
+                  <span className="text-xs text-muted-foreground">
                     Fund Release {milestone.fund_allocation_percent}%
                   </span>
                 </div>
 
                 {/* Connector line */}
                 {index < sorted.length - 1 && (
-                  <div className="mt-3 flex items-center px-1">
+                  <div className="pt-3 flex items-center px-1">
                     <div
                       className={cn(
                         'h-0.5 w-8',
