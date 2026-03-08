@@ -1,5 +1,5 @@
 import { StatCard } from '@/components/common/StatCard'
-import { formatWeiToUSD, formatNumber } from '@/lib/utils'
+import { formatTokenToUSD, formatNumber } from '@/lib/utils'
 import type { IProjectData } from '@/types/project'
 
 interface FundingStatsProps {
@@ -13,11 +13,11 @@ export function FundingStats({ project }: FundingStatsProps) {
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       <StatCard
         label="Target Raise"
-        value={formatWeiToUSD(market_info.target_raise)}
+        value={formatTokenToUSD(market_info.target_raise)}
       />
       <StatCard
         label="Total Committed"
-        value={formatWeiToUSD(market_info.total_committed)}
+        value={formatTokenToUSD(market_info.total_committed)}
       />
       <StatCard
         label="Investors"

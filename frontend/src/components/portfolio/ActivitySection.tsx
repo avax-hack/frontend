@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { StatusBadge } from '@/components/common/StatusBadge'
 import { MilestoneDots } from '@/components/common/MilestoneDots'
 import { EmptyState } from '@/components/common/EmptyState'
-import { formatWeiToUSD, formatNumber, formatLaunchDate, truncateAddress } from '@/lib/utils'
+import { formatTokenToUSD, formatNumber, formatLaunchDate, truncateAddress } from '@/lib/utils'
 import { SNOWTRACE_URL } from '@/lib/constants'
 import type { ActivityTab, IIdoParticipation, IAccountSwapRecord, IRefundRecord } from '@/features/portfolio/types'
 
@@ -115,7 +115,7 @@ export function ActivitySection({
                         <span className="font-medium truncate">{item.project_info.name}</span>
                         <div className="flex items-center gap-2">
                           <span className="text-xs text-muted-foreground">
-                            Invested: {formatWeiToUSD(item.invested_amount)}
+                            Invested: {formatTokenToUSD(item.invested_amount)}
                           </span>
                           <MilestoneDots
                             completed={item.milestone_progress.completed}
@@ -222,9 +222,9 @@ export function ActivitySection({
                         {refund.project_info.name}
                       </span>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <span>Invested: {formatWeiToUSD(refund.original_investment)}</span>
+                        <span>Invested: {formatTokenToUSD(refund.original_investment)}</span>
                         <span>→</span>
-                        <span>Refund: {formatWeiToUSD(refund.refund_amount)}</span>
+                        <span>Refund: {formatTokenToUSD(refund.refund_amount)}</span>
                       </div>
                       <span className="text-xs text-red-400">
                         Failed: {refund.failed_milestone}

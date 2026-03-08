@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card'
 import { StatusBadge } from '@/components/common/StatusBadge'
 import { ProgressBar } from '@/components/common/ProgressBar'
 import { Skeleton } from '@/components/ui/skeleton'
-import { formatWeiToUSD, formatNumber } from '@/lib/utils'
+import { formatTokenToUSD, formatNumber } from '@/lib/utils'
 import type { IBuilderOverviewData } from '@/features/builder/types'
 
 interface ProjectOverviewCardProps {
@@ -55,7 +55,7 @@ export function ProjectOverviewCard({ data, isLoading }: ProjectOverviewCardProp
       <div className="grid grid-cols-3 gap-4">
         <div className="flex flex-col gap-1">
           <span className="text-xs text-muted-foreground">Total Raised</span>
-          <span className="font-bold">{formatWeiToUSD(market_info.total_committed)}</span>
+          <span className="font-bold">{formatTokenToUSD(market_info.total_committed)}</span>
         </div>
         <div className="flex flex-col gap-1">
           <span className="text-xs text-muted-foreground">Investors</span>
