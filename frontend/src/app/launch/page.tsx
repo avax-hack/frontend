@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { FormProvider } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ArrowLeftIcon, ArrowRightIcon, LoaderIcon, RocketIcon, XIcon } from 'lucide-react'
-import { parseUnits } from 'viem'
+import { parseUnits, getAddress } from 'viem'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -18,7 +18,7 @@ import {
 import { useCreateProjectForm, useCreateProject } from '@/features/launch/hooks'
 import { uploadImage } from '@/features/launch/services'
 import { useCreateProjectContract } from '@/features/contracts'
-import { useAuth } from '@/features/auth/hooks'
+import { useProfile, useAuth } from '@/features/auth/hooks'
 import { IS_MOCK } from '@/lib/mock'
 
 export default function LaunchPage() {
@@ -37,7 +37,8 @@ export default function LaunchPage() {
 
   const [isValidating, setIsValidating] = useState(false)
   const router = useRouter()
-  const { isAuthenticated, login } = useAuth()
+  const { isAuthenticated } = useProfile()
+  const { login } = useAuth()
   const createProjectMutation = useCreateProject()
   const createContract = useCreateProjectContract()
 
@@ -98,6 +99,7 @@ export default function LaunchPage() {
       const payload = {
         name: projectInfo.name,
         symbol: projectInfo.ticker,
+        category: projectInfo.category,
         description: projectInfo.description,
         image_uri: imageUri,
         website: projectInfo.websiteUrl || null,
@@ -119,7 +121,7 @@ export default function LaunchPage() {
           description: 'Your project has been created.',
         })
         reset()
-        router.push(`/projects/${result.project_id}`)
+        router.push(`/projects/${getAddress(result.project_id)}`)
       } catch {
         // Error already handled by mutation's onError
       }
@@ -141,7 +143,7 @@ export default function LaunchPage() {
       const result = await createContract.execute(params)
       if (result) {
         reset()
-        router.push(`/projects/${result.tokenAddress}`)
+        router.push(`/projects/${getAddress(result.tokenAddress)}`)
       }
     }
   }, [isAuthenticated, login, projectInfoForm, milestonesForm, createProjectMutation, createContract, reset, router])

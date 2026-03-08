@@ -4,7 +4,7 @@ import { WalletRequired } from '@/components/portfolio/WalletRequired'
 import { PortfolioOverview } from '@/components/portfolio/PortfolioOverview'
 import { HoldingsTable } from '@/components/portfolio/HoldingsTable'
 import { ActivitySection } from '@/components/portfolio/ActivitySection'
-import { useAuthStore } from '@/stores/authStore'
+import { useProfile } from '@/features/auth/hooks'
 import {
   usePortfolioSummary,
   useHoldTokens,
@@ -22,7 +22,7 @@ export default function PortfolioPage() {
 }
 
 function PortfolioContent() {
-  const account = useAuthStore((s) => s.account)
+  const { account } = useProfile()
   const accountId = account?.account_id
 
   const { data: summary, isLoading: summaryLoading } = usePortfolioSummary(accountId)

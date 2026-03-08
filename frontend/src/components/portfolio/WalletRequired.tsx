@@ -2,7 +2,7 @@
 
 import { useAccount } from 'wagmi'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { useAuthStore } from '@/stores/authStore'
+import { useProfile } from '@/features/auth/hooks'
 import { WalletIcon } from 'lucide-react'
 
 interface WalletRequiredProps {
@@ -11,7 +11,7 @@ interface WalletRequiredProps {
 
 export function WalletRequired({ children }: WalletRequiredProps) {
   const { isConnected } = useAccount()
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+  const { isAuthenticated, isLoading } = useProfile()
 
   if (!isConnected) {
     return (
@@ -24,6 +24,17 @@ export function WalletRequired({ children }: WalletRequiredProps) {
           Connect your wallet to view your portfolio
         </p>
         <ConnectButton />
+      </div>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center gap-4 py-24 text-center">
+        <div className="text-muted-foreground" aria-hidden="true">
+          <WalletIcon className="size-12" />
+        </div>
+        <h2 className="text-xl font-bold">Checking session…</h2>
       </div>
     )
   }

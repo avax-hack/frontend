@@ -2,20 +2,48 @@
 
 import { useCallback, useRef, useState } from 'react'
 import { useAccount, useSignMessage } from 'wagmi'
-import { useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { useAuthStore } from '@/stores/authStore'
 import { postNonce, postSession, deleteSession, getAccount } from './services'
 import { authKeys } from './query-keys'
 import { ApiError } from '@/lib/api'
 import { isUserRejection } from '@/lib/errors'
+import type { IAccountInfo } from '@/types/common'
+
+export function useProfile() {
+  const { address, isConnected } = useAccount()
+  const queryClient = useQueryClient()
+
+  const { data: account, isLoading, isFetched } = useQuery({
+    queryKey: authKeys.session(address),
+    queryFn: () => getAccount(),
+    enabled: isConnected && !!address,
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+  })
+
+  const isAuthenticated = !!account
+  const isSessionRestored = isFetched
+
+  const setSession = useCallback(
+    (accountInfo: IAccountInfo) => {
+      queryClient.setQueryData(authKeys.session(address), accountInfo)
+    },
+    [queryClient, address],
+  )
+
+  const clearSession = useCallback(() => {
+    queryClient.removeQueries({ queryKey: authKeys.all })
+  }, [queryClient])
+
+  return { account: account ?? null, isAuthenticated, isSessionRestored, isLoading, setSession, clearSession }
+}
 
 export function useAuth() {
   const { address, chainId } = useAccount()
   const { signMessageAsync } = useSignMessage()
-  const queryClient = useQueryClient()
-  const { account, isAuthenticated, setAccount, clearAccount } = useAuthStore()
-  const signingRef = useRef(false) // loop prevention guard
+  const { setSession, clearSession } = useProfile()
+  const signingRef = useRef(false)
   const [isSigning, setIsSigning] = useState(false)
 
   const login = useCallback(async (): Promise<boolean> => {
@@ -24,19 +52,14 @@ export function useAuth() {
     signingRef.current = true
     setIsSigning(true)
     try {
-      // 1. Get nonce
       const { nonce } = await postNonce(address)
-
-      // 2. Sign message
       const signature = await signMessageAsync({ message: nonce })
-
-      // 3. Create session
       const result = await postSession({
         nonce,
         signature,
         chain_id: chainId,
       })
-      setAccount(result.account_info)
+      setSession(result.account_info)
 
       toast.success('Wallet authenticated')
       return true
@@ -52,13 +75,13 @@ export function useAuth() {
       } else {
         toast.error('Authentication failed')
       }
-      clearAccount()
+      clearSession()
       return false
     } finally {
       signingRef.current = false
       setIsSigning(false)
     }
-  }, [address, chainId, signMessageAsync, setAccount, clearAccount])
+  }, [address, chainId, signMessageAsync, setSession, clearSession])
 
   const logout = useCallback(async () => {
     try {
@@ -66,30 +89,9 @@ export function useAuth() {
     } catch {
       // Ignore logout API errors
     }
-    clearAccount()
-    queryClient.removeQueries({ queryKey: authKeys.all })
+    clearSession()
     toast.success('Signed out')
-  }, [clearAccount, queryClient])
+  }, [clearSession])
 
-  const restoreSession = useCallback(async () => {
-    try {
-      const accountInfo = await getAccount()
-      if (accountInfo) {
-        setAccount(accountInfo)
-      } else {
-        clearAccount()
-      }
-    } catch {
-      clearAccount()
-    }
-  }, [setAccount, clearAccount])
-
-  return {
-    account,
-    isAuthenticated,
-    login,
-    logout,
-    restoreSession,
-    isSigning,
-  }
+  return { login, logout, isSigning }
 }

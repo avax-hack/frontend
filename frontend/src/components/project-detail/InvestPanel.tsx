@@ -7,14 +7,15 @@ import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { toast } from 'sonner'
 import { LoaderIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useAuth } from '@/features/auth/hooks'
+import { Input } from '@/components/ui/input'
+import { useProfile, useAuth } from '@/features/auth/hooks'
 import { isUserRejection } from '@/lib/errors'
 import { useUsdcBalance, useRefund, useTokenBalance } from '@/features/contracts'
 import { IS_MOCK } from '@/lib/mock'
 import { SNOWTRACE_URL } from '@/lib/constants'
 import { InvestModal } from './InvestModal'
 import type { IProjectData } from '@/types/project'
-import type { Address } from 'viem'
+import { getAddress } from 'viem'
 
 interface InvestPanelProps {
   project: IProjectData
@@ -24,13 +25,14 @@ export function InvestPanel({ project }: InvestPanelProps) {
   const { market_info } = project
   const { isConnected, address } = useAccount()
   const { openConnectModal } = useConnectModal()
-  const { isAuthenticated, login } = useAuth()
+  const { isAuthenticated } = useProfile()
+  const { login } = useAuth()
   const queryClient = useQueryClient()
   const [amount, setAmount] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
   // Refund hooks (unconditional, per React rules)
   const refund = useRefund()
-  const projectTokenAddress = project.project_info.project_id as Address
+  const projectTokenAddress = getAddress(project.project_info.project_id)
   const { data: projectTokenBalanceRaw } = useTokenBalance(projectTokenAddress, address)
   const projectTokenBalanceData = projectTokenBalanceRaw as bigint | undefined
   const [isMockRefunding, setIsMockRefunding] = useState(false)
@@ -192,7 +194,7 @@ export function InvestPanel({ project }: InvestPanelProps) {
               <div className="flex flex-1 flex-col gap-1">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-muted-foreground" aria-hidden="true">$</span>
-                  <input
+                  <Input
                     type="number"
                     inputMode="decimal"
                     name="invest-amount"
@@ -204,7 +206,7 @@ export function InvestPanel({ project }: InvestPanelProps) {
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     aria-label="Investment amount in USD"
-                    className="h-10 w-full rounded-md border bg-background px-3 text-base outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring"
+                    className="h-10"
                   />
                 </div>
                 <div className="flex items-center gap-2 pl-5">
