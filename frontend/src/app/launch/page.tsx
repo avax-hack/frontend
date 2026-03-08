@@ -85,8 +85,8 @@ export default function LaunchPage() {
     let imageUri = ''
     if (logoFile) {
       try {
-        const { uri } = await uploadImage(logoFile)
-        imageUri = uri
+        const { image_uri } = await uploadImage(logoFile)
+        imageUri = image_uri
       } catch {
         toast.error('Failed to upload image')
         return
