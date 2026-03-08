@@ -6,7 +6,7 @@ interface MilestoneDotsProps {
   size?: 'sm' | 'md'
 }
 
-const dotSizes = {
+const dotSizes: Record<NonNullable<MilestoneDotsProps['size']>, string> = {
   sm: 'size-1.5',
   md: 'size-2',
 }
@@ -15,7 +15,7 @@ export function MilestoneDots({ completed, total, size = 'sm' }: MilestoneDotsPr
   return (
     <div
       className="flex items-center gap-1"
-      aria-label={`Milestone progress: ${completed} of ${total} completed`}
+      aria-label={`${completed} of ${total} milestones completed`}
     >
       {Array.from({ length: total }, (_, i) => (
         <span

@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { projectKeys } from './query-keys'
-import { getFeaturedProjects, getProjectList, getProject } from './services'
+import { getFeaturedProjects, getProjectList, getProjectDetail } from './services'
 
 export function useFeaturedProjects() {
   return useQuery({
@@ -11,17 +11,17 @@ export function useFeaturedProjects() {
   })
 }
 
-export function useProjectList(sortType: string = 'recent') {
+export function useProjectList(sortType?: string) {
   return useQuery({
-    queryKey: projectKeys.list(sortType),
+    queryKey: projectKeys.list(sortType ?? 'recent'),
     queryFn: () => getProjectList(sortType),
   })
 }
 
-export function useProject(id: string) {
+export function useProjectDetail(id: string) {
   return useQuery({
     queryKey: projectKeys.detail(id),
-    queryFn: () => getProject(id),
+    queryFn: () => getProjectDetail(id),
     enabled: !!id,
   })
 }

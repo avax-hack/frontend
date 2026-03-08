@@ -13,6 +13,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
+import { LAUNCHPAD_LINKS, TRADING_LINKS } from '@/lib/constants'
 
 const ConnectButton = dynamic(
   () => import('@rainbow-me/rainbowkit').then((mod) => mod.ConnectButton),
@@ -33,15 +34,9 @@ const TABS: { id: TabId; label: string }[] = [
   { id: 'trading', label: 'Trading' },
 ]
 
-const NAV_LINKS: Record<TabId, { href: string; label: string }[]> = {
-  launchpad: [
-    { href: '/explore', label: 'Explore' },
-    { href: '/launch', label: 'Launch' },
-    { href: '/portfolio', label: 'Portfolio' },
-  ],
-  trading: [
-    { href: '/trading', label: 'Trading' },
-  ],
+const NAV_LINKS_BY_TAB: Record<TabId, readonly { readonly href: string; readonly label: string }[]> = {
+  launchpad: LAUNCHPAD_LINKS,
+  trading: TRADING_LINKS,
 }
 
 const TRADING_ROUTES = ['/trading']
@@ -58,10 +53,10 @@ export function Header() {
   const activeTab = getActiveTab(pathname)
   const [mobileOpen, setMobileOpen] = useState(false)
 
-  const currentLinks = NAV_LINKS[activeTab]
+  const currentLinks = NAV_LINKS_BY_TAB[activeTab]
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 md:px-6">
         {/* Left: Logo + Tabs + Nav */}
         <div className="flex items-center gap-6">
@@ -70,11 +65,13 @@ export function Header() {
           </Link>
 
           {/* Tab Switcher — desktop */}
-          <nav className="hidden items-center gap-1 rounded-lg bg-secondary p-1 md:flex" aria-label="Main sections">
+          <div className="hidden items-center gap-1 rounded-lg bg-secondary p-1 md:flex" role="tablist" aria-label="Main sections">
             {TABS.map((tab) => (
               <Link
                 key={tab.id}
                 href={tab.id === 'trading' ? '/trading' : '/'}
+                role="tab"
+                aria-selected={activeTab === tab.id}
                 className={cn(
                   'rounded-md px-3 py-1 text-sm font-medium transition-colors',
                   activeTab === tab.id
@@ -85,7 +82,7 @@ export function Header() {
                 {tab.label}
               </Link>
             ))}
-          </nav>
+          </div>
 
           {/* Nav Links — desktop */}
           <nav className="hidden items-center gap-4 md:flex" aria-label="Page navigation">
@@ -93,6 +90,7 @@ export function Header() {
               <Link
                 key={link.href}
                 href={link.href}
+                aria-current={pathname === link.href ? 'page' : undefined}
                 className={cn(
                   'text-sm transition-colors hover:text-foreground',
                   pathname === link.href
@@ -119,7 +117,7 @@ export function Header() {
                 variant="ghost"
                 size="icon"
                 className="md:hidden"
-                aria-label="Open menu"
+                aria-label="Open navigation menu"
               >
                 <MenuIcon aria-hidden="true" />
               </Button>
@@ -128,11 +126,13 @@ export function Header() {
               <SheetTitle className="text-lg font-bold">OpenLaunch</SheetTitle>
 
               {/* Tab switcher — mobile */}
-              <div className="flex items-center gap-1 rounded-lg bg-secondary p-1">
+              <div className="flex items-center gap-1 rounded-lg bg-secondary p-1" role="tablist" aria-label="Main sections">
                 {TABS.map((tab) => (
                   <Link
                     key={tab.id}
                     href={tab.id === 'trading' ? '/trading' : '/'}
+                    role="tab"
+                    aria-selected={activeTab === tab.id}
                     onClick={() => setMobileOpen(false)}
                     className={cn(
                       'flex-1 rounded-md px-3 py-1 text-center text-sm font-medium transition-colors',
@@ -152,6 +152,7 @@ export function Header() {
                   <Link
                     key={link.href}
                     href={link.href}
+                    aria-current={pathname === link.href ? 'page' : undefined}
                     onClick={() => setMobileOpen(false)}
                     className={cn(
                       'rounded-md px-3 py-2 text-sm transition-colors',
