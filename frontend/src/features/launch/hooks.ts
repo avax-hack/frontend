@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import {
   projectInfoSchema,
   milestonesFormSchema,
@@ -12,8 +13,11 @@ import {
   type MilestonesFormValues,
 } from './schemas'
 import { useCreateProjectStore, type FormStep } from './store'
-import { checkTickerAvailability } from './services'
+import { checkTickerAvailability, createProject } from './services'
 import { launchKeys } from './query-keys'
+import { projectKeys } from '@/features/project/query-keys'
+import { ApiError } from '@/lib/api'
+import { useAuthStore } from '@/stores/authStore'
 
 interface CreateProjectForm {
   projectInfoForm: UseFormReturn<ProjectInfoValues>
@@ -129,5 +133,34 @@ export function useTickerAvailability(ticker: string) {
     queryFn: () => checkTickerAvailability(trimmed),
     enabled: trimmed.length >= 2,
     staleTime: 30_000,
+  })
+}
+
+/** Mutation hook for creating a project */
+export function useCreateProject() {
+  const queryClient = useQueryClient()
+  const clearAccount = useAuthStore((s) => s.clearAccount)
+
+  return useMutation({
+    mutationFn: createProject,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: projectKeys.all })
+    },
+    onError: (error) => {
+      if (error instanceof ApiError) {
+        if (error.isUnauthorized) {
+          clearAccount()
+          toast.error('Session expired', {
+            description: 'Please sign in again and retry.',
+          })
+        } else {
+          toast.error('Failed to create project', {
+            description: error.serverMessage ?? 'Network error. Please try again.',
+          })
+        }
+      } else {
+        toast.error('Failed to create project')
+      }
+    },
   })
 }

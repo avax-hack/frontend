@@ -136,4 +136,35 @@ Run machine learning models on a decentralized network of GPU providers, verifie
       { milestone_id: 'ms_204', order: 4, title: 'Ecosystem', description: '100 model providers', fund_allocation_percent: 20, fund_release_amount: '200000000000000000000000', status: 'in_verification', funds_released: false, evidence_uri: null, submitted_at: 1720000000, verified_at: null },
     ],
   },
+  {
+    project_info: {
+      project_id: '0xdead000000000000000000000000000000000001',
+      name: 'FailedDAO',
+      symbol: 'FDAO',
+      image_uri: '',
+      description: `## FailedDAO
+
+A governance experiment that did not reach its milestones. This project has been marked as failed and investors can claim refunds.`,
+      tagline: 'Governance experiment — failed.',
+      category: 'defi',
+      creator: { ...mockCreator, nickname: 'AnonymousDAO', bio: 'Experimental governance builders.' },
+      website: null,
+      twitter: null,
+      github: null,
+      telegram: null,
+      created_at: 1713000000,
+    },
+    market_info: {
+      project_id: '0xdead000000000000000000000000000000000001',
+      status: 'failed',
+      target_raise: '300000000000000000000000',
+      total_committed: '150000000000000000000000',
+      funded_percent: 50,
+      investor_count: 89,
+    },
+    milestones: [
+      { milestone_id: 'ms_f01', order: 1, title: 'MVP', description: 'Build initial DAO tooling', fund_allocation_percent: 50, fund_release_amount: '150000000000000000000000', status: 'failed', funds_released: false, evidence_uri: null, submitted_at: 1714000000, verified_at: null },
+      { milestone_id: 'ms_f02', order: 2, title: 'Launch', description: 'Public launch', fund_allocation_percent: 50, fund_release_amount: '150000000000000000000000', status: 'pending', funds_released: false, evidence_uri: null, submitted_at: null, verified_at: null },
+    ],
+  },
 ]

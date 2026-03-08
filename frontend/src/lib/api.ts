@@ -43,7 +43,14 @@ async function baseFetch<T>(
     const handler = getMockHandler(path)
     if (handler) {
       await mockDelay()
-      return handler(path, options) as T
+      try {
+        return handler(path, options) as T
+      } catch (error) {
+        if (error instanceof ApiError) {
+          throw error
+        }
+        throw new ApiError(500, error instanceof Error ? error.message : 'Mock handler error')
+      }
     }
     console.warn(`[mock] No handler for ${method} ${path} — falling through to real API`)
   }
