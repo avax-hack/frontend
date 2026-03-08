@@ -32,11 +32,20 @@ export const CONTRACT_ADDRESSES = {
 
 export const SNOWTRACE_URL = process.env.NEXT_PUBLIC_SNOWTRACE_URL ?? 'https://snowtrace.io';
 
-export const NAV_LINKS = [
-  { href: '/', label: 'Home' },
+export const LAUNCHPAD_LINKS = [
   { href: '/explore', label: 'Explore' },
   { href: '/launch', label: 'Launch' },
-  { href: '/trading', label: 'Trading' },
   { href: '/portfolio', label: 'Portfolio' },
   { href: '/builder', label: 'Builder' },
+] as const;
+
+export const TRADING_LINKS = [
+  { href: '/trading', label: 'Trading' },
+] as const;
+
+/** @deprecated Use LAUNCHPAD_LINKS and TRADING_LINKS instead */
+export const NAV_LINKS = [
+  { href: '/', label: 'Home' },
+  ...LAUNCHPAD_LINKS,
+  ...TRADING_LINKS,
 ] as const;
