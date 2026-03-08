@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Card } from '@/components/ui/card'
-import { cn, formatWeiToUSD } from '@/lib/utils'
+import { cn, formatWeiToUSD, formatLaunchDate } from '@/lib/utils'
 import { ProgressBar } from './ProgressBar'
 import { MilestoneDots } from './MilestoneDots'
 import type { IProjectListItem } from '@/types/project'

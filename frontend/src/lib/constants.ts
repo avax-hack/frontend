@@ -23,18 +23,21 @@ export const avalanche = defineChain({
   },
 });
 
-function parseAddress(value: string | undefined): `0x${string}` | undefined {
+function isHexAddress(value: string): value is `0x${string}` {
+  return /^0x[0-9a-fA-F]{40}$/.test(value);
+}
+
+function toHexAddress(value: string | undefined): `0x${string}` | undefined {
   if (!value) return undefined;
-  if (/^0x[0-9a-fA-F]{40}$/.test(value)) return value as `0x${string}`;
-  console.error(`Invalid contract address: ${value}`);
+  if (isHexAddress(value)) return value;
   return undefined;
 }
 
 export const CONTRACT_ADDRESSES = {
-  ido: parseAddress(process.env.NEXT_PUBLIC_IDO_CONTRACT),
-  lpManager: parseAddress(process.env.NEXT_PUBLIC_LP_MANAGER_CONTRACT),
-  usdc: parseAddress(process.env.NEXT_PUBLIC_USDC_ADDRESS),
-  uniswapV4Router: parseAddress(process.env.NEXT_PUBLIC_UNISWAP_V4_ROUTER),
+  ido: toHexAddress(process.env.NEXT_PUBLIC_IDO_CONTRACT),
+  lpManager: toHexAddress(process.env.NEXT_PUBLIC_LP_MANAGER_CONTRACT),
+  usdc: toHexAddress(process.env.NEXT_PUBLIC_USDC_ADDRESS),
+  uniswapV4Router: toHexAddress(process.env.NEXT_PUBLIC_UNISWAP_V4_ROUTER),
 } as const;
 
 export const SNOWTRACE_URL = process.env.NEXT_PUBLIC_SNOWTRACE_URL ?? 'https://snowtrace.io';
