@@ -7,19 +7,19 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { useAccount, useBalance } from 'wagmi'
-import { parseEther, formatUnits } from 'viem'
+import { useAccount } from 'wagmi'
+import { parseUnits, formatUnits } from 'viem'
 import type { Address } from 'viem'
-import { useSwap, useTokenBalance } from '@/features/contracts'
+import { useSwap, useTokenBalance, useUsdcBalance } from '@/features/contracts'
 import { IS_MOCK } from '@/lib/mock'
 import { SNOWTRACE_URL } from '@/lib/constants'
 import type { ITokenData } from '@/features/trading/types'
+import Link from 'next/link'
 
 interface TradePanelProps {
   token: ITokenData
 }
 
-const MOCK_BALANCE = 10.5
 const SLIPPAGE_OPTIONS = ['0.5', '1', '3', '5'] as const
 const PERCENT_OPTIONS = [25, 50, 75, 100] as const
 
@@ -35,7 +35,7 @@ export function TradePanel({ token }: TradePanelProps) {
   const { address } = useAccount()
   const queryClient = useQueryClient()
   const swap = useSwap()
-  const { data: avaxBalanceData } = useBalance({ address })
+  const { data: usdcBalance } = useUsdcBalance(address)
   const { data: tokenBalance } = useTokenBalance(
     token_info.token_id as Address,
     address,
@@ -43,27 +43,44 @@ export function TradePanel({ token }: TradePanelProps) {
 
   // Derived balance
   const currentBalance = useMemo(() => {
-    if (IS_MOCK) return MOCK_BALANCE
     if (side === 'buy') {
-      return avaxBalanceData ? parseFloat(avaxBalanceData.formatted) : 0
+      // USDC has 6 decimals
+      return usdcBalance ? parseFloat(formatUnits(usdcBalance as bigint, 6)) : 0
     }
-    // sell side — tokenBalance is bigint (18 decimals)
+    // sell side — token has 18 decimals
     return tokenBalance ? parseFloat(formatUnits(tokenBalance as bigint, 18)) : 0
-  }, [side, avaxBalanceData, tokenBalance])
+  }, [side, usdcBalance, tokenBalance])
 
   const balanceLabel = useMemo(() => {
-    if (IS_MOCK) return `${MOCK_BALANCE} AVAX`
     if (side === 'buy') {
-      const formatted = avaxBalanceData
-        ? parseFloat(avaxBalanceData.formatted).toFixed(4)
+      const formatted = usdcBalance
+        ? parseFloat(formatUnits(usdcBalance as bigint, 6)).toFixed(2)
         : '0'
-      return `${formatted} AVAX`
+      return `${formatted} USDC`
     }
     const formatted = tokenBalance
       ? parseFloat(formatUnits(tokenBalance as bigint, 18)).toFixed(4)
       : '0'
     return `${formatted} ${token_info.symbol}`
-  }, [side, avaxBalanceData, tokenBalance, token_info.symbol])
+  }, [side, usdcBalance, tokenBalance, token_info.symbol])
+
+  // IDO tokens can't be swapped via DEX — they're bought through the project page
+  if (!token.token_info.is_graduated) {
+    return (
+      <Card className="p-6 flex flex-col items-center gap-3 text-center">
+        <p className="text-sm text-muted-foreground">
+          This token is still in IDO phase. Trading will be available after graduation.
+        </p>
+        {token.token_info.project_id && (
+          <Button asChild variant="outline" size="sm">
+            <Link href={`/projects/${token.token_info.project_id}`}>
+              Go to Project Page
+            </Link>
+          </Button>
+        )}
+      </Card>
+    )
+  }
 
   // Swap state helpers
   const isSwapping =
@@ -102,7 +119,8 @@ export function TradePanel({ token }: TradePanelProps) {
 
   function handlePresetPercent(percent: number) {
     const val = (currentBalance * percent) / 100
-    setAmount(String(parseFloat(val.toFixed(6))))
+    const decimals = side === 'buy' ? 2 : 6
+    setAmount(String(parseFloat(val.toFixed(decimals))))
   }
 
   async function handleSubmit() {
@@ -115,7 +133,9 @@ export function TradePanel({ token }: TradePanelProps) {
 
     if (!amount || parsedAmount <= 0) return
 
-    const amountBigInt = parseEther(amount)
+    // buy: USDC (6 decimals), sell: token (18 decimals)
+    const decimals = side === 'buy' ? 6 : 18
+    const amountBigInt = parseUnits(amount, decimals)
 
     const hash = await swap.execute({
       tokenAddress: token_info.token_id as Address,
@@ -140,7 +160,7 @@ export function TradePanel({ token }: TradePanelProps) {
               ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
               : 'bg-secondary text-muted-foreground',
           )}
-          onClick={() => setSide('buy')}
+          onClick={() => { setSide('buy'); setAmount('') }}
         >
           Buy
         </Button>
@@ -151,7 +171,7 @@ export function TradePanel({ token }: TradePanelProps) {
               ? 'bg-red-600 hover:bg-red-700 text-white'
               : 'bg-secondary text-muted-foreground',
           )}
-          onClick={() => setSide('sell')}
+          onClick={() => { setSide('sell'); setAmount('') }}
         >
           Sell
         </Button>
@@ -166,7 +186,7 @@ export function TradePanel({ token }: TradePanelProps) {
           type="text"
           inputMode="decimal"
           placeholder={
-            side === 'buy' ? '0.00 AVAX…' : `0.00 ${token_info.symbol}…`
+            side === 'buy' ? '0.00 USDC…' : `0.00 ${token_info.symbol}…`
           }
           value={amount}
           onChange={(e) => handleAmountChange(e.target.value)}

@@ -5,7 +5,7 @@ import { useAccount, useWriteContract } from 'wagmi'
 import { parseUnits, decodeEventLog } from 'viem'
 import type { Address, Hash } from 'viem'
 import { toast } from 'sonner'
-import { contracts, IDO_ABI, ERC20_ABI } from '@/lib/contracts'
+import { contracts, IDO_ABI, ERC20_ABI, SWAP_ROUTER_ABI } from '@/lib/contracts'
 import { OPENLAUNCH_CONTRACTS, SNOWTRACE_URL } from '@/lib/constants'
 import { isUserRejection } from '@/lib/errors'
 
@@ -310,13 +310,14 @@ export function useCreateProjectContract() {
 // ===== Swap Hook =====
 
 /**
- * useSwap — PoolManager.swap(key, params, hookData)
+ * useSwap — SwapRouter.swap(key, params)
  *
- * Uniswap V4 style swap:
+ * Pool is USDC ↔ Token (NOT AVAX).
  * - currency0 < currency1 (sorted by address)
- * - zeroForOne: true = sell currency0, false = sell currency1
- * - amountSpecified: negative = exact input, positive = exact output
- * - sqrtPriceLimitX96: direction-dependent boundary
+ * - buy: USDC → Token (amount in USDC, 6 decimals)
+ * - sell: Token → USDC (amount in Token, 18 decimals)
+ * - amountSpecified: negative = exact input
+ * - Requires approve on input token to SwapRouter before swap
  */
 export function useSwap() {
   const { address } = useAccount()
@@ -327,44 +328,70 @@ export function useSwap() {
   const execute = useCallback(async (params: {
     tokenAddress: Address
     side: 'buy' | 'sell'
-    amount: bigint // in token's native units
-    slippageBps: number // basis points, e.g. 300 = 3%
+    amount: bigint // buy: USDC units (6 dec), sell: token units (18 dec)
+    slippageBps: number
   }): Promise<Hash | null> => {
     if (!address) return null
 
     setTxState({ step: 'idle', txHash: null, error: null })
 
     try {
+      const usdcAddress = OPENLAUNCH_CONTRACTS.USDC as Address
+      const swapRouterAddress = OPENLAUNCH_CONTRACTS.SWAP_ROUTER as Address
+
       // Sort currencies for PoolKey (currency0 < currency1)
-      const avaxSentinel = '0x0000000000000000000000000000000000000000' as Address
-      const currency0 = avaxSentinel < params.tokenAddress ? avaxSentinel : params.tokenAddress
-      const currency1 = avaxSentinel < params.tokenAddress ? params.tokenAddress : avaxSentinel
+      const tokenLower = params.tokenAddress.toLowerCase()
+      const usdcLower = usdcAddress.toLowerCase()
+      const currency0 = tokenLower < usdcLower ? params.tokenAddress : usdcAddress
+      const currency1 = tokenLower < usdcLower ? usdcAddress : params.tokenAddress
+      const tokenIsCurrency0 = tokenLower < usdcLower
 
       // Determine swap direction
-      const avaxIsCurrency0 = currency0 === avaxSentinel
-      const zeroForOne = params.side === 'buy' ? avaxIsCurrency0 : !avaxIsCurrency0
+      // buy (USDC → Token): sell USDC side → zeroForOne depends on which is currency0
+      // sell (Token → USDC): sell Token side
+      const zeroForOne = params.side === 'buy'
+        ? !tokenIsCurrency0  // selling USDC: if USDC is currency0, zeroForOne=true
+        : tokenIsCurrency0   // selling Token: if Token is currency0, zeroForOne=true
 
-      // amountSpecified: negative = exact input
+      // Exact input (negative amountSpecified)
       const amountSpecified = BigInt(0) - params.amount
 
-      // TODO: Compute price limit from current pool sqrtPrice and slippageBps for production use
-      // Price limits (extreme boundaries to ensure execution)
       const MIN_SQRT_PRICE = BigInt('4295128739')
       const MAX_SQRT_PRICE = BigInt('1461446703485210103287273052203988822378723970342')
       const sqrtPriceLimitX96 = zeroForOne
         ? MIN_SQRT_PRICE + BigInt(1)
         : MAX_SQRT_PRICE - BigInt(1)
 
+      // Step 1: Approve input token to SwapRouter
+      const inputTokenAddress = params.side === 'buy' ? usdcAddress : params.tokenAddress
+
+      setTxState({ step: 'approving', txHash: null, error: null })
+
+      const approveHash = await writeContractAsync({
+        address: inputTokenAddress,
+        abi: ERC20_ABI,
+        functionName: 'approve',
+        args: [swapRouterAddress, params.amount],
+      })
+
+      setTxState({ step: 'waiting-approval', txHash: approveHash, error: null })
+
+      const { waitForTransactionReceipt } = await import('wagmi/actions')
+      const { wagmiConfig } = await import('@/components/providers/wagmi-config')
+      await waitForTransactionReceipt(wagmiConfig, { hash: approveHash })
+
+      // Step 2: Execute swap via SwapRouter
       setTxState({ step: 'executing', txHash: null, error: null })
 
       const hash = await writeContractAsync({
-        ...contracts.poolManager,
+        address: swapRouterAddress,
+        abi: SWAP_ROUTER_ABI,
         functionName: 'swap',
         args: [
           {
             currency0,
             currency1,
-            fee: 3000, // 0.3% fee tier
+            fee: 3000,
             tickSpacing: 60,
             hooks: OPENLAUNCH_CONTRACTS.SWAP_FEE_HOOK,
           },
@@ -373,15 +400,11 @@ export function useSwap() {
             amountSpecified,
             sqrtPriceLimitX96,
           },
-          '0x' as `0x${string}`, // empty hookData
         ],
-        // TODO: Native AVAX swaps may require WAVAX wrapping or a router contract
       })
 
       setTxState({ step: 'waiting-execution', txHash: hash, error: null })
 
-      const { waitForTransactionReceipt } = await import('wagmi/actions')
-      const { wagmiConfig } = await import('@/components/providers/wagmi-config')
       await waitForTransactionReceipt(wagmiConfig, { hash })
 
       setTxState({ step: 'success', txHash: hash, error: null })
