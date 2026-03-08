@@ -33,7 +33,8 @@ export const projectInfoSchema = z.object({
   githubUrl: optionalUrl,
   idoTokenAmount: z
     .number({ message: 'IDO token amount is required' })
-    .min(1, 'IDO token amount must be at least 1'),
+    .min(1, 'IDO token amount must be at least 1')
+    .max(1_000_000_000, 'Maximum IDO token amount is 1,000,000,000'),
   tokenPrice: z
     .number({ message: 'Token price is required' })
     .min(0.000001, 'Token price must be at least 0.000001'),

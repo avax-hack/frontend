@@ -5,7 +5,7 @@ import { useAccount, useWriteContract } from 'wagmi'
 import { parseUnits, decodeEventLog } from 'viem'
 import type { Address, Hash } from 'viem'
 import { toast } from 'sonner'
-import { contracts, IDO_ABI } from '@/lib/contracts'
+import { contracts, IDO_ABI, ERC20_ABI } from '@/lib/contracts'
 import { OPENLAUNCH_CONTRACTS, SNOWTRACE_URL } from '@/lib/constants'
 import { isUserRejection } from '@/lib/errors'
 
@@ -110,8 +110,10 @@ export function useInvest() {
 // ===== Refund Hook =====
 
 /**
- * useRefund — IDO.refund(token, tokenAmount)
- * No approve needed — user is sending project tokens back.
+ * useRefund — approve project token → IDO.refund(token, tokenAmount)
+ *
+ * The IDO contract calls safeTransferFrom to pull project tokens from the user,
+ * so the user must first approve the IDO contract to spend their project tokens.
  */
 export function useRefund() {
   const { address } = useAccount()
@@ -125,6 +127,23 @@ export function useRefund() {
     setTxState({ step: 'idle', txHash: null, error: null })
 
     try {
+      // Step 1: Approve project token spending
+      setTxState({ step: 'approving', txHash: null, error: null })
+
+      const approveHash = await writeContractAsync({
+        address: tokenAddress,
+        abi: ERC20_ABI,
+        functionName: 'approve',
+        args: [OPENLAUNCH_CONTRACTS.IDO, tokenAmount],
+      })
+
+      setTxState({ step: 'waiting-approval', txHash: approveHash, error: null })
+
+      const { waitForTransactionReceipt } = await import('wagmi/actions')
+      const { wagmiConfig } = await import('@/components/providers/wagmi-config')
+      await waitForTransactionReceipt(wagmiConfig, { hash: approveHash })
+
+      // Step 2: Execute refund
       setTxState({ step: 'executing', txHash: null, error: null })
 
       const hash = await writeContractAsync({
@@ -135,8 +154,6 @@ export function useRefund() {
 
       setTxState({ step: 'waiting-execution', txHash: hash, error: null })
 
-      const { waitForTransactionReceipt } = await import('wagmi/actions')
-      const { wagmiConfig } = await import('@/components/providers/wagmi-config')
       await waitForTransactionReceipt(wagmiConfig, { hash })
 
       setTxState({ step: 'success', txHash: hash, error: null })
