@@ -3,6 +3,7 @@
 import { use, useState } from 'react'
 import { getAddress } from 'viem'
 import { useTokenDetail, useChartData, useSwapHistory, useTokenHolders } from '@/features/trading/hooks'
+import { useTradingSubscription } from '@/hooks/useWebSocket'
 import type { ChartResolution } from '@/features/trading/types'
 import { TokenHeader } from '@/components/trading/TokenHeader'
 import { MarketStats } from '@/components/trading/MarketStats'
@@ -26,6 +27,7 @@ type Tab = (typeof TABS)[number]
 export default function TokenDetailPage({ params }: TokenDetailPageProps) {
   const { tokenId: rawTokenId } = use(params)
   const tokenId = getAddress(rawTokenId)
+  useTradingSubscription(tokenId)
   const [interval, setInterval_] = useState<ChartResolution>('1m')
   const [activeTab, setActiveTab] = useState<Tab>('trades')
 

@@ -1,12 +1,14 @@
 'use client'
 
 import { useProjectList } from '@/features/project/hooks'
+import { useNewContentSubscription } from '@/hooks/useWebSocket'
 import { ProjectCard } from '@/components/common/ProjectCard'
 import { SkeletonCard } from '@/components/common/SkeletonCard'
 import { EmptyState } from '@/components/common/EmptyState'
 import { Button } from '@/components/ui/button'
 
 export default function ExplorePage() {
+  useNewContentSubscription()
   const { data, isLoading, isError, refetch } = useProjectList('recent')
   const projects = data?.data ?? []
 

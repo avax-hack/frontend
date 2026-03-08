@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { useTokenList } from '@/features/trading/hooks'
+import { useNewContentSubscription } from '@/hooks/useWebSocket'
 import type { SortType, TokenCategory } from '@/features/trading/types'
 import { TokenCard, SortFilter, CategoryFilter, SearchBar } from '@/components/trading'
 import { SkeletonCard } from '@/components/common/SkeletonCard'
@@ -10,6 +11,7 @@ import { EmptyState } from '@/components/common/EmptyState'
 const SKELETON_COUNT = 6
 
 export default function TradingPage() {
+  useNewContentSubscription()
   const [sortType, setSortType] = useState<SortType>('creation_time_desc')
   const [category, setCategory] = useState<TokenCategory>('all')
   const [search, setSearch] = useState('')

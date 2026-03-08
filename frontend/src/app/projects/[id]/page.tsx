@@ -5,6 +5,7 @@ import { getAddress } from 'viem'
 import Link from 'next/link'
 import { ArrowLeftIcon, SearchXIcon } from 'lucide-react'
 import { useProjectDetail } from '@/features/project/hooks'
+import { useProjectSubscription } from '@/hooks/useWebSocket'
 import {
   ProjectHero,
   FundingStats,
@@ -113,6 +114,7 @@ function ProjectDetailError({ onRetry }: { onRetry: () => void }) {
 }
 
 function ProjectDetailContent({ id }: { id: string }) {
+  useProjectSubscription(id)
   const { data: project, isLoading, isError, refetch } = useProjectDetail(id)
 
   if (isLoading) {

@@ -1,6 +1,7 @@
 'use client'
 
 import { useFeaturedProjects, useProjectList } from '@/features/project/hooks'
+import { useNewContentSubscription } from '@/hooks/useWebSocket'
 import { HeroSection } from '@/components/landing/HeroSection'
 import { StatsBar } from '@/components/landing/StatsBar'
 import { FeaturedCarousel } from '@/components/landing/FeaturedCarousel'
@@ -11,6 +12,7 @@ import { SkeletonCard } from '@/components/common/SkeletonCard'
 import { EmptyState } from '@/components/common/EmptyState'
 
 export default function HomePage() {
+  useNewContentSubscription()
   const featured = useFeaturedProjects()
   const projectList = useProjectList('recent')
 
