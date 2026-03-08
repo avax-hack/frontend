@@ -2,7 +2,7 @@ import type { IAccountInfo } from './common'
 import type { IMilestoneInfo } from './milestone'
 
 export type ProjectStatus = 'funding' | 'active' | 'completed' | 'failed'
-export type ProjectCategory = 'defi' | 'infra' | 'ai' | 'gaming' | 'social' | 'meme'
+export type ProjectCategory = 'defi' | 'infra' | 'ai' | 'gaming' | 'social' | 'meme' | 'other'
 
 export interface IProjectInfo {
   project_id: string

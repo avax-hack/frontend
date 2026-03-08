@@ -17,6 +17,7 @@ const categoryVariants: Record<ProjectCategory, { label: string; variant: 'green
   gaming: { label: 'Gaming', variant: 'green' },
   social: { label: 'Social', variant: 'amber' },
   meme: { label: 'Meme', variant: 'red' },
+  other: { label: 'Other', variant: 'gray' },
 }
 
 const statusVariants: Record<ProjectStatus, { label: string; variant: 'green' | 'amber' | 'red' | 'gray' | 'purple' | 'blue' }> = {

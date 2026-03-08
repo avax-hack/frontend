@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+const CATEGORIES = ['defi', 'infra', 'ai', 'gaming', 'social', 'meme', 'other'] as const
+
 // --- URL validation helper: accept empty string or valid URL ---
 const optionalUrl = z
   .union([z.literal(''), z.string().url('Invalid URL format')])
@@ -7,6 +9,7 @@ const optionalUrl = z
 
 // --- Step 1: Project Info Schema ---
 export const projectInfoSchema = z.object({
+  category: z.enum(CATEGORIES, { message: 'Category is required' }),
   name: z
     .string()
     .trim()

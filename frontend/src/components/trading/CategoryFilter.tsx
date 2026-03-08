@@ -11,6 +11,7 @@ const CATEGORY_OPTIONS: { label: string; value: TokenCategory }[] = [
   { label: 'Gaming', value: 'gaming' },
   { label: 'Social', value: 'social' },
   { label: 'Meme', value: 'meme' },
+  { label: 'Other', value: 'other' },
 ] as const
 
 interface CategoryFilterProps {

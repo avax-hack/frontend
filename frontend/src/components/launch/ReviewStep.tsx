@@ -100,10 +100,10 @@ export function ReviewStep({
                   {projectInfo.name}
                 </h3>
                 <Badge variant="secondary">${projectInfo.ticker}</Badge>
+                <Badge variant="outline" className="capitalize">
+                  {projectInfo.category === 'ai' ? 'AI' : projectInfo.category === 'defi' ? 'DeFi' : projectInfo.category}
+                </Badge>
               </div>
-              <p className="text-sm text-muted-foreground truncate">
-                {projectInfo.tagline}
-              </p>
             </div>
           </div>
 

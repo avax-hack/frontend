@@ -50,4 +50,4 @@ export interface ITokenHolderListData {
 // Union types for API params
 export type ChartResolution = '1' | '5' | '15' | '60' | '240' | '1D'
 export type SortType = 'mcap' | 'creation_time_desc' | 'trending' | 'most_funded'
-export type TokenCategory = 'all' | 'defi' | 'infra' | 'ai' | 'gaming' | 'social' | 'meme'
+export type TokenCategory = 'all' | 'defi' | 'infra' | 'ai' | 'gaming' | 'social' | 'meme' | 'other'
