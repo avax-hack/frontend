@@ -1,8 +1,17 @@
 'use client'
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from '@/components/ui/table'
 import { StatusBadge } from '@/components/common/StatusBadge'
 import { MilestoneDots } from '@/components/common/MilestoneDots'
 import { EmptyState } from '@/components/common/EmptyState'
@@ -58,13 +67,15 @@ export function ActivitySection({
 
       <div className="flex border-b border-border" role="tablist">
         {TABS.map((tab) => (
-          <button
+          <Button
             key={tab.value}
+            variant="ghost"
+            size="sm"
             role="tab"
             id={`activity-tab-${tab.value}`}
             aria-selected={activeTab === tab.value}
             aria-controls={`activity-panel-${tab.value}`}
-            className={`px-4 py-2 text-sm ${
+            className={`rounded-none ${
               activeTab === tab.value
                 ? 'border-b-2 border-primary text-foreground'
                 : 'text-muted-foreground'
@@ -72,7 +83,7 @@ export function ActivitySection({
             onClick={() => setActiveTab(tab.value)}
           >
             {tab.label}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -146,65 +157,60 @@ export function ActivitySection({
                 <h3 className="text-sm font-medium text-muted-foreground">Trades</h3>
               )}
               <Card className="overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-border text-muted-foreground">
-                        <th className="px-4 py-2 text-left font-medium">Time</th>
-                        <th className="px-4 py-2 text-left font-medium">Token</th>
-                        <th className="px-4 py-2 text-left font-medium">Type</th>
-                        <th className="px-4 py-2 text-right font-medium">Amount</th>
-                        <th className="px-4 py-2 text-right font-medium">TX</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {swapHistory.map((swap, index) => (
-                        <tr
-                          key={`swap-${swap.transaction_hash}-${index}`}
-                          className="border-b border-border last:border-0"
-                        >
-                          <td className="px-4 py-2 text-muted-foreground">
-                            {formatLaunchDate(swap.created_at)}
-                          </td>
-                          <td className="px-4 py-2">
-                            <div className="flex items-center gap-2">
-                              {swap.token_info.image_uri ? (
-                                <img
-                                  src={swap.token_info.image_uri}
-                                  alt=""
-                                  className="size-5 rounded-full"
-                                />
-                              ) : (
-                                <div className="size-5 rounded-full bg-secondary" />
-                              )}
-                              <span>{swap.token_info.symbol}</span>
-                            </div>
-                          </td>
-                          <td className="px-4 py-2">
-                            <StatusBadge
-                              label={swap.event_type}
-                              variant={swap.event_type === 'BUY' ? 'green' : 'red'}
-                              size="sm"
-                            />
-                          </td>
-                          <td className="px-4 py-2 text-right">
-                            {formatNumber(Number(swap.native_amount) / 1e18, 4)} AVAX
-                          </td>
-                          <td className="px-4 py-2 text-right">
-                            <a
-                              href={`${SNOWTRACE_URL}/tx/${swap.transaction_hash}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-primary hover:underline"
-                            >
-                              {truncateAddress(swap.transaction_hash, 4)}
-                            </a>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Time</TableHead>
+                      <TableHead>Token</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
+                      <TableHead className="text-right">TX</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {swapHistory.map((swap, index) => (
+                      <TableRow key={`swap-${swap.transaction_hash}-${index}`}>
+                        <TableCell className="text-muted-foreground">
+                          {formatLaunchDate(swap.created_at)}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            {swap.token_info.image_uri ? (
+                              <img
+                                src={swap.token_info.image_uri}
+                                alt=""
+                                className="size-5 rounded-full"
+                              />
+                            ) : (
+                              <div className="size-5 rounded-full bg-secondary" />
+                            )}
+                            <span>{swap.token_info.symbol}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <StatusBadge
+                            label={swap.event_type}
+                            variant={swap.event_type === 'BUY' ? 'green' : 'red'}
+                            size="sm"
+                          />
+                        </TableCell>
+                        <TableCell className="text-right">
+                          ${formatNumber(Number(swap.native_amount) / 1e6, 2)}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <a
+                            href={`${SNOWTRACE_URL}/tx/${swap.transaction_hash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline"
+                          >
+                            {truncateAddress(swap.transaction_hash, 4)}
+                          </a>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </Card>
             </div>
           )}
