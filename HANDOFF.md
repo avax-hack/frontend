@@ -273,3 +273,12 @@ All code review issues from REVIEW.md have been addressed:
 **Note:** ReviewStep `ml-3` (I3) not found in current code — already clean. Ticker availability hook `enabled` threshold updated to match new min(2).
 
 Build: ✅ passes (`npm run build`)
+
+## Changes Log
+
+### WalletConnect 제거 (2026-03-08)
+- WalletConnect projectId 의존성 제거
+- RainbowKit + injected wallets only (MetaMask, Core Wallet)
+- 이유: WalletConnect projectId 없이도 동작하도록. Phase 1에서는 injected wallet만 지원
+- Feature Spec C-2 변경 없음 (원래 MetaMask/Core만 명시)
+- 추후 WalletConnect 추가 시 projectId 발급 후 재설정
