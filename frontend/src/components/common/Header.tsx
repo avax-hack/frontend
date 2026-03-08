@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import dynamic from 'next/dynamic'
+import { useAccount } from 'wagmi'
 import { MenuIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -14,6 +15,7 @@ import {
 } from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
 import { LAUNCHPAD_LINKS, TRADING_LINKS } from '@/lib/constants'
+import { useAuth } from '@/features/auth/hooks'
 
 const ConnectButton = dynamic(
   () => import('@rainbow-me/rainbowkit').then((mod) => mod.ConnectButton),
@@ -48,12 +50,72 @@ function getActiveTab(pathname: string): TabId {
   return 'launchpad'
 }
 
+function truncateAddress(addr: string): string {
+  return `${addr.slice(0, 6)}...${addr.slice(-4)}`
+}
+
 export function Header() {
   const pathname = usePathname()
   const activeTab = getActiveTab(pathname)
   const [mobileOpen, setMobileOpen] = useState(false)
 
+  const { address, isConnected } = useAccount()
+  const { isAuthenticated, login, logout, isSigning } = useAuth()
+  const autoSignAttempted = useRef(false)
+  const [autoSignFailed, setAutoSignFailed] = useState(false)
+
+  // Auto-sign on connect (one-shot)
+  useEffect(() => {
+    if (isConnected && !isAuthenticated && !autoSignAttempted.current && !isSigning) {
+      autoSignAttempted.current = true
+      login().then((success) => {
+        if (!success) setAutoSignFailed(true)
+      })
+    }
+  }, [isConnected, isAuthenticated, login, isSigning])
+
+  // Reset auto-sign guard on disconnect
+  useEffect(() => {
+    if (!isConnected) {
+      autoSignAttempted.current = false
+      setAutoSignFailed(false)
+    }
+  }, [isConnected])
+
   const currentLinks = NAV_LINKS_BY_TAB[activeTab]
+
+  const walletSection = (
+    <>
+      {isConnected && isAuthenticated && address ? (
+        <div className="flex items-center gap-2">
+          <span className="rounded-lg bg-secondary px-3 py-1.5 text-sm font-medium">
+            {truncateAddress(address)}
+          </span>
+          <Button variant="ghost" size="sm" onClick={logout}>
+            Sign Out
+          </Button>
+        </div>
+      ) : isConnected && !isAuthenticated && autoSignFailed ? (
+        <Button
+          size="sm"
+          onClick={() => {
+            setAutoSignFailed(false)
+            login().then((success) => {
+              if (!success) setAutoSignFailed(true)
+            })
+          }}
+        >
+          Sign In
+        </Button>
+      ) : isConnected && isSigning ? (
+        <div className="rounded-lg bg-secondary px-4 py-2 text-sm font-medium text-muted-foreground">
+          Signing…
+        </div>
+      ) : (
+        <ConnectButton />
+      )}
+    </>
+  )
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">
@@ -107,7 +169,7 @@ export function Header() {
         {/* Right: Wallet + Mobile Menu */}
         <div className="flex items-center gap-3">
           <div className="hidden md:block">
-            <ConnectButton />
+            {walletSection}
           </div>
 
           {/* Mobile hamburger */}
@@ -166,8 +228,10 @@ export function Header() {
                 ))}
               </nav>
 
-              <div className="flex flex-col gap-3 mt-auto">
-                <ConnectButton />
+              {/* Spacer to push wallet to bottom */}
+              <div className="flex-1" />
+              <div className="flex flex-col gap-3">
+                {walletSection}
               </div>
             </SheetContent>
           </Sheet>
