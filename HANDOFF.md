@@ -1,6 +1,6 @@
 # HANDOFF.md — OpenLaunch Frontend
 
-## Status: Phase 1 — v0.2.1
+## Status: Phase 2 — v0.3.0
 
 ## Completed
 - [x] v0.1.0 — Project setup (Next.js 15, providers, API client, types, pages)
@@ -131,3 +131,145 @@
 - Repo: github.com/avax-hack/frontend
 - Author: 0xAryweb3
 - Push URL: https://github.com/avax-hack/frontend.git
+
+---
+
+## Phase 2: Project Core
+
+### Feature Mapping
+
+| ID | Feature | Component/File | Status |
+|----|---------|----------------|--------|
+| D-1 | Project Hero | ProjectHero.tsx | done |
+| D-2 | Funding Stats | FundingStats.tsx | done |
+| D-3 | Funding Progress Bar | FundingProgress.tsx | done |
+| D-4 | Milestone Roadmap | MilestoneRoadmap.tsx | done |
+| D-5 | Milestone Status Display | MilestoneRoadmap.tsx | done |
+| D-6 | Fund Release Label | MilestoneRoadmap.tsx | done |
+| D-7 | Fund Allocation Bar | FundAllocationBar.tsx | done |
+| D-8 | Project Overview | ProjectOverview.tsx (markdown) | done |
+| D-9 | Team Section | TeamSection.tsx | done |
+| D-10 | Invest CTA (sticky) | InvestPanel.tsx (UI only, no contract) | done |
+| D-12 | Wallet Not Connected | InvestPanel.tsx | done |
+| D-13 | Funding Complete | InvestPanel.tsx | done |
+| CR-1 | Step Indicator | StepIndicator.tsx | done |
+| CR-2 | Step 1: Project Info | ProjectInfoStep.tsx | done |
+| CR-4 | Logo Upload | LogoUpload.tsx | done |
+| CR-5 | Ticker Validation | ProjectInfoStep.tsx (debounced) | done |
+| CR-6 | Step 2: Milestones | MilestoneStep.tsx | done |
+| CR-7 | Milestone Add/Remove | MilestoneStep.tsx | done |
+| CR-8 | Step 3: Review | ReviewStep.tsx | done |
+| CR-10 | Form Validation | Zod schemas | done |
+| CR-11 | Form Data Persistence | Zustand store | done |
+
+### Skipped (requires on-chain / Phase 3)
+- D-11: Investment Flow (contract call)
+- D-14: Claim Refund (contract call)
+- D-15: UMA Verification Modal (P2 priority)
+- CR-3: Rich Editor (P1 priority, use textarea for now)
+- CR-9: Project Launch contract deploy
+
+### Plan
+
+#### P2-1: Project Detail Page Components (src/components/project-detail/)
+- ProjectHero.tsx — Logo, name, ticker, tagline, StatusBadge, chain badge (Avalanche)
+- FundingStats.tsx — 3x StatCard: Target Raise, Total Committed, Investor Count
+- FundingProgress.tsx — ProgressBar + "62% - $312,450 raised" label
+- MilestoneRoadmap.tsx — Horizontal timeline with nodes. Each node: title, status icon (✓ green / ◐ amber / ○ gray), fund release % label
+- FundAllocationBar.tsx — Stacked horizontal bar, color per milestone
+- ProjectOverview.tsx — Markdown rendering (react-markdown + rehype-sanitize)
+- TeamSection.tsx — Team description + social links (icons for TG/X/Web/GH)
+- InvestPanel.tsx — Sticky bottom panel. Amount input (min $10), "Commit Funds" button. States: not connected → "Connect Wallet", funded → "Funding Complete", failed → "Claim Refund" (disabled, Phase 3)
+
+#### P2-2: Project Detail Data Layer (src/features/project/)
+- Update services.ts + hooks.ts: useProjectDetail(id) already exists
+- Add mock data for a single project detail in mocks/
+
+#### P2-3: Project Detail Page (src/app/projects/[id]/page.tsx)
+- Compose all detail components
+- Loading skeleton
+- 404 handling (project not found)
+
+#### P2-4: Project Creation Components (src/components/launch/)
+- StepIndicator.tsx — 3 steps, active/done/pending states
+- ProjectInfoStep.tsx — Form fields: name, ticker (debounced validation), tagline, description (textarea), logo upload, links, target raise, token supply
+- LogoUpload.tsx — Drag & drop zone, preview, file validation (PNG/JPG, max 5MB)
+- MilestoneStep.tsx — Card-based milestone inputs, add/remove (min 2, max 6), allocation % with real-time sum
+- ReviewStep.tsx — Preview card + milestone summary + warnings
+
+#### P2-5: Form Infrastructure
+- Zod schemas for all validation rules per Feature Spec
+- Zustand store for multi-step form data persistence
+- Form hook with per-step validation
+
+#### P2-6: Launch Page (src/app/launch/page.tsx)
+- Multi-step form with StepIndicator
+- Step navigation (Next/Back)
+- Final "Launch Project" button (UI only, shows "coming soon" toast)
+
+#### P2-7: Git
+- Branch: feat/phase-2-project-core
+- Logical commits → merge --no-ff → tag v0.3.0 → push
+
+### Dependencies
+- react-markdown + rehype-sanitize (for D-8)
+- zod (for form validation)
+- Already have: zustand, shadcn components
+
+### Tasks
+- id: P2-1
+  task: "Project detail components (8 files)"
+  status: done
+
+- id: P2-2
+  task: "Detail data layer + mock"
+  status: done
+
+- id: P2-3
+  task: "Detail page composition"
+  status: done
+  blocked_by: [P2-1, P2-2]
+
+- id: P2-4
+  task: "Creation form components (5 files)"
+  status: done
+
+- id: P2-5
+  task: "Form infra (Zod + Zustand)"
+  status: done
+
+- id: P2-6
+  task: "Launch page composition"
+  status: done
+  blocked_by: [P2-4, P2-5]
+  note: All code done. Git worker committing + pushing.
+
+- id: P2-7
+  task: "Git commits + tag + push"
+  status: done
+  blocked_by: [P2-1, P2-2, P2-3, P2-4, P2-5, P2-6]
+
+### P2 Review Fixes Applied (v0.3.0-rc1)
+
+All code review issues from REVIEW.md have been addressed:
+
+**Critical (fixed)**
+- C1: Schema validation aligned with Feature Spec §4 — ticker min(2)/max(10), description min(20), targetRaise min(1000)
+- C2: Removed `as 1 | 2 | 3` assertion in StepIndicator.tsx → uses `([1, 2, 3] as const)[i]` map. Store.ts and hooks.ts had no assertions in current code.
+- C3: Logo required enforcement — goNext() validates logo on step 1, surfaces error via `logoError` state, LogoUpload shows red border + error message when missing
+
+**Important (fixed)**
+- I1: InvestPanel now handles `active` status (milestone phase) with "Funding Closed" button
+- I2: LogoUpload uses semantic `<button type="button">` instead of `<div role="button">`, removed manual keyboard handler
+- I3: Margin violations fixed — `[&_li]:my-1` → `[&_li]:py-0.5`, `mt-3` → `pt-3`
+- I4: Typography `text-[10px]` → `text-xs` (12px floor)
+- I5: ReviewStep milestone keys use `m.title || \`milestone-${i}\`` (stable, title-based)
+- I6: beforeunload handler adds `e.returnValue = ''` for cross-browser support
+
+**Minor (fixed)**
+- M1: FundingProgress `<p>` tag has `leading-[1.2]` per convention
+- M2: TeamSection had no `!` assertion in current code (already clean)
+
+**Note:** ReviewStep `ml-3` (I3) not found in current code — already clean. Ticker availability hook `enabled` threshold updated to match new min(2).
+
+Build: ✅ passes (`npm run build`)
