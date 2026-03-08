@@ -1,6 +1,6 @@
 import type { IAccountInfo } from './common'
 
-export type MarketType = 'CURVE' | 'DEX'
+export type MarketType = 'CURVE' | 'DEX' | 'IDO'
 
 export interface ITokenInfo {
   token_id: string
@@ -40,6 +40,6 @@ export interface ITokenData {
 }
 
 export interface ITokenListData {
-  tokens: ITokenData[]
+  data: ITokenData[]
   total_count: number
 }

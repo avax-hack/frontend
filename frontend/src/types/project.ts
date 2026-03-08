@@ -43,7 +43,7 @@ export interface IProjectListItem {
 }
 
 export interface IProjectListData {
-  projects: IProjectListItem[]
+  data: IProjectListItem[]
   total_count: number
 }
 

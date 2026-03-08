@@ -32,20 +32,18 @@ export interface ISwapRecord {
 }
 
 export interface ITokenSwapHistoryData {
-  swaps: ISwapRecord[]
+  data: ISwapRecord[]
   total_count: number
 }
 
 // Holder data
 export interface ITokenHolder {
-  rank: number
   account_info: IAccountInfo
   balance: string
-  percent: number
 }
 
 export interface ITokenHolderListData {
-  holders: ITokenHolder[]
+  data: ITokenHolder[]
   total_count: number
 }
 

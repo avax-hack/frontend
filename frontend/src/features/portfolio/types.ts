@@ -11,7 +11,7 @@ export interface IPortfolioSummaryData {
   refunds_received: string
 }
 
-// GET /profile/hold-token/:accountId → items in .tokens[]
+// GET /profile/hold-token/:accountId → items in .data[]
 export interface IHoldTokenItem {
   token_info: ITokenInfo
   market_info: IMarketInfo
@@ -29,11 +29,11 @@ export interface IHoldTokenItem {
 }
 
 export interface IAccountHoldTokenData {
-  tokens: IHoldTokenItem[]
+  data: IHoldTokenItem[]
   total_count: number
 }
 
-// GET /profile/ido-history/:accountId → items in .participations[]
+// GET /profile/ido-history/:accountId → items in .data[]
 export interface IIdoParticipation {
   project_info: IProjectInfo
   market_info: IProjectMarketInfo
@@ -48,11 +48,11 @@ export interface IIdoParticipation {
 }
 
 export interface IAccountIDOHistoryData {
-  participations: IIdoParticipation[]
+  data: IIdoParticipation[]
   total_count: number
 }
 
-// GET /profile/swap-history/:accountId → items in .swaps[]
+// GET /profile/swap-history/:accountId → items in .data[]
 export interface IAccountSwapRecord {
   event_type: 'BUY' | 'SELL'
   token_info: ITokenInfo
@@ -65,11 +65,11 @@ export interface IAccountSwapRecord {
 }
 
 export interface IAccountSwapHistoryData {
-  swaps: IAccountSwapRecord[]
+  data: IAccountSwapRecord[]
   total_count: number
 }
 
-// GET /profile/refund-history/:accountId → items in .refunds[]
+// GET /profile/refund-history/:accountId → items in .data[]
 export interface IRefundRecord {
   project_info: IProjectInfo
   original_investment: string
@@ -80,7 +80,7 @@ export interface IRefundRecord {
 }
 
 export interface IAccountRefundHistoryData {
-  refunds: IRefundRecord[]
+  data: IRefundRecord[]
   total_count: number
 }
 
