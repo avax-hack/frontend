@@ -7,7 +7,7 @@ import type { SortType, ChartResolution } from './types'
 
 export function useTokenList(
   sortType?: SortType,
-  params?: { page?: number; limit?: number; category?: string; search?: string },
+  params?: { page?: number; limit?: number; category?: string; search?: string; is_ido?: boolean },
 ) {
   return useQuery({
     queryKey: tradingKeys.list(sortType ?? 'creation_time_desc', params),

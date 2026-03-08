@@ -42,15 +42,15 @@ function PortfolioContent() {
       <div className="flex flex-col gap-2">
         <h2 className="text-lg font-bold">My Holdings</h2>
         <HoldingsTable
-          tokens={holdTokens?.tokens}
+          tokens={holdTokens?.data}
           isLoading={holdingsLoading}
         />
       </div>
 
       <ActivitySection
-        idoHistory={idoData?.participations}
-        swapHistory={swapData?.swaps}
-        refundHistory={refundData?.refunds}
+        idoHistory={idoData?.data}
+        swapHistory={swapData?.data}
+        refundHistory={refundData?.data}
         isLoading={activityLoading}
       />
     </div>

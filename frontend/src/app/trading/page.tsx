@@ -21,6 +21,7 @@ export default function TradingPage() {
   const { data, isLoading, isError } = useTokenList(sortType, {
     category: category !== 'all' ? category : undefined,
     search: search || undefined,
+    is_ido: false,
   })
 
   return (
@@ -42,11 +43,11 @@ export default function TradingPage() {
         </div>
       ) : isError ? (
         <EmptyState message="Something went wrong" description="Failed to load tokens. Please try again." />
-      ) : data?.tokens.length === 0 ? (
+      ) : data?.data.length === 0 ? (
         <EmptyState message="No tokens found" />
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {data?.tokens.map((token) => (
+          {data?.data.map((token) => (
             <TokenCard key={token.token_info.token_id} token={token} />
           ))}
         </div>

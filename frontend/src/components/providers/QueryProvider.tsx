@@ -2,10 +2,6 @@
 
 import { ReactNode, useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { initMocks } from '@/lib/mock'
-
-// Initialize mocks before any queries fire
-initMocks()
 
 interface QueryProviderProps {
   children: ReactNode

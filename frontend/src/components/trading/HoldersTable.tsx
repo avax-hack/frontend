@@ -33,24 +33,20 @@ export function HoldersTable({ holders, isLoading }: HoldersTableProps) {
       <table className="w-full">
         <thead>
           <tr>
-            <th className="px-3 py-2 text-left text-xs text-muted-foreground font-medium">Rank</th>
+            <th className="px-3 py-2 text-left text-xs text-muted-foreground font-medium">#</th>
             <th className="px-3 py-2 text-left text-xs text-muted-foreground font-medium">Address</th>
             <th className="px-3 py-2 text-right text-xs text-muted-foreground font-medium">Balance</th>
-            <th className="px-3 py-2 text-right text-xs text-muted-foreground font-medium">%</th>
           </tr>
         </thead>
         <tbody>
-          {holders.map((holder) => (
+          {holders.map((holder, i) => (
             <tr key={holder.account_info.account_id} className="border-t border-border">
-              <td className="px-3 py-2 text-sm">{holder.rank}</td>
+              <td className="px-3 py-2 text-sm">{i + 1}</td>
               <td className="px-3 py-2 text-sm">
                 {truncateAddress(holder.account_info.account_id)}
               </td>
               <td className="px-3 py-2 text-sm text-right">
                 {formatNumber(Number(holder.balance) / 1e18, 2)}
-              </td>
-              <td className="px-3 py-2 text-sm text-right">
-                {holder.percent.toFixed(2)}%
               </td>
             </tr>
           ))}

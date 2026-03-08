@@ -2,7 +2,7 @@ import type { IProjectInfo, IProjectMarketInfo } from '@/types/project'
 
 // GET /profile/tokens/created/:accountId
 export interface IAccountCreatedTokenData {
-  projects: {
+  data: {
     project_info: IProjectInfo
     market_info: IProjectMarketInfo
   }[]

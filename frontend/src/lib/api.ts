@@ -1,5 +1,3 @@
-import { IS_MOCK, getMockHandler, mockDelay } from './mock'
-
 type AuthMode = 'none' | 'cookie' | 'bearer'
 
 interface IFetchOptions {
@@ -38,23 +36,6 @@ async function baseFetch<T>(
   path: string,
   options?: IFetchOptions,
 ): Promise<T> {
-  // Mock mode — return mock data if handler exists
-  if (IS_MOCK) {
-    const handler = getMockHandler(path)
-    if (handler) {
-      await mockDelay()
-      try {
-        return handler(path, options) as T
-      } catch (error) {
-        if (error instanceof ApiError) {
-          throw error
-        }
-        throw new ApiError(500, error instanceof Error ? error.message : 'Mock handler error')
-      }
-    }
-    console.warn(`[mock] No handler for ${method} ${path} — falling through to real API`)
-  }
-
   const url = `${API_BASE}${path}`
 
   const headers: Record<string, string> = {

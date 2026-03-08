@@ -6,7 +6,7 @@ import { parseUnits, formatUnits } from 'viem'
 import { OPENLAUNCH_CONTRACTS } from '@/lib/constants'
 import MockUSDC_ABI from '@/lib/abi/MockUSDC.json'
 
-const MINT_AMOUNT = parseUnits('10', 6) // 10 USDC (6 decimals)
+const MINT_AMOUNT = parseUnits('100', 6) // 100 USDC (6 decimals)
 
 export function FaucetButton() {
   const { address, isConnected } = useAccount()
@@ -62,7 +62,7 @@ export function FaucetButton() {
         disabled={isPending || isConfirming}
         className="rounded-md bg-blue-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {isPending ? 'Confirm...' : isConfirming ? 'Minting...' : 'Faucet 10 USDC'}
+        {isPending ? 'Confirm...' : isConfirming ? 'Minting...' : 'Faucet 100 USDC'}
       </button>
       {isSuccess && <span className="text-xs text-green-600">Minted!</span>}
       {error && <span className="text-xs text-red-500 max-w-[120px] truncate">{error}</span>}

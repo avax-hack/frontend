@@ -58,7 +58,15 @@ export function InvestPanel({ project }: InvestPanelProps) {
   const isFunding = market_info.status === 'funding' && !isFundingComplete && !isActive
 
   const numericAmount = parseFloat(amount)
-  const isValidAmount = !isNaN(numericAmount) && numericAmount >= 10
+  const remainingUsdc = Math.max(
+    0,
+    Number(market_info.target_raise) / 1e6 - Number(market_info.total_committed) / 1e6,
+  )
+  const usdcBalance = formattedBalance !== undefined ? parseFloat(formattedBalance) : Infinity
+  const maxInvestable = Math.min(remainingUsdc, usdcBalance)
+  const exceedsRemaining = !isNaN(numericAmount) && numericAmount > remainingUsdc
+  const exceedsBalance = !IS_MOCK && !isNaN(numericAmount) && numericAmount > usdcBalance
+  const isValidAmount = !isNaN(numericAmount) && numericAmount >= 10 && !exceedsRemaining && !exceedsBalance
 
   const handleCommitFunds = useCallback(async () => {
     if (!isAuthenticated) {
@@ -199,10 +207,34 @@ export function InvestPanel({ project }: InvestPanelProps) {
                     className="h-10 w-full rounded-md border bg-background px-3 text-base outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring"
                   />
                 </div>
-                {/* USDC balance (real mode only) */}
-                {!IS_MOCK && formattedBalance !== undefined && (
-                  <span className="pl-5 text-xs text-muted-foreground">
-                    Balance: ${formattedBalance} USDC
+                <div className="flex items-center gap-2 pl-5">
+                  {/* USDC balance (real mode only) */}
+                  {!IS_MOCK && formattedBalance !== undefined && (
+                    <span className="text-xs text-muted-foreground">
+                      Balance: ${formattedBalance} USDC
+                    </span>
+                  )}
+                  <span className="text-xs text-muted-foreground">
+                    (Remaining: ${remainingUsdc.toLocaleString(undefined, { maximumFractionDigits: 2 })})
+                  </span>
+                  {maxInvestable >= 10 && (
+                    <button
+                      type="button"
+                      className="text-xs font-medium text-primary hover:underline"
+                      onClick={() => setAmount(String(Math.floor(maxInvestable * 100) / 100))}
+                    >
+                      Max
+                    </button>
+                  )}
+                </div>
+                {exceedsRemaining && (
+                  <span className="pl-5 text-xs text-red-500">
+                    Exceeds remaining funding amount (${remainingUsdc.toLocaleString(undefined, { maximumFractionDigits: 2 })})
+                  </span>
+                )}
+                {!exceedsRemaining && exceedsBalance && (
+                  <span className="pl-5 text-xs text-red-500">
+                    Exceeds your USDC balance (${formattedBalance})
                   </span>
                 )}
               </div>

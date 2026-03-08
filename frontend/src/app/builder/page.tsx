@@ -66,15 +66,15 @@ function BuilderContent({ accountId }: { accountId: string }) {
   useEffect(() => {
     if (
       !selectedProjectId &&
-      createdProjects?.projects &&
-      createdProjects.projects.length > 0
+      createdProjects?.data &&
+      createdProjects.data.length > 0
     ) {
-      setSelectedProjectId(createdProjects.projects[0].project_info.project_id)
+      setSelectedProjectId(createdProjects.data[0].project_info.project_id)
     }
   }, [createdProjects, selectedProjectId])
 
   // No projects state (B-13)
-  if (!projectsLoading && (!createdProjects?.projects || createdProjects.projects.length === 0)) {
+  if (!projectsLoading && (!createdProjects?.data || createdProjects.data.length === 0)) {
     return (
       <div className="px-4 py-6 mx-auto max-w-5xl">
         <h1 className="text-2xl font-bold">Builder Dashboard</h1>
@@ -99,7 +99,7 @@ function BuilderContent({ accountId }: { accountId: string }) {
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">Builder Dashboard</h1>
         <ProjectSelector
-          projects={createdProjects?.projects}
+          projects={createdProjects?.data}
           selectedProjectId={selectedProjectId}
           onSelect={setSelectedProjectId}
           isLoading={projectsLoading}

@@ -10,9 +10,9 @@ export function checkTickerAvailability(
   )
 }
 
-export async function uploadImage(file: File): Promise<{ uri: string }> {
+export async function uploadImage(file: File): Promise<{ image_uri: string }> {
   const formData = new FormData()
-  formData.append('image', file)
+  formData.append('file', file)
 
   const res = await fetch(`${API_BASE}/metadata/image`, {
     method: 'POST',
