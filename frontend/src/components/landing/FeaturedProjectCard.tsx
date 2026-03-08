@@ -40,8 +40,8 @@ function getMilestoneVariant(completed: number, total: number): 'green' | 'purpl
 
 export function FeaturedProjectCard({ project }: FeaturedProjectCardProps) {
   const { project_info, market_info, milestone_completed, milestone_total } = project
-  const category = categoryVariants[project_info.category]
-  const status = statusVariants[market_info.status]
+  const category = categoryVariants[project_info.category] ?? { label: project_info.category ?? "Unknown", variant: "gray" as const }
+  const status = statusVariants[market_info.status] ?? { label: market_info.status ?? "Unknown", variant: "gray" as const }
 
   return (
     <Link
