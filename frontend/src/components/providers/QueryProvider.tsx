@@ -1,10 +1,14 @@
-'use client';
+'use client'
 
-import { ReactNode, useState } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactNode, useState } from 'react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { initMocks } from '@/lib/mock'
+
+// Initialize mocks before any queries fire
+initMocks()
 
 interface QueryProviderProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 export function QueryProvider({ children }: QueryProviderProps) {
@@ -13,16 +17,16 @@ export function QueryProvider({ children }: QueryProviderProps) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 30 * 1000, // 30s for trade data freshness
+            staleTime: 30 * 1000,
             refetchOnWindowFocus: false,
           },
         },
       }),
-  );
+  )
 
   return (
     <QueryClientProvider client={queryClient}>
       {children}
     </QueryClientProvider>
-  );
+  )
 }
