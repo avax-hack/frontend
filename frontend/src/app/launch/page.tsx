@@ -2,9 +2,11 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { FormProvider } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ArrowLeftIcon, ArrowRightIcon, LoaderIcon, RocketIcon, XIcon } from 'lucide-react'
+import { parseEther } from 'viem'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -13,7 +15,8 @@ import {
   MilestoneStep,
   ReviewStep,
 } from '@/components/launch'
-import { useCreateProjectForm } from '@/features/launch/hooks'
+import { useCreateProjectForm, useCreateProject } from '@/features/launch/hooks'
+import { useAuth } from '@/features/auth/hooks'
 
 export default function LaunchPage() {
   const {
@@ -30,6 +33,9 @@ export default function LaunchPage() {
   } = useCreateProjectForm()
 
   const [isValidating, setIsValidating] = useState(false)
+  const router = useRouter()
+  const { isAuthenticated, login } = useAuth()
+  const createProjectMutation = useCreateProject()
 
   // Warn on page leave if form is dirty
   const projectDirty = projectInfoForm.formState.isDirty
@@ -61,12 +67,47 @@ export default function LaunchPage() {
     }
   }, [goNext])
 
-  const handleLaunch = useCallback(() => {
-    toast.info(
-      'Coming soon! Contract deployment will be available in Phase 3.',
-      { duration: 5000 }
-    )
-  }, [])
+  const handleLaunch = useCallback(async () => {
+    // Auth gate
+    if (!isAuthenticated) {
+      await login()
+      return // User needs to click again after auth
+    }
+
+    const projectInfo = projectInfoForm.getValues()
+    const milestones = milestonesForm.getValues().milestones
+
+    // Map form data to API payload
+    const payload = {
+      name: projectInfo.name,
+      symbol: projectInfo.ticker,
+      tagline: projectInfo.tagline,
+      description: projectInfo.description,
+      image_uri: '', // TODO: Upload logo file and get URI. For now, empty string.
+      website: projectInfo.websiteUrl || null,
+      twitter: projectInfo.twitterUrl || null,
+      github: projectInfo.githubUrl || null,
+      target_raise: parseEther(String(projectInfo.targetRaise)).toString(),
+      token_supply: parseEther(String(projectInfo.tokenSupply)).toString(),
+      milestones: milestones.map((m, i) => ({
+        order: i + 1,
+        title: m.title,
+        description: m.description,
+        fund_allocation_percent: m.allocation,
+      })),
+    }
+
+    try {
+      const result = await createProjectMutation.mutateAsync(payload)
+      toast.success('Project launched successfully!', {
+        description: 'Your project has been created.',
+      })
+      reset()
+      router.push(`/projects/${result.project_id}`)
+    } catch {
+      // Error already handled by mutation's onError
+    }
+  }, [isAuthenticated, login, projectInfoForm, milestonesForm, createProjectMutation, reset, router])
 
   const handleCancel = useCallback(() => {
     reset()
@@ -162,9 +203,14 @@ export default function LaunchPage() {
           <Button
             type="button"
             onClick={handleLaunch}
+            disabled={createProjectMutation.isPending}
           >
-            <RocketIcon className="size-4" aria-hidden="true" />
-            Launch Project
+            {createProjectMutation.isPending ? (
+              <LoaderIcon className="size-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <RocketIcon className="size-4" aria-hidden="true" />
+            )}
+            {createProjectMutation.isPending ? 'Launching…' : 'Launch Project'}
           </Button>
         )}
       </nav>
