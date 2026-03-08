@@ -4,6 +4,7 @@ import type {
   ITokenListData,
   ITradingChartData,
   ITokenSwapHistoryData,
+  ITokenHolderListData,
   SortType,
   ChartResolution,
 } from './types'
@@ -63,5 +64,18 @@ export function getSwapHistory(
   const query = searchParams.toString()
   return httpGet<ITokenSwapHistoryData>(
     `/trade/swap-history/${tokenId}${query ? `?${query}` : ''}`,
+  )
+}
+
+export function getTokenHolders(
+  tokenId: string,
+  params?: { page?: number; limit?: number },
+): Promise<ITokenHolderListData> {
+  const searchParams = new URLSearchParams()
+  if (params?.page !== undefined) searchParams.set('page', String(params.page))
+  if (params?.limit !== undefined) searchParams.set('limit', String(params.limit))
+  const query = searchParams.toString()
+  return httpGet<ITokenHolderListData>(
+    `/trade/holder/${tokenId}${query ? `?${query}` : ''}`,
   )
 }
