@@ -10,20 +10,27 @@ interface ActiveProjectsGridProps {
 
 export function ActiveProjectsGrid({ projects }: ActiveProjectsGridProps) {
   if (projects.length === 0) {
-    return <EmptyState message="No active projects yet" actionLabel="Launch a Project" actionHref="/launch" />
+    return (
+      <EmptyState
+        message="No active projects yet"
+        description="Be the first to launch on OpenLaunch"
+        actionLabel="Launch a Project"
+        actionHref="/launch"
+      />
+    )
   }
 
   return (
     <section className="flex flex-col gap-6">
       <h2 className="text-2xl font-bold">Active Projects</h2>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {projects.map((project) => (
           <ProjectCard key={project.project_info.project_id} project={project} />
         ))}
       </div>
       <div className="flex justify-center">
         <Button asChild variant="outline">
-          <Link href="/explore">View All Projects</Link>
+          <Link href="/explore">View All Projects →</Link>
         </Button>
       </div>
     </section>
