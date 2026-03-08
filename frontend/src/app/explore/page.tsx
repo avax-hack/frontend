@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 
 export default function ExplorePage() {
   const { data, isLoading, isError, refetch } = useProjectList('recent')
-  const projects = data?.projects ?? []
+  const projects = data?.data ?? []
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-8 md:px-6">

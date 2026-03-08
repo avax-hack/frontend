@@ -106,10 +106,10 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
 
             <div role="tabpanel" id={`tabpanel-${activeTab}`} aria-labelledby={`tab-${activeTab}`}>
               {activeTab === 'trades' && (
-                <TradesTable swaps={swapData?.swaps ?? []} isLoading={swapsLoading} />
+                <TradesTable swaps={swapData?.data ?? []} isLoading={swapsLoading} />
               )}
               {activeTab === 'holders' && (
-                <HoldersTable holders={holdersData?.holders ?? []} isLoading={holdersLoading} />
+                <HoldersTable holders={holdersData?.data ?? []} isLoading={holdersLoading} />
               )}
               {activeTab === 'about' && (
                 <div className="flex flex-col gap-4 p-4">

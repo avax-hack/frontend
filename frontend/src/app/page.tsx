@@ -47,7 +47,7 @@ export default function HomePage() {
         </section>
       ) : (
         <ActiveProjectsGrid
-          projects={(projectList.data?.projects ?? []).slice(0, 6)}
+          projects={(projectList.data?.data ?? []).slice(0, 6)}
         />
       )}
     </div>
