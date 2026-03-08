@@ -161,7 +161,7 @@ export function ReviewStep({
           <div className="flex flex-col gap-3">
             {milestones.map((m, i) => (
               <div
-                key={m.title || `milestone-${i}`}
+                key={`${m.title}-${m.allocation}-${i}`}
                 className="flex items-center justify-between gap-3 rounded-lg border px-4 py-3"
               >
                 <div className="flex min-w-0 flex-col gap-1">

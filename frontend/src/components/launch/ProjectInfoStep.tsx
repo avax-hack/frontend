@@ -86,7 +86,7 @@ export function ProjectInfoStep({
           <Input
             id="ticker"
             placeholder="TOKEN…"
-            maxLength={6}
+            maxLength={10}
             autoComplete="off"
             spellCheck={false}
             aria-invalid={!!errors.ticker}
@@ -101,7 +101,7 @@ export function ProjectInfoStep({
               Checking…
             </span>
           )}
-          {tickerCheck?.available && debouncedTicker.length >= 3 && !isCheckingTicker && (
+          {tickerCheck?.available && debouncedTicker.length >= 2 && !isCheckingTicker && (
             <span className="absolute top-1/2 right-3 -translate-y-1/2 text-xs text-green-500">
               Available
             </span>
@@ -141,7 +141,7 @@ export function ProjectInfoStep({
         </Label>
         <Textarea
           id="description"
-          placeholder="Describe your project in detail (min 100 characters)…"
+          placeholder="Describe your project in detail (min 20 characters)…"
           rows={6}
           autoComplete="off"
           aria-invalid={!!errors.description}
@@ -248,7 +248,7 @@ export function ProjectInfoStep({
           type="number"
           inputMode="decimal"
           placeholder="100,000…"
-          min={10_000}
+          min={1_000}
           max={10_000_000}
           autoComplete="off"
           aria-invalid={!!errors.targetRaise}
