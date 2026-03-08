@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { getAddress } from 'viem'
 import { Card } from '@/components/ui/card'
 import { StatusBadge } from '@/components/common/StatusBadge'
 import { ProgressBar } from '@/components/common/ProgressBar'
@@ -30,12 +31,11 @@ export function TokenCard({ token }: TokenCardProps) {
   const { token_info, market_info } = token
 
   const price = Number(market_info.token_price)
-  const supply = Number(market_info.total_supply) / 1e18
-  const mcap = supply * Number(market_info.token_price)
+  const mcap = Number(market_info.total_supply) * Number(market_info.token_price)
 
   return (
     <Link
-      href={`/trading/${token_info.token_id}`}
+      href={`/trading/${getAddress(token_info.token_id)}`}
       aria-label={`View ${token_info.name} trading`}
     >
       <Card className="flex flex-col gap-3 p-4 transition hover:bg-secondary/50">

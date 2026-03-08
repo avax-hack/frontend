@@ -15,6 +15,21 @@ interface TradingChartProps {
   data: IChartBar[]
 }
 
+function getPrecision(data: IChartBar[]): number {
+  if (data.length === 0) return 2
+  const prices = data.flatMap((bar) => [
+    Number(bar.open),
+    Number(bar.high),
+    Number(bar.low),
+    Number(bar.close),
+  ])
+  const minPrice = Math.min(...prices)
+  if (minPrice <= 0) return 2
+  // enough decimals so the smallest price has 2+ significant digits
+  const digits = Math.max(2, Math.ceil(-Math.log10(minPrice)) + 2)
+  return Math.min(digits, 10)
+}
+
 export function TradingChart({ data }: TradingChartProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const chartRef = useRef<ReturnType<typeof createChart> | null>(null)
@@ -39,7 +54,11 @@ export function TradingChart({ data }: TradingChartProps) {
         horzLines: { color: '#27272a' },
       },
       crosshair: { mode: 0 },
-      rightPriceScale: { borderColor: '#27272a' },
+      rightPriceScale: {
+        borderColor: '#27272a',
+        autoScale: true,
+        scaleMargins: { top: 0.1, bottom: 0.2 },
+      },
       timeScale: {
         borderColor: '#27272a',
         timeVisible: true,
@@ -91,6 +110,16 @@ export function TradingChart({ data }: TradingChartProps) {
   useEffect(() => {
     if (!candlestickRef.current || !volumeRef.current || !chartRef.current) return
     if (data.length === 0) return
+
+    const precision = getPrecision(data)
+
+    candlestickRef.current.applyOptions({
+      priceFormat: {
+        type: 'price',
+        precision,
+        minMove: 1 / Math.pow(10, precision),
+      },
+    })
 
     const candlestickData = data.map((bar) => ({
       time: bar.time as UTCTimestamp,

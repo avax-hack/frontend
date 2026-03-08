@@ -23,27 +23,15 @@ export function useTokenDetail(tokenId: string) {
   })
 }
 
-export function useChartData(tokenId: string, resolution: ChartResolution = '15') {
-  const now = Math.floor(Date.now() / 1000)
-  const rangeMap: Record<ChartResolution, number> = {
-    '1': 3600,
-    '5': 18000,
-    '15': 54000,
-    '60': 216000,
-    '240': 864000,
-    '1D': 2592000,
-  }
-  const from = now - (rangeMap[resolution] || 54000)
-
+export function useChartData(tokenId: string, resolution: ChartResolution = '1m') {
   return useQuery({
     queryKey: tradingKeys.chart(tokenId, resolution),
     queryFn: () =>
       getChartData(tokenId, {
         resolution,
-        from,
-        to: now,
+        from: 0,
+        to: 9999999999,
         countback: 300,
-        chart_type: 'price',
       }),
     enabled: !!tokenId,
   })

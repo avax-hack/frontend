@@ -8,8 +8,7 @@ import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useAccount } from 'wagmi'
-import { parseUnits, formatUnits } from 'viem'
-import type { Address } from 'viem'
+import { parseUnits, formatUnits, getAddress } from 'viem'
 import { useSwap, useTokenBalance, useUsdcBalance } from '@/features/contracts'
 import { IS_MOCK } from '@/lib/mock'
 import { SNOWTRACE_URL } from '@/lib/constants'
@@ -37,7 +36,7 @@ export function TradePanel({ token }: TradePanelProps) {
   const swap = useSwap()
   const { data: usdcBalance } = useUsdcBalance(address)
   const { data: tokenBalance } = useTokenBalance(
-    token_info.token_id as Address,
+    getAddress(token_info.token_id),
     address,
   )
 
@@ -73,7 +72,7 @@ export function TradePanel({ token }: TradePanelProps) {
         </p>
         {token.token_info.project_id && (
           <Button asChild variant="outline" size="sm">
-            <Link href={`/projects/${token.token_info.project_id}`}>
+            <Link href={`/projects/${getAddress(token.token_info.project_id)}`}>
               Go to Project Page
             </Link>
           </Button>
@@ -138,7 +137,7 @@ export function TradePanel({ token }: TradePanelProps) {
     const amountBigInt = parseUnits(amount, decimals)
 
     const hash = await swap.execute({
-      tokenAddress: token_info.token_id as Address,
+      tokenAddress: getAddress(token_info.token_id),
       side,
       amount: amountBigInt,
       slippageBps,

@@ -1,6 +1,7 @@
 'use client'
 
 import { use, useState } from 'react'
+import { getAddress } from 'viem'
 import { useTokenDetail, useChartData, useSwapHistory, useTokenHolders } from '@/features/trading/hooks'
 import type { ChartResolution } from '@/features/trading/types'
 import { TokenHeader } from '@/components/trading/TokenHeader'
@@ -25,8 +26,8 @@ type Tab = (typeof TABS)[number]
 
 export default function TokenDetailPage({ params }: TokenDetailPageProps) {
   const { tokenId: rawTokenId } = use(params)
-  const tokenId = rawTokenId.toLowerCase()
-  const [interval, setInterval_] = useState<ChartResolution>('15')
+  const tokenId = getAddress(rawTokenId)
+  const [interval, setInterval_] = useState<ChartResolution>('1m')
   const [activeTab, setActiveTab] = useState<Tab>('trades')
 
   const { data: token, isLoading: tokenLoading, isError: tokenError } = useTokenDetail(tokenId)
@@ -86,13 +87,15 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
           <div className="flex flex-col">
             <div className="flex border-b border-border" role="tablist">
               {TABS.map((tab) => (
-                <button
+                <Button
                   key={tab}
+                  variant="ghost"
+                  size="sm"
                   role="tab"
                   id={`tab-${tab}`}
                   aria-selected={activeTab === tab}
                   aria-controls={`tabpanel-${tab}`}
-                  className={`px-4 py-2 text-sm capitalize ${
+                  className={`rounded-none capitalize ${
                     activeTab === tab
                       ? 'border-b-2 border-primary text-foreground'
                       : 'text-muted-foreground'
@@ -100,7 +103,7 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
                   onClick={() => setActiveTab(tab)}
                 >
                   {tab}
-                </button>
+                </Button>
               ))}
             </div>
 
