@@ -41,6 +41,7 @@ export interface CreateProjectPayload {
   github: string | null
   target_raise: string // wei string
   token_supply: string // wei string
+  deadline: number // unix timestamp (seconds)
   milestones: {
     order: number
     title: string

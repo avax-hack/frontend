@@ -1,8 +1,6 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { FeaturedProjectCard } from './FeaturedProjectCard'
 import type { IProjectListItem } from '@/types/project'
 
@@ -12,103 +10,172 @@ interface FeaturedCarouselProps {
 
 export function FeaturedCarousel({ projects }: FeaturedCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [slideDir, setSlideDir] = useState<'left' | 'right' | null>(null)
   const isHovered = useRef(false)
-  const containerRef = useRef<HTMLElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  const goTo = useCallback(
-    (index: number) => {
-      setCurrentIndex(((index % projects.length) + projects.length) % projects.length)
-    },
-    [projects.length],
-  )
+  const dragStartX = useRef(0)
+  const dragDeltaX = useRef(0)
+  const isDragging = useRef(false)
+  const hasDragged = useRef(false)
 
-  const prev = useCallback(() => goTo(currentIndex - 1), [goTo, currentIndex])
-  const next = useCallback(() => goTo(currentIndex + 1), [goTo, currentIndex])
+  const wrap = useCallback((i: number) => ((i % projects.length) + projects.length) % projects.length, [projects.length])
 
+  const slideTo = useCallback((dir: 'left' | 'right') => {
+    setSlideDir(dir)
+    setTimeout(() => {
+      setCurrentIndex((i) => wrap(dir === 'left' ? i + 1 : i - 1))
+      setSlideDir(null)
+    }, 700)
+  }, [wrap])
+
+  // Auto-play
   useEffect(() => {
     if (projects.length <= 1) return
     const id = setInterval(() => {
-      if (!isHovered.current) {
-        setCurrentIndex((i) => (i + 1) % projects.length)
+      if (!isHovered.current && !isDragging.current) {
+        slideTo('left')
       }
     }, 5000)
     return () => clearInterval(id)
-  }, [projects.length])
+  }, [projects.length, slideTo])
 
+  // Keyboard
   useEffect(() => {
     const el = containerRef.current
     if (!el || projects.length <= 1) return
-
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'ArrowLeft') {
-        e.preventDefault()
-        setCurrentIndex((i) => (i - 1 + projects.length) % projects.length)
-      } else if (e.key === 'ArrowRight') {
-        e.preventDefault()
-        setCurrentIndex((i) => (i + 1) % projects.length)
-      }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); slideTo('right') }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); slideTo('left') }
     }
-
     el.addEventListener('keydown', handleKeyDown)
     return () => el.removeEventListener('keydown', handleKeyDown)
-  }, [projects.length])
+  }, [projects.length, slideTo])
+
+  // Mouse drag
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if (projects.length <= 1 || slideDir) return
+    e.preventDefault()
+    isDragging.current = true
+    hasDragged.current = false
+    dragStartX.current = e.clientX
+    dragDeltaX.current = 0
+  }, [projects.length, slideDir])
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isDragging.current) return
+    dragDeltaX.current = e.clientX - dragStartX.current
+    if (Math.abs(dragDeltaX.current) > 5) hasDragged.current = true
+  }, [])
+
+  const handleMouseUp = useCallback(() => {
+    if (!isDragging.current) return
+    isDragging.current = false
+    if (Math.abs(dragDeltaX.current) > 50) {
+      slideTo(dragDeltaX.current < 0 ? 'left' : 'right')
+    }
+    dragDeltaX.current = 0
+  }, [slideTo])
+
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    if (hasDragged.current) {
+      e.preventDefault()
+      e.stopPropagation()
+      hasDragged.current = false
+    }
+  }, [])
+
+  // Touch drag
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (projects.length <= 1 || slideDir) return
+    isDragging.current = true
+    hasDragged.current = false
+    dragStartX.current = e.touches[0].clientX
+    dragDeltaX.current = 0
+  }, [projects.length, slideDir])
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!isDragging.current) return
+    dragDeltaX.current = e.touches[0].clientX - dragStartX.current
+    if (Math.abs(dragDeltaX.current) > 5) hasDragged.current = true
+  }, [])
+
+  const handleTouchEnd = useCallback(() => {
+    if (!isDragging.current) return
+    isDragging.current = false
+    if (Math.abs(dragDeltaX.current) > 50) {
+      slideTo(dragDeltaX.current < 0 ? 'left' : 'right')
+    }
+    dragDeltaX.current = 0
+  }, [slideTo])
 
   if (projects.length === 0) return null
 
+  const nextIndex = wrap(currentIndex + 1)
+  const prevIndex = wrap(currentIndex - 1)
+
+  // Animation classes
+  const getAnimClass = () => {
+    if (!slideDir) return 'translate-x-0'
+    return slideDir === 'left' ? '-translate-x-full' : 'translate-x-full'
+  }
+  const getNextAnimClass = () => {
+    if (!slideDir) return 'translate-x-full'
+    return slideDir === 'left' ? 'translate-x-0' : 'translate-x-0'
+  }
+  const incomingIndex = slideDir === 'left' ? nextIndex : prevIndex
+
   return (
-    <section
+    <div
       ref={containerRef}
       tabIndex={0}
-      className="flex flex-col gap-4 focus-visible:ring-2 focus-visible:ring-ring focus-visible:rounded-lg"
-      onMouseEnter={() => {
-        isHovered.current = true
-      }}
-      onMouseLeave={() => {
-        isHovered.current = false
-      }}
+      className="relative cursor-grab select-none overflow-hidden rounded-2xl active:cursor-grabbing focus-visible:ring-2 focus-visible:ring-ring"
+      onMouseEnter={() => { isHovered.current = true }}
+      onMouseLeave={() => { isHovered.current = false; if (isDragging.current) { isDragging.current = false; dragDeltaX.current = 0 } }}
+      onMouseDownCapture={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUpCapture={handleMouseUp}
+      onClickCapture={handleClick}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       aria-roledescription="carousel"
       aria-label="Featured projects"
     >
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Featured Projects</h2>
-        {projects.length > 1 && (
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon-sm"
-              onClick={prev}
-              aria-label="Previous project"
-            >
-              <ChevronLeftIcon aria-hidden="true" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon-sm"
-              onClick={next}
-              aria-label="Next project"
-            >
-              <ChevronRightIcon aria-hidden="true" />
-            </Button>
-          </div>
-        )}
+      {/* Current card */}
+      <div className={`${slideDir ? 'transition-transform duration-700 ease-in-out' : ''} ${getAnimClass()}`}>
+        <FeaturedProjectCard
+          project={projects[currentIndex]}
+          totalSlides={projects.length}
+          currentSlide={currentIndex}
+          onSlideChange={(i) => {
+            if (i > currentIndex) slideTo('left')
+            else if (i < currentIndex) slideTo('right')
+            else setCurrentIndex(i)
+          }}
+        />
       </div>
 
-      <FeaturedProjectCard project={projects[currentIndex]} />
-
-      {projects.length > 1 && (
-        <div className="flex justify-center gap-2">
-          {projects.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentIndex(i)}
-              className={`size-3 rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${
-                i === currentIndex ? 'bg-primary' : 'bg-muted'
-              }`}
-              aria-label={`Go to slide ${i + 1}`}
-            />
-          ))}
+      {/* Incoming card */}
+      {slideDir && (
+        <div className={`absolute inset-0 transition-transform duration-700 ease-in-out ${getNextAnimClass()}`}
+          style={{ transform: slideDir === 'left' ? 'translateX(100%)' : 'translateX(-100%)' }}
+          ref={(el) => {
+            if (el && slideDir) {
+              // Force reflow then animate to 0
+              el.getBoundingClientRect()
+              el.style.transform = 'translateX(0)'
+            }
+          }}
+        >
+          <FeaturedProjectCard
+            project={projects[incomingIndex]}
+            totalSlides={projects.length}
+            currentSlide={incomingIndex}
+            onSlideChange={() => {}}
+          />
         </div>
       )}
-    </section>
+    </div>
   )
 }
