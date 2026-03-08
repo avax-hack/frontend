@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Card } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
+import { cn, formatWeiToUSD } from '@/lib/utils'
 import { ProgressBar } from './ProgressBar'
 import { MilestoneDots } from './MilestoneDots'
 import type { IProjectListItem } from '@/types/project'
@@ -9,18 +9,27 @@ interface ProjectCardProps {
   project: IProjectListItem
 }
 
-function getProgressColor(percent: number): 'green' | 'cyan' | 'blue' {
+function getFundedColor(percent: number): string {
+  if (percent >= 75) return 'text-green-500'
+  if (percent >= 40) return 'text-foreground'
+  return 'text-muted-foreground'
+}
+
+function getProgressColor(percent: number): 'green' | 'purple' | 'blue' {
   if (percent >= 75) return 'green'
-  if (percent >= 40) return 'cyan'
-  return 'blue'
+  if (percent >= 40) return 'blue'
+  return 'purple'
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
   const { project_info, market_info, milestone_completed, milestone_total } = project
-  const { funded_percent } = market_info
+  const { funded_percent, target_raise } = market_info
 
   return (
-    <Link href={`/projects/${project_info.project_id}`}>
+    <Link
+      href={`/projects/${project_info.project_id}`}
+      aria-label={`View ${project_info.name} (${project_info.symbol}) project details`}
+    >
       <Card className={cn(
         'flex flex-col gap-3 p-4 hover:border-primary/30 transition-colors cursor-pointer',
       )}>
@@ -38,8 +47,10 @@ export function ProjectCard({ project }: ProjectCardProps) {
             </div>
           )}
           <div className="min-w-0">
-            <p className="font-bold truncate">{project_info.name}</p>
-            <p className="text-sm text-muted-foreground">${project_info.symbol}</p>
+            <p className="font-bold truncate">
+              {project_info.name}{' '}
+              <span className="font-normal text-muted-foreground">({project_info.symbol})</span>
+            </p>
           </div>
         </div>
 
@@ -48,12 +59,17 @@ export function ProjectCard({ project }: ProjectCardProps) {
           {project_info.tagline}
         </p>
 
+        {/* Target */}
+        <p className="text-sm">
+          Target: {formatWeiToUSD(target_raise)}
+        </p>
+
         {/* Progress */}
         <ProgressBar percent={funded_percent} color={getProgressColor(funded_percent)} size="sm" />
 
         {/* Footer */}
         <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">
+          <span className={cn('text-xs font-medium', getFundedColor(funded_percent))}>
             Funded {Math.round(funded_percent)}%
           </span>
           <MilestoneDots completed={milestone_completed} total={milestone_total} />

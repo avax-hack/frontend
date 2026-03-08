@@ -2,20 +2,18 @@ import { cn } from '@/lib/utils'
 
 interface ProgressBarProps {
   percent: number
-  color?: 'green' | 'purple' | 'blue' | 'cyan'
+  color?: 'green' | 'purple' | 'blue'
   showLabel?: boolean
-  label?: string
   size?: 'sm' | 'md' | 'lg'
 }
 
-const colorClasses = {
+const colorClasses: Record<NonNullable<ProgressBarProps['color']>, string> = {
   green: 'bg-emerald-500',
   purple: 'bg-purple-500',
   blue: 'bg-sky-500',
-  cyan: 'bg-cyan-500',
 }
 
-const sizeClasses = {
+const sizeClasses: Record<NonNullable<ProgressBarProps['size']>, string> = {
   sm: 'h-1',
   md: 'h-2',
   lg: 'h-3',
@@ -23,24 +21,29 @@ const sizeClasses = {
 
 export function ProgressBar({
   percent,
-  color = 'cyan',
+  color = 'blue',
   showLabel,
-  label,
   size = 'md',
 }: ProgressBarProps) {
   const clamped = Math.min(100, Math.max(0, percent))
 
   return (
     <div className="flex flex-col gap-1">
-      <div className={cn('rounded-full bg-secondary overflow-hidden', sizeClasses[size])}>
+      <div
+        className={cn('rounded-full bg-secondary overflow-hidden', sizeClasses[size])}
+        role="progressbar"
+        aria-valuenow={Math.round(clamped)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+      >
         <div
           className={cn('h-full rounded-full transition-all duration-500', colorClasses[color])}
           style={{ width: `${clamped}%` }}
         />
       </div>
-      {(showLabel || label) && (
+      {showLabel && (
         <p className="text-xs text-muted-foreground">
-          {label ?? `${Math.round(clamped)}%`}
+          {Math.round(clamped)}%
         </p>
       )}
     </div>
