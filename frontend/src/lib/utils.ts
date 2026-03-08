@@ -27,3 +27,13 @@ export function formatUSD(value: number): string {
 export function formatPercent(value: number): string {
   return `${(value * 100).toFixed(1)}%`;
 }
+
+export function formatWeiToUSD(wei: string): string {
+  const value = Number(wei) / 1e18
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    notation: value >= 1_000_000 ? 'compact' : 'standard',
+    maximumFractionDigits: 0,
+  }).format(value)
+}
