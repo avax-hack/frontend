@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card'
 import { StatusBadge } from '@/components/common/StatusBadge'
 import { ProgressBar } from '@/components/common/ProgressBar'
 import { MilestoneDots } from '@/components/common/MilestoneDots'
-import { formatWeiToUSD } from '@/lib/utils'
+import { formatTokenToUSD } from '@/lib/utils'
 import type { IProjectListItem, ProjectCategory, ProjectStatus } from '@/types/project'
 
 interface FeaturedProjectCardProps {
@@ -92,11 +92,11 @@ export function FeaturedProjectCard({ project }: FeaturedProjectCardProps) {
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
               <span className="text-xs text-muted-foreground">Target</span>
-              <span className="font-bold">{formatWeiToUSD(market_info.target_raise)}</span>
+              <span className="font-bold">{formatTokenToUSD(market_info.target_raise)}</span>
             </div>
             <div className="flex flex-col gap-1">
               <span className="text-xs text-muted-foreground">Committed</span>
-              <span className="font-bold">{formatWeiToUSD(market_info.total_committed)}</span>
+              <span className="font-bold">{formatTokenToUSD(market_info.total_committed)}</span>
             </div>
           </div>
 

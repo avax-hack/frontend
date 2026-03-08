@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Card } from '@/components/ui/card'
-import { cn, formatWeiToUSD, formatLaunchDate } from '@/lib/utils'
+import { cn, formatTokenToUSD, formatLaunchDate } from '@/lib/utils'
 import { ProgressBar } from './ProgressBar'
 import { MilestoneDots } from './MilestoneDots'
 import type { IProjectListItem } from '@/types/project'
@@ -61,8 +61,8 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
         {/* Metrics: Committed / Target */}
         <div className="flex items-center gap-4 text-sm">
-          <span>Committed: {formatWeiToUSD(total_committed)}</span>
-          <span className="text-muted-foreground">Target: {formatWeiToUSD(target_raise)}</span>
+          <span>Committed: {formatTokenToUSD(total_committed)}</span>
+          <span className="text-muted-foreground">Target: {formatTokenToUSD(target_raise)}</span>
         </div>
 
         {/* Progress */}
