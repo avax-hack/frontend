@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { getAddress } from 'viem'
 import Link from 'next/link'
 import { ArrowLeftIcon, SearchXIcon } from 'lucide-react'
 import { useProjectDetail } from '@/features/project/hooks'
@@ -163,11 +164,12 @@ function ProjectDetailContent({ id }: { id: string }) {
 }
 
 export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
-  const { id } = React.use(params)
+  const { id: rawId } = React.use(params)
+  const id = getAddress(rawId)
 
   return (
     <main>
-      <ProjectDetailContent id={id.toLowerCase()} />
+      <ProjectDetailContent id={id} />
     </main>
   )
 }

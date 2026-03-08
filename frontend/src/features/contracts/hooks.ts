@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { useAccount, useWriteContract } from 'wagmi'
-import { parseUnits, decodeEventLog } from 'viem'
+import { parseUnits, decodeEventLog, getAddress } from 'viem'
 import type { Address, Hash } from 'viem'
 import { toast } from 'sonner'
 import { contracts, IDO_ABI, ERC20_ABI, SWAP_ROUTER_ABI } from '@/lib/contracts'
@@ -336,14 +336,15 @@ export function useSwap() {
     setTxState({ step: 'idle', txHash: null, error: null })
 
     try {
-      const usdcAddress = OPENLAUNCH_CONTRACTS.USDC as Address
-      const swapRouterAddress = OPENLAUNCH_CONTRACTS.SWAP_ROUTER as Address
+      const tokenAddress = getAddress(params.tokenAddress)
+      const usdcAddress = getAddress(OPENLAUNCH_CONTRACTS.USDC as Address)
+      const swapRouterAddress = getAddress(OPENLAUNCH_CONTRACTS.SWAP_ROUTER as Address)
 
-      // Sort currencies for PoolKey (currency0 < currency1)
-      const tokenLower = params.tokenAddress.toLowerCase()
+      // Sort currencies for PoolKey (currency0 < currency1) — compare lowercase per EVM convention
+      const tokenLower = tokenAddress.toLowerCase()
       const usdcLower = usdcAddress.toLowerCase()
-      const currency0 = tokenLower < usdcLower ? params.tokenAddress : usdcAddress
-      const currency1 = tokenLower < usdcLower ? usdcAddress : params.tokenAddress
+      const currency0 = tokenLower < usdcLower ? tokenAddress : usdcAddress
+      const currency1 = tokenLower < usdcLower ? usdcAddress : tokenAddress
       const tokenIsCurrency0 = tokenLower < usdcLower
 
       // Determine swap direction
@@ -362,23 +363,34 @@ export function useSwap() {
         ? MIN_SQRT_PRICE + BigInt(1)
         : MAX_SQRT_PRICE - BigInt(1)
 
-      // Step 1: Approve input token to SwapRouter
-      const inputTokenAddress = params.side === 'buy' ? usdcAddress : params.tokenAddress
+      // Step 1: Check allowance, approve with max uint256 if needed
+      const inputTokenAddress = params.side === 'buy' ? usdcAddress : tokenAddress
+      const maxUint256 = BigInt('115792089237316195423570985008687907853269984665640564039457584007913129639935')
 
-      setTxState({ step: 'approving', txHash: null, error: null })
+      const { readContract, waitForTransactionReceipt } = await import('wagmi/actions')
+      const { wagmiConfig } = await import('@/components/providers/wagmi-config')
 
-      const approveHash = await writeContractAsync({
+      const currentAllowance = await readContract(wagmiConfig, {
         address: inputTokenAddress,
         abi: ERC20_ABI,
-        functionName: 'approve',
-        args: [swapRouterAddress, params.amount],
-      })
+        functionName: 'allowance',
+        args: [address, swapRouterAddress],
+      }) as bigint
 
-      setTxState({ step: 'waiting-approval', txHash: approveHash, error: null })
+      if (currentAllowance < params.amount) {
+        setTxState({ step: 'approving', txHash: null, error: null })
 
-      const { waitForTransactionReceipt } = await import('wagmi/actions')
-      const { wagmiConfig } = await import('@/components/providers/wagmi-config')
-      await waitForTransactionReceipt(wagmiConfig, { hash: approveHash })
+        const approveHash = await writeContractAsync({
+          address: inputTokenAddress,
+          abi: ERC20_ABI,
+          functionName: 'approve',
+          args: [swapRouterAddress, maxUint256],
+        })
+
+        setTxState({ step: 'waiting-approval', txHash: approveHash, error: null })
+
+        await waitForTransactionReceipt(wagmiConfig, { hash: approveHash })
+      }
 
       // Step 2: Execute swap via SwapRouter
       setTxState({ step: 'executing', txHash: null, error: null })

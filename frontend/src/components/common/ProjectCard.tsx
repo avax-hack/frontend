@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { getAddress } from 'viem'
 import { Card } from '@/components/ui/card'
 import { cn, formatTokenToUSD, formatLaunchDate } from '@/lib/utils'
 import { ProgressBar } from './ProgressBar'
@@ -27,7 +28,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
   return (
     <Link
-      href={`/projects/${project_info.project_id}`}
+      href={`/projects/${getAddress(project_info.project_id)}`}
       aria-label={`View ${project_info.name} (${project_info.symbol}) project details`}
     >
       <Card className={cn(

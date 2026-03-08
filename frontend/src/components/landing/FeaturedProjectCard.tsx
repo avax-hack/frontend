@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { getAddress } from 'viem'
 import { Card } from '@/components/ui/card'
 import { StatusBadge } from '@/components/common/StatusBadge'
 import { ProgressBar } from '@/components/common/ProgressBar'
@@ -46,7 +47,7 @@ export function FeaturedProjectCard({ project }: FeaturedProjectCardProps) {
 
   return (
     <Link
-      href={`/projects/${project_info.project_id}`}
+      href={`/projects/${getAddress(project_info.project_id)}`}
       aria-label={`View featured project ${project_info.name}`}
     >
       <Card className="flex flex-col gap-6 p-6 hover:border-primary/30 transition-colors cursor-pointer md:flex-row md:items-start">

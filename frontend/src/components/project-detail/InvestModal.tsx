@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useAccount } from 'wagmi'
 import { toast } from 'sonner'
-import type { Address } from 'viem'
+import { getAddress } from 'viem'
 import {
   Dialog,
   DialogContent,
@@ -108,7 +108,7 @@ export function InvestModal({ project, amount, open, onOpenChange, onSuccess }: 
       }
     } else {
       // Real TX flow — hook handles toasts internally
-      const tokenAddress = project_info.project_id as Address
+      const tokenAddress = getAddress(project_info.project_id)
       const hash = await executeInvest(tokenAddress, amount)
 
       if (hash) {

@@ -33,6 +33,7 @@ export async function uploadImage(file: File): Promise<{ image_uri: string }> {
 export interface CreateProjectPayload {
   name: string
   symbol: string
+  category: string
   description: string
   image_uri: string
   website: string | null
