@@ -1,6 +1,7 @@
 import { registerMock } from '@/lib/mock'
 import { mockProjects } from './data/projects'
 import { mockTokens } from './data/tokens'
+import { mockProjectDetail } from './project-detail'
 
 // --- Project ---
 registerMock('/project/featured', () => ({
@@ -24,8 +25,11 @@ registerMock('/order/project/:sortType', () => ({
 
 registerMock('/project/:projectId', (path) => {
   const id = path.split('/').pop()
+  // Try to find in mockProjects first, fall back to detailed mock
   const project = mockProjects.find(p => p.project_info.project_id === id)
-  return project ?? mockProjects[0]
+  if (project) return project
+  // Default: return the detailed mock project
+  return mockProjectDetail
 })
 
 // --- Token ---
