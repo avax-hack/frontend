@@ -59,7 +59,7 @@ export function FeaturedCarousel({ projects }: FeaturedCarouselProps) {
     <section
       ref={containerRef}
       tabIndex={0}
-      className="flex flex-col gap-4 outline-none"
+      className="flex flex-col gap-4 focus-visible:ring-2 focus-visible:ring-ring focus-visible:rounded-lg"
       onMouseEnter={() => {
         isHovered.current = true
       }}
@@ -101,7 +101,7 @@ export function FeaturedCarousel({ projects }: FeaturedCarouselProps) {
             <button
               key={i}
               onClick={() => setCurrentIndex(i)}
-              className={`size-2.5 rounded-full transition-colors ${
+              className={`size-3 rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${
                 i === currentIndex ? 'bg-primary' : 'bg-muted'
               }`}
               aria-label={`Go to slide ${i + 1}`}

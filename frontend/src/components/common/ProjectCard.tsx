@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Card } from '@/components/ui/card'
-import { cn, formatWeiToUSD } from '@/lib/utils'
+import { cn, formatWeiToUSD, formatLaunchDate } from '@/lib/utils'
 import { ProgressBar } from './ProgressBar'
 import { MilestoneDots } from './MilestoneDots'
 import type { IProjectListItem } from '@/types/project'
@@ -23,7 +23,7 @@ function getProgressColor(percent: number): 'green' | 'purple' | 'blue' {
 
 export function ProjectCard({ project }: ProjectCardProps) {
   const { project_info, market_info, milestone_completed, milestone_total } = project
-  const { funded_percent, target_raise } = market_info
+  const { funded_percent, target_raise, total_committed } = market_info
 
   return (
     <Link
@@ -59,10 +59,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
           {project_info.tagline}
         </p>
 
-        {/* Target */}
-        <p className="text-sm">
-          Target: {formatWeiToUSD(target_raise)}
-        </p>
+        {/* Metrics: Committed / Target */}
+        <div className="flex items-center gap-4 text-sm">
+          <span>Committed: {formatWeiToUSD(total_committed)}</span>
+          <span className="text-muted-foreground">Target: {formatWeiToUSD(target_raise)}</span>
+        </div>
 
         {/* Progress */}
         <ProgressBar percent={funded_percent} color={getProgressColor(funded_percent)} size="sm" />

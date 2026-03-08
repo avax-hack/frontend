@@ -4,7 +4,7 @@ import { StatusBadge } from '@/components/common/StatusBadge'
 import { ProgressBar } from '@/components/common/ProgressBar'
 import { MilestoneDots } from '@/components/common/MilestoneDots'
 import { formatWeiToUSD } from '@/lib/utils'
-import type { IProjectListItem, ProjectCategory } from '@/types/project'
+import type { IProjectListItem, ProjectCategory, ProjectStatus } from '@/types/project'
 
 interface FeaturedProjectCardProps {
   project: IProjectListItem
@@ -19,15 +19,29 @@ const categoryVariants: Record<ProjectCategory, { label: string; variant: 'green
   meme: { label: 'Meme', variant: 'red' },
 }
 
+const statusVariants: Record<ProjectStatus, { label: string; variant: 'green' | 'amber' | 'red' | 'gray' | 'purple' | 'blue' }> = {
+  funding: { label: 'Funding', variant: 'blue' },
+  active: { label: 'Active', variant: 'green' },
+  completed: { label: 'Completed', variant: 'green' },
+  failed: { label: 'Failed', variant: 'red' },
+}
+
 function getProgressColor(percent: number): 'green' | 'purple' | 'blue' {
   if (percent >= 75) return 'green'
   if (percent >= 40) return 'purple'
   return 'blue'
 }
 
+function getMilestoneVariant(completed: number, total: number): 'green' | 'purple' | 'gray' {
+  if (completed === total) return 'green'
+  if (completed > 0) return 'purple'
+  return 'gray'
+}
+
 export function FeaturedProjectCard({ project }: FeaturedProjectCardProps) {
   const { project_info, market_info, milestone_completed, milestone_total } = project
   const category = categoryVariants[project_info.category]
+  const status = statusVariants[market_info.status]
 
   return (
     <Link
@@ -41,7 +55,7 @@ export function FeaturedProjectCard({ project }: FeaturedProjectCardProps) {
             {project_info.image_uri ? (
               <img
                 src={project_info.image_uri}
-                alt=""
+                alt={project_info.name}
                 className="size-16 rounded-xl object-cover"
               />
             ) : (
@@ -50,7 +64,15 @@ export function FeaturedProjectCard({ project }: FeaturedProjectCardProps) {
               </div>
             )}
             <div className="flex flex-col gap-1">
-              <h3 className="text-xl font-bold">{project_info.name}</h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-xl font-bold">{project_info.name}</h3>
+                <StatusBadge label={status.label} variant={status.variant} size="sm" />
+                <StatusBadge
+                  label={`${milestone_completed}/${milestone_total} MS`}
+                  variant={getMilestoneVariant(milestone_completed, milestone_total)}
+                  size="sm"
+                />
+              </div>
               <p className="text-sm text-muted-foreground">${project_info.symbol}</p>
               <StatusBadge label={category.label} variant={category.variant} size="sm" />
             </div>

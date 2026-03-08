@@ -166,7 +166,7 @@ export function Header() {
                 ))}
               </nav>
 
-              <div className="flex flex-col gap-3 pt-auto">
+              <div className="flex flex-col gap-3 mt-auto">
                 <ConnectButton />
               </div>
             </SheetContent>

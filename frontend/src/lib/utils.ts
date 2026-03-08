@@ -28,6 +28,14 @@ export function formatPercent(value: number): string {
   return `${(value * 100).toFixed(1)}%`;
 }
 
+export function formatLaunchDate(timestamp: number): string {
+  const date = new Date(timestamp * 1000)
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
+}
 export function formatWeiToUSD(wei: string): string {
   const value = Number(wei) / 1e18
   return new Intl.NumberFormat('en-US', {

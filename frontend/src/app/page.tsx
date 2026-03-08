@@ -5,6 +5,7 @@ import { HeroSection } from '@/components/landing/HeroSection'
 import { FeaturedCarousel } from '@/components/landing/FeaturedCarousel'
 import { ActiveProjectsGrid } from '@/components/landing/ActiveProjectsGrid'
 import { SkeletonCard } from '@/components/common/SkeletonCard'
+import { EmptyState } from '@/components/common/EmptyState'
 
 export default function HomePage() {
   const featured = useFeaturedProjects()
@@ -16,6 +17,12 @@ export default function HomePage() {
 
       {featured.isLoading ? (
         <SkeletonCard />
+      ) : featured.isError ? (
+        <EmptyState
+          message="Something went wrong"
+          actionLabel="Try Again"
+          onAction={() => featured.refetch()}
+        />
       ) : featured.data?.projects?.length ? (
         <FeaturedCarousel projects={featured.data.projects} />
       ) : null}
@@ -28,6 +35,15 @@ export default function HomePage() {
               <SkeletonCard key={i} />
             ))}
           </div>
+        </section>
+      ) : projectList.isError ? (
+        <section className="flex flex-col gap-4">
+          <h2 className="text-2xl font-bold">Active Projects</h2>
+          <EmptyState
+            message="Something went wrong"
+            actionLabel="Try Again"
+            onAction={() => projectList.refetch()}
+          />
         </section>
       ) : (
         <ActiveProjectsGrid

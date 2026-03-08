@@ -7,7 +7,7 @@ interface MilestoneDotsProps {
 }
 
 const dotSizes: Record<NonNullable<MilestoneDotsProps['size']>, string> = {
-  sm: 'size-1.5',
+  sm: 'size-2',
   md: 'size-2',
 }
 
