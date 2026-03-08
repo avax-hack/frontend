@@ -1311,3 +1311,7 @@ Status codes:
 | Builder Dashboard | `GET /profile/tokens/created/:id`, `GET /builder/overview/:id`, `GET /project/:id`, `POST /milestone/submit/:id`, `GET /milestone/verification/:id`, `GET /builder/stats/:id`, `GET /project/investor/:id` |
 | Trading List | `GET /order/:sortType`, `GET /trend`, `WS trade`, `WS new_content` |
 | Trading Detail | `GET /token/:id`, `GET /trade/chart/:id`, `GET /trade/swap-history/:id`, `GET /trade/holder/:id`, `GET /trade/market/:id`, `GET /trade/metrics/:id`, `GET /trade/quote/:id`, `WS trade`, `WS price` |
+
+## Theme
+- **T-1**: Default theme is **light mode**. No dark mode toggle in Phase 1.
+- Dark mode support may be added in a future phase.
