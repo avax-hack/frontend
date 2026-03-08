@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback, useRef, useEffect } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useAccount } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { toast } from 'sonner'
@@ -8,8 +9,12 @@ import { LoaderIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/features/auth/hooks'
 import { isUserRejection } from '@/lib/errors'
+import { useUsdcBalance, useRefund, useTokenBalance } from '@/features/contracts'
+import { IS_MOCK } from '@/lib/mock'
+import { SNOWTRACE_URL } from '@/lib/constants'
 import { InvestModal } from './InvestModal'
 import type { IProjectData } from '@/types/project'
+import type { Address } from 'viem'
 
 interface InvestPanelProps {
   project: IProjectData
@@ -17,12 +22,31 @@ interface InvestPanelProps {
 
 export function InvestPanel({ project }: InvestPanelProps) {
   const { market_info } = project
-  const { isConnected } = useAccount()
+  const { isConnected, address } = useAccount()
   const { openConnectModal } = useConnectModal()
   const { isAuthenticated, login } = useAuth()
+  const queryClient = useQueryClient()
   const [amount, setAmount] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
-  const [isRefunding, setIsRefunding] = useState(false)
+  // Refund hooks (unconditional, per React rules)
+  const refund = useRefund()
+  const projectTokenAddress = project.project_info.project_id as Address
+  const { data: projectTokenBalanceRaw } = useTokenBalance(projectTokenAddress, address)
+  const projectTokenBalanceData = projectTokenBalanceRaw as bigint | undefined
+  const [isMockRefunding, setIsMockRefunding] = useState(false)
+
+  // Derived refund states
+  const isRefundBusy = IS_MOCK
+    ? isMockRefunding
+    : refund.step === 'executing' || refund.step === 'waiting-execution'
+  const isRefundSuccess = !IS_MOCK && refund.step === 'success'
+  const hasNoTokenBalance = !IS_MOCK && (!projectTokenBalanceData || projectTokenBalanceData === BigInt(0))
+
+  // USDC balance (real mode only; disabled when IS_MOCK)
+  const { data: usdcBalanceRaw } = useUsdcBalance(address)
+  const formattedBalance = usdcBalanceRaw !== undefined
+    ? (Number(usdcBalanceRaw) / 1e6).toFixed(2)
+    : undefined
 
   // Use a ref to read latest isConnected in async callback
   const isConnectedRef = useRef(isConnected)
@@ -54,35 +78,42 @@ export function InvestPanel({ project }: InvestPanelProps) {
       await login()
       return
     }
-    if (isRefunding) return // double-submit prevention
 
-    setIsRefunding(true)
-    try {
-      // Mock refund TX
-      await new Promise(resolve => setTimeout(resolve, 2000))
-
-      // Check if still connected after TX
-      if (!isConnectedRef.current) {
-        toast.error('Wallet disconnected', {
-          description: 'Please reconnect and try again.',
+    if (IS_MOCK) {
+      if (isMockRefunding) return
+      setIsMockRefunding(true)
+      try {
+        await new Promise(resolve => setTimeout(resolve, 2000))
+        if (!isConnectedRef.current) {
+          toast.error('Wallet disconnected', {
+            description: 'Please reconnect and try again.',
+          })
+          return
+        }
+        toast.success('Refund claimed successfully!', {
+          description: 'Your funds have been returned to your wallet.',
         })
-        return
+      } catch (error: unknown) {
+        if (isUserRejection(error)) {
+          toast.error('Transaction rejected')
+        } else {
+          toast.error('Refund failed', { description: 'Please try again.' })
+        }
+      } finally {
+        setIsMockRefunding(false)
       }
-
-      // TODO: Replace with real contract call
-      toast.success('Refund claimed successfully!', {
-        description: 'Your funds have been returned to your wallet.',
-      })
-    } catch (error: unknown) {
-      if (isUserRejection(error)) {
-        toast.error('Transaction rejected')
-      } else {
-        toast.error('Refund failed', { description: 'Please try again.' })
-      }
-    } finally {
-      setIsRefunding(false)
+      return
     }
-  }, [isAuthenticated, login, isRefunding])
+
+    // Real refund flow — refund all project tokens
+    const tokenBalance = projectTokenBalanceData
+    if (!tokenBalance || tokenBalance === BigInt(0)) return
+
+    const refundHash = await refund.execute(projectTokenAddress, tokenBalance)
+    if (refundHash) {
+      queryClient.invalidateQueries({ queryKey: ['readContract'] })
+    }
+  }, [isAuthenticated, login, isMockRefunding, refund, projectTokenBalanceData, projectTokenAddress])
 
   return (
     <>
@@ -112,16 +143,28 @@ export function InvestPanel({ project }: InvestPanelProps) {
           {isConnected && isFailed && (
             <div className="flex w-full items-center justify-between">
               <p className="text-sm text-muted-foreground">This project has failed</p>
-              <Button
-                variant="destructive"
-                size="lg"
-                aria-label="Claim Refund"
-                disabled={isRefunding}
-                onClick={handleClaimRefund}
-              >
-                {isRefunding && <LoaderIcon className="size-4 animate-spin" aria-hidden="true" />}
-                {isRefunding ? 'Claiming…' : 'Claim Refund'}
-              </Button>
+              <div className="flex items-center gap-3">
+                {!IS_MOCK && refund.txHash && (
+                  <a
+                    href={`${SNOWTRACE_URL}/tx/${refund.txHash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-muted-foreground underline"
+                  >
+                    View on Snowtrace ↗
+                  </a>
+                )}
+                <Button
+                  variant="destructive"
+                  size="lg"
+                  aria-label="Claim Refund"
+                  disabled={isRefundBusy || isRefundSuccess || hasNoTokenBalance}
+                  onClick={handleClaimRefund}
+                >
+                  {isRefundBusy && <LoaderIcon className="size-4 animate-spin" aria-hidden="true" />}
+                  {isRefundBusy ? 'Claiming…' : isRefundSuccess ? 'Refund Claimed ✓' : 'Claim Refund'}
+                </Button>
+              </div>
             </div>
           )}
 
@@ -138,22 +181,30 @@ export function InvestPanel({ project }: InvestPanelProps) {
           {/* D-10: Active funding */}
           {isConnected && isFunding && (
             <div className="flex w-full items-center gap-4">
-              <div className="flex flex-1 items-center gap-2">
-                <span className="text-sm font-medium text-muted-foreground" aria-hidden="true">$</span>
-                <input
-                  type="number"
-                  inputMode="decimal"
-                  name="invest-amount"
-                  min={10}
-                  step={10}
-                  autoComplete="off"
-                  spellCheck={false}
-                  placeholder="0.00 (min $10)…"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  aria-label="Investment amount in USD"
-                  className="h-10 w-full rounded-md border bg-background px-3 text-base outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring"
-                />
+              <div className="flex flex-1 flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-muted-foreground" aria-hidden="true">$</span>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    name="invest-amount"
+                    min={10}
+                    step={10}
+                    autoComplete="off"
+                    spellCheck={false}
+                    placeholder="0.00 (min $10)…"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    aria-label="Investment amount in USD"
+                    className="h-10 w-full rounded-md border bg-background px-3 text-base outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring"
+                  />
+                </div>
+                {/* USDC balance (real mode only) */}
+                {!IS_MOCK && formattedBalance !== undefined && (
+                  <span className="pl-5 text-xs text-muted-foreground">
+                    Balance: ${formattedBalance} USDC
+                  </span>
+                )}
               </div>
               <Button
                 size="lg"
