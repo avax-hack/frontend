@@ -1,11 +1,39 @@
+'use client'
+
+import { useFeaturedProjects, useProjectList } from '@/features/project/hooks'
+import { HeroSection } from '@/components/landing/HeroSection'
+import { FeaturedCarousel } from '@/components/landing/FeaturedCarousel'
+import { ActiveProjectsGrid } from '@/components/landing/ActiveProjectsGrid'
+import { SkeletonCard } from '@/components/common/SkeletonCard'
+
 export default function HomePage() {
+  const featured = useFeaturedProjects()
+  const projectList = useProjectList('recent')
+
   return (
-    <div className="flex flex-col items-center justify-center gap-6 px-6 py-24">
-      <h1 className="text-4xl font-bold">OpenLaunch</h1>
-      <p className="text-lg text-neutral-400">
-        Milestone-based decentralized launchpad on Avalanche
-      </p>
-      <p className="text-sm text-neutral-500">Coming Soon</p>
+    <div className="mx-auto flex max-w-7xl flex-col gap-12 px-4 pb-12 md:px-6">
+      <HeroSection />
+
+      {featured.isLoading ? (
+        <SkeletonCard />
+      ) : featured.data?.projects?.length ? (
+        <FeaturedCarousel projects={featured.data.projects} />
+      ) : null}
+
+      {projectList.isLoading ? (
+        <section className="flex flex-col gap-4">
+          <h2 className="text-2xl font-bold">Active Projects</h2>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {Array.from({ length: 3 }, (_, i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </div>
+        </section>
+      ) : (
+        <ActiveProjectsGrid
+          projects={(projectList.data?.projects ?? []).slice(0, 6)}
+        />
+      )}
     </div>
-  );
+  )
 }
