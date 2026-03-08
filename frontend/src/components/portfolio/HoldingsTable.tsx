@@ -1,9 +1,18 @@
 'use client'
 
 import Link from 'next/link'
+import { getAddress } from 'viem'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from '@/components/ui/table'
 import { EmptyState } from '@/components/common/EmptyState'
 import { formatNumber } from '@/lib/utils'
 import { CoinsIcon } from 'lucide-react'
@@ -39,71 +48,66 @@ export function HoldingsTable({ tokens, isLoading }: HoldingsTableProps) {
 
   return (
     <Card className="overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-border text-muted-foreground">
-              <th className="px-4 py-3 text-left font-medium">Token</th>
-              <th className="px-4 py-3 text-right font-medium">Balance</th>
-              <th className="px-4 py-3 text-right font-medium">Price</th>
-              <th className="px-4 py-3 text-right font-medium">Value</th>
-              <th className="px-4 py-3 text-right font-medium">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tokens.map((item) => {
-              const balance = Number(item.balance_info.balance) / 1e18
-              const price = Number(item.balance_info.token_price)
-              const value = balance * price
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Token</TableHead>
+            <TableHead className="text-right">Balance</TableHead>
+            <TableHead className="text-right">Price</TableHead>
+            <TableHead className="text-right">Value</TableHead>
+            <TableHead className="text-right">Action</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {tokens.map((item) => {
+            const balance = Number(item.balance_info.balance) / 1e18
+            const price = Number(item.balance_info.token_price)
+            const value = balance * price
 
-              return (
-                <tr
-                  key={item.token_info.token_id}
-                  className="border-b border-border last:border-0"
-                >
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      {item.token_info.image_uri ? (
-                        <img
-                          src={item.token_info.image_uri}
-                          alt=""
-                          className="size-8 rounded-full"
-                        />
-                      ) : (
-                        <div className="size-8 rounded-full bg-secondary flex items-center justify-center text-xs font-bold">
-                          {item.token_info.symbol.charAt(0)}
-                        </div>
-                      )}
-                      <div className="flex flex-col">
-                        <span className="font-medium">{item.token_info.name}</span>
-                        <span className="text-xs text-muted-foreground">
-                          {item.token_info.symbol}
-                        </span>
+            return (
+              <TableRow key={item.token_info.token_id}>
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    {item.token_info.image_uri ? (
+                      <img
+                        src={item.token_info.image_uri}
+                        alt=""
+                        className="size-8 rounded-full"
+                      />
+                    ) : (
+                      <div className="size-8 rounded-full bg-secondary flex items-center justify-center text-xs font-bold">
+                        {item.token_info.symbol.charAt(0)}
                       </div>
+                    )}
+                    <div className="flex flex-col">
+                      <span className="font-medium">{item.token_info.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {item.token_info.symbol}
+                      </span>
                     </div>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    {formatNumber(balance)}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    ${formatNumber(price, 4)}
-                  </td>
-                  <td className="px-4 py-3 text-right font-medium">
-                    ${formatNumber(value, 2)}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <Button asChild size="sm" variant="outline">
-                      <Link href={`/trading/${item.token_info.token_id}`}>
-                        Trade
-                      </Link>
-                    </Button>
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
+                  </div>
+                </TableCell>
+                <TableCell className="text-right">
+                  {formatNumber(balance)}
+                </TableCell>
+                <TableCell className="text-right">
+                  ${formatNumber(price, 4)}
+                </TableCell>
+                <TableCell className="text-right font-medium">
+                  ${formatNumber(value, 2)}
+                </TableCell>
+                <TableCell className="text-right">
+                  <Button asChild size="sm" variant="outline">
+                    <Link href={`/trading/${getAddress(item.token_info.token_id)}`}>
+                      Trade
+                    </Link>
+                  </Button>
+                </TableCell>
+              </TableRow>
+            )
+          })}
+        </TableBody>
+      </Table>
     </Card>
   )
 }

@@ -1,5 +1,6 @@
 'use client'
 
+import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ChevronDownIcon } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
@@ -44,10 +45,10 @@ export function ProjectSelector({
 
   return (
     <div ref={ref} className="relative w-full max-w-sm">
-      <button
-        type="button"
+      <Button
+        variant="outline"
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between gap-2 rounded-lg border border-border bg-card px-4 py-3 text-left"
+        className="flex w-full items-center justify-between gap-2 h-auto px-4 py-3 text-left"
         aria-expanded={open}
         aria-haspopup="listbox"
         aria-label="Select project"
@@ -63,7 +64,7 @@ export function ProjectSelector({
           )}
         </div>
         <ChevronDownIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-      </button>
+      </Button>
 
       {open && (
         <div
@@ -71,12 +72,12 @@ export function ProjectSelector({
           className="absolute top-full left-0 z-10 mt-1 w-full rounded-lg border border-border bg-card shadow-lg"
         >
           {projects.map((project) => (
-            <button
+            <Button
               key={project.project_id}
-              type="button"
+              variant="ghost"
               role="option"
               aria-selected={project.project_id === selectedProjectId}
-              className={`flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-secondary/50 ${
+              className={`flex w-full items-center gap-3 h-auto px-4 py-3 text-left justify-start rounded-none ${
                 project.project_id === selectedProjectId ? 'bg-secondary/30' : ''
               }`}
               onClick={() => {
@@ -99,7 +100,7 @@ export function ProjectSelector({
                 <span className="font-medium truncate">{project.name}</span>
                 <span className="text-xs text-muted-foreground">{project.symbol}</span>
               </div>
-            </button>
+            </Button>
           ))}
         </div>
       )}

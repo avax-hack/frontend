@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract } from 'wagmi'
+import { Button } from '@/components/ui/button'
 import { parseUnits, formatUnits } from 'viem'
 import { OPENLAUNCH_CONTRACTS } from '@/lib/constants'
 import MockUSDC_ABI from '@/lib/abi/MockUSDC.json'
@@ -57,13 +58,13 @@ export function FaucetButton() {
       <span className="text-xs text-muted-foreground">
         {balance !== undefined ? `${formatUnits(balance as bigint, 6)} USDC` : '—'}
       </span>
-      <button
+      <Button
+        size="sm"
         onClick={handleMint}
         disabled={isPending || isConfirming}
-        className="rounded-md bg-blue-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isPending ? 'Confirm...' : isConfirming ? 'Minting...' : 'Faucet 100 USDC'}
-      </button>
+      </Button>
       {isSuccess && <span className="text-xs text-green-600">Minted!</span>}
       {error && <span className="text-xs text-red-500 max-w-[120px] truncate">{error}</span>}
     </div>

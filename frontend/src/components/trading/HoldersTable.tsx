@@ -2,6 +2,14 @@
 
 import { truncateAddress, formatNumber } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from '@/components/ui/table'
 import type { ITokenHolder } from '@/features/trading/types'
 
 interface HoldersTableProps {
@@ -29,29 +37,27 @@ export function HoldersTable({ holders, isLoading }: HoldersTableProps) {
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full">
-        <thead>
-          <tr>
-            <th className="px-3 py-2 text-left text-xs text-muted-foreground font-medium">#</th>
-            <th className="px-3 py-2 text-left text-xs text-muted-foreground font-medium">Address</th>
-            <th className="px-3 py-2 text-right text-xs text-muted-foreground font-medium">Balance</th>
-          </tr>
-        </thead>
-        <tbody>
-          {holders.map((holder, i) => (
-            <tr key={holder.account_info.account_id} className="border-t border-border">
-              <td className="px-3 py-2 text-sm">{i + 1}</td>
-              <td className="px-3 py-2 text-sm">
-                {truncateAddress(holder.account_info.account_id)}
-              </td>
-              <td className="px-3 py-2 text-sm text-right">
-                {formatNumber(Number(holder.balance) / 1e18, 2)}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>#</TableHead>
+          <TableHead>Address</TableHead>
+          <TableHead className="text-right">Balance</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {holders.map((holder, i) => (
+          <TableRow key={holder.account_info.account_id}>
+            <TableCell>{i + 1}</TableCell>
+            <TableCell>
+              {truncateAddress(holder.account_info.account_id)}
+            </TableCell>
+            <TableCell className="text-right">
+              {formatNumber(Number(holder.balance) / 1e18, 2)}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   )
 }
