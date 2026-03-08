@@ -150,26 +150,6 @@ export function ProjectInfoStep({
         )}
       </div>
 
-      {/* Tagline */}
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="tagline">
-          Tagline <span className="text-destructive">*</span>
-        </Label>
-        <Input
-          id="tagline"
-          placeholder="A short description of your project…"
-          maxLength={120}
-          autoComplete="off"
-          aria-invalid={!!errors.tagline}
-          {...register('tagline')}
-        />
-        {errors.tagline && (
-          <p className="text-sm text-destructive" role="alert">
-            {errors.tagline.message}
-          </p>
-        )}
-      </div>
-
       {/* Description */}
       <div className="flex flex-col gap-2">
         <Label htmlFor="description">

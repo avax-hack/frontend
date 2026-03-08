@@ -98,7 +98,6 @@ export default function LaunchPage() {
       const payload = {
         name: projectInfo.name,
         symbol: projectInfo.ticker,
-        tagline: projectInfo.tagline,
         description: projectInfo.description,
         image_uri: imageUri,
         website: projectInfo.websiteUrl || null,

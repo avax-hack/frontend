@@ -10,7 +10,6 @@ export interface IProjectInfo {
   symbol: string
   image_uri: string
   description: string | null
-  tagline: string
   category: ProjectCategory
   creator: IAccountInfo
   website: string | null

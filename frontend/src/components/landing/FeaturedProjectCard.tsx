@@ -79,8 +79,6 @@ export function FeaturedProjectCard({ project }: FeaturedProjectCardProps) {
             </div>
           </div>
 
-          <p className="text-sm text-muted-foreground">{project_info.tagline}</p>
-
           {project_info.description && (
             <p className="text-sm text-muted-foreground line-clamp-3">
               {project_info.description}

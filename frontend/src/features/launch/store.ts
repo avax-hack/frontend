@@ -7,7 +7,6 @@ const DEFAULT_PROJECT_INFO: ProjectInfoValues = {
   name: '',
   category: 'meme',
   ticker: '',
-  tagline: '',
   description: '',
   websiteUrl: undefined,
   twitterUrl: undefined,

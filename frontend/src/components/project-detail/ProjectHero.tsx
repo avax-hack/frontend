@@ -45,9 +45,11 @@ export function ProjectHero({ project }: ProjectHeroProps) {
             </h1>
           </div>
 
-          <p className="text-sm leading-[1.2] text-muted-foreground">
-            {project_info.tagline}
-          </p>
+          {project_info.description && (
+            <p className="text-sm leading-[1.2] text-muted-foreground line-clamp-2">
+              {project_info.description}
+            </p>
+          )}
 
           <div className="flex flex-wrap items-center gap-2">
             <StatusBadge label={statusBadge.label} variant={statusBadge.variant} />

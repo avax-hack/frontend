@@ -21,15 +21,9 @@ export const projectInfoSchema = z.object({
     .min(2, 'Ticker must be at least 2 characters')
     .max(10, 'Ticker must be 10 characters or less')
     .regex(/^[A-Z0-9]+$/, 'Ticker must be uppercase alphanumeric'),
-  tagline: z
-    .string()
-    .trim()
-    .min(5, 'Tagline must be at least 5 characters')
-    .max(120, 'Tagline must be 120 characters or less'),
   description: z
     .string()
-    .trim()
-    .min(20, 'Description must be at least 20 characters'),
+    .trim(),
   websiteUrl: optionalUrl,
   twitterUrl: optionalUrl,
   telegramUrl: optionalUrl,

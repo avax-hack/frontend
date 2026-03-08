@@ -54,10 +54,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
           </div>
         </div>
 
-        {/* Tagline */}
-        <p className="text-sm text-muted-foreground line-clamp-2">
-          {project_info.tagline}
-        </p>
+        {project_info.description && (
+          <p className="text-sm text-muted-foreground line-clamp-2">
+            {project_info.description}
+          </p>
+        )}
 
         {/* Metrics: Committed / Target */}
         <div className="flex items-center gap-4 text-sm">
