@@ -5,6 +5,7 @@ export type FormStep = 1 | 2 | 3
 
 const DEFAULT_PROJECT_INFO: ProjectInfoValues = {
   name: '',
+  category: 'meme',
   ticker: '',
   tagline: '',
   description: '',

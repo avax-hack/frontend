@@ -5,6 +5,7 @@ import { useFormContext } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
+import { cn } from '@/lib/utils'
 import { LogoUpload } from './LogoUpload'
 import { useTickerAvailability } from '@/features/launch/hooks'
 import type { ProjectInfoValues } from '@/features/launch/schemas'
@@ -25,6 +26,7 @@ export function ProjectInfoStep({
   const {
     register,
     watch,
+    setValue,
     setError,
     clearErrors,
     formState: { errors },
@@ -78,6 +80,35 @@ export function ProjectInfoStep({
         {errors.name && (
           <p className="text-sm text-destructive" role="alert">
             {errors.name.message}
+          </p>
+        )}
+      </div>
+
+      {/* Category */}
+      <div className="flex flex-col gap-2">
+        <Label>
+          Category <span className="text-destructive">*</span>
+        </Label>
+        <div className="flex flex-wrap gap-2">
+          {(['defi', 'infra', 'ai', 'gaming', 'social', 'meme', 'other'] as const).map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              className={cn(
+                'rounded-full border px-3 py-1.5 text-sm capitalize transition-colors',
+                watch('category') === cat
+                  ? 'border-primary bg-primary text-primary-foreground'
+                  : 'border-border bg-background text-muted-foreground hover:bg-accent',
+              )}
+              onClick={() => setValue('category', cat, { shouldValidate: true })}
+            >
+              {cat === 'ai' ? 'AI' : cat === 'defi' ? 'DeFi' : cat === 'other' ? 'Other' : cat.charAt(0).toUpperCase() + cat.slice(1)}
+            </button>
+          ))}
+        </div>
+        {errors.category && (
+          <p className="text-sm text-destructive" role="alert">
+            {errors.category.message}
           </p>
         )}
       </div>

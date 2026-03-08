@@ -51,7 +51,6 @@ export interface CreateProjectPayload {
 
 export interface CreateProjectResponse {
   project_id: string
-  transaction_hash: string
 }
 
 export function createProject(
