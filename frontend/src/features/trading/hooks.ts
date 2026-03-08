@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { tradingKeys } from './query-keys'
-import { getTokenList, getTokenDetail, getChartData, getSwapHistory } from './services'
+import { getTokenList, getTokenDetail, getChartData, getSwapHistory, getTokenHolders } from './services'
 import type { SortType, ChartResolution } from './types'
 
 export function useTokenList(
@@ -56,6 +56,17 @@ export function useSwapHistory(
   return useQuery({
     queryKey: tradingKeys.swapHistory(tokenId, params),
     queryFn: () => getSwapHistory(tokenId, params),
+    enabled: !!tokenId,
+  })
+}
+
+export function useTokenHolders(
+  tokenId: string,
+  params?: { page?: number; limit?: number },
+) {
+  return useQuery({
+    queryKey: tradingKeys.holders(tokenId, params),
+    queryFn: () => getTokenHolders(tokenId, params),
     enabled: !!tokenId,
   })
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { use, useState } from 'react'
-import { useTokenDetail, useChartData, useSwapHistory } from '@/features/trading/hooks'
+import { useTokenDetail, useChartData, useSwapHistory, useTokenHolders } from '@/features/trading/hooks'
 import type { ChartResolution } from '@/features/trading/types'
 import { TokenHeader } from '@/components/trading/TokenHeader'
 import { MarketStats } from '@/components/trading/MarketStats'
@@ -9,6 +9,7 @@ import { TradingChart } from '@/components/trading/TradingChart'
 import { ChartIntervalSelector } from '@/components/trading/ChartIntervalSelector'
 import { TradePanel } from '@/components/trading/TradePanel'
 import { TradesTable } from '@/components/trading/TradesTable'
+import { HoldersTable } from '@/components/trading/HoldersTable'
 import { BondingCurveCard } from '@/components/trading/BondingCurveCard'
 import { MilestoneStatusCard } from '@/components/trading/MilestoneStatusCard'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -23,13 +24,15 @@ const TABS = ['trades', 'holders', 'about'] as const
 type Tab = (typeof TABS)[number]
 
 export default function TokenDetailPage({ params }: TokenDetailPageProps) {
-  const { tokenId } = use(params)
+  const { tokenId: rawTokenId } = use(params)
+  const tokenId = rawTokenId.toLowerCase()
   const [interval, setInterval_] = useState<ChartResolution>('15')
   const [activeTab, setActiveTab] = useState<Tab>('trades')
 
   const { data: token, isLoading: tokenLoading, isError: tokenError } = useTokenDetail(tokenId)
   const { data: chartData } = useChartData(tokenId, interval)
   const { data: swapData, isLoading: swapsLoading } = useSwapHistory(tokenId)
+  const { data: holdersData, isLoading: holdersLoading } = useTokenHolders(tokenId)
 
   if (tokenLoading) {
     return (
@@ -106,10 +109,51 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
                 <TradesTable swaps={swapData?.swaps ?? []} isLoading={swapsLoading} />
               )}
               {activeTab === 'holders' && (
-                <div className="p-8 text-center text-muted-foreground">Coming soon</div>
+                <HoldersTable holders={holdersData?.holders ?? []} isLoading={holdersLoading} />
               )}
               {activeTab === 'about' && (
-                <div className="p-8 text-center text-muted-foreground">Coming soon</div>
+                <div className="flex flex-col gap-4 p-4">
+                  {token.token_info.description ? (
+                    <p className="text-sm whitespace-pre-wrap">{token.token_info.description}</p>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No description</p>
+                  )}
+
+                  {(token.token_info.website || token.token_info.twitter || token.token_info.telegram) && (
+                    <div className="flex flex-wrap gap-3">
+                      {token.token_info.website && (
+                        <a
+                          href={token.token_info.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-sky-400 hover:underline"
+                        >
+                          Website
+                        </a>
+                      )}
+                      {token.token_info.twitter && (
+                        <a
+                          href={token.token_info.twitter}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-sky-400 hover:underline"
+                        >
+                          Twitter
+                        </a>
+                      )}
+                      {token.token_info.telegram && (
+                        <a
+                          href={token.token_info.telegram}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-sky-400 hover:underline"
+                        >
+                          Telegram
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </div>

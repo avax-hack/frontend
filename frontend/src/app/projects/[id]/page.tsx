@@ -167,7 +167,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
 
   return (
     <main>
-      <ProjectDetailContent id={id} />
+      <ProjectDetailContent id={id.toLowerCase()} />
     </main>
   )
 }

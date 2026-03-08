@@ -7,4 +7,6 @@ export const tradingKeys = {
     [...tradingKeys.all, 'chart', tokenId, resolution] as const,
   swapHistory: (tokenId: string, params?: Record<string, unknown>) =>
     [...tradingKeys.all, 'swapHistory', tokenId, params] as const,
+  holders: (tokenId: string, params?: Record<string, unknown>) =>
+    [...tradingKeys.all, 'holders', tokenId, params] as const,
 }
