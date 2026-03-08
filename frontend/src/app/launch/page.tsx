@@ -16,6 +16,7 @@ import {
   ReviewStep,
 } from '@/components/launch'
 import { useCreateProjectForm, useCreateProject } from '@/features/launch/hooks'
+import { uploadImage } from '@/features/launch/services'
 import { useCreateProjectContract } from '@/features/contracts'
 import { useAuth } from '@/features/auth/hooks'
 import { IS_MOCK } from '@/lib/mock'
@@ -80,6 +81,18 @@ export default function LaunchPage() {
     const projectInfo = projectInfoForm.getValues()
     const milestones = milestonesForm.getValues().milestones
 
+    // Upload logo if provided
+    let imageUri = ''
+    if (logoFile) {
+      try {
+        const { uri } = await uploadImage(logoFile)
+        imageUri = uri
+      } catch {
+        toast.error('Failed to upload image')
+        return
+      }
+    }
+
     if (IS_MOCK) {
       // Mock mode: use API mutation
       const payload = {
@@ -87,7 +100,7 @@ export default function LaunchPage() {
         symbol: projectInfo.ticker,
         tagline: projectInfo.tagline,
         description: projectInfo.description,
-        image_uri: '',
+        image_uri: imageUri,
         website: projectInfo.websiteUrl || null,
         twitter: projectInfo.twitterUrl || null,
         github: projectInfo.githubUrl || null,
@@ -118,7 +131,7 @@ export default function LaunchPage() {
       const params = {
         name: projectInfo.name,
         symbol: projectInfo.ticker,
-        tokenURI: '',
+        tokenURI: imageUri,
         idoTokenAmount: parseUnits(String(projectInfo.idoTokenAmount), 18),
         tokenPrice: parseUnits(String(projectInfo.tokenPrice), 6),
         deadline: BigInt(Math.floor(new Date(projectInfo.deadline).getTime() / 1000)),
