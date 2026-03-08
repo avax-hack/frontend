@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useAccount } from 'wagmi'
-import { useAuthStore } from '@/stores/authStore'
+import { useProfile } from '@/features/auth/hooks'
 import { useCreatedProjects, useBuilderOverview } from '@/features/builder/hooks'
 import { useProjectDetail } from '@/features/project/hooks'
 import { ProjectSelector } from '@/components/builder/ProjectSelector'
@@ -17,8 +17,19 @@ import type { IMilestoneInfo } from '@/types/milestone'
 
 export default function BuilderPage() {
   const { isConnected } = useAccount()
-  const { account, isAuthenticated } = useAuthStore()
+  const { account, isAuthenticated, isLoading } = useProfile()
   const accountId = account?.account_id
+
+  if (isConnected && isLoading) {
+    return (
+      <div className="flex flex-col items-center gap-4 py-24 text-center px-4">
+        <div className="text-muted-foreground" aria-hidden="true">
+          <WalletIcon className="size-12" />
+        </div>
+        <h1 className="text-xl font-bold">Checking session…</h1>
+      </div>
+    )
+  }
 
   // Auth gate
   if (!isConnected) {

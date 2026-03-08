@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import dynamic from 'next/dynamic'
@@ -16,6 +16,7 @@ import {
 import { cn } from '@/lib/utils'
 import { LAUNCHPAD_LINKS, TRADING_LINKS, defaultChain } from '@/lib/constants'
 import { FaucetButton } from '@/components/common/FaucetButton'
+import { useProfile } from '@/features/auth/hooks'
 import { useAuth } from '@/features/auth/hooks'
 
 const ConnectButton = dynamic(
@@ -61,27 +62,8 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   const { address, isConnected } = useAccount()
-  const { isAuthenticated, login, logout, isSigning } = useAuth()
-  const autoSignAttempted = useRef(false)
-  const [autoSignFailed, setAutoSignFailed] = useState(false)
-
-  // Auto-sign on connect (one-shot)
-  useEffect(() => {
-    if (isConnected && !isAuthenticated && !autoSignAttempted.current && !isSigning) {
-      autoSignAttempted.current = true
-      login().then((success) => {
-        if (!success) setAutoSignFailed(true)
-      })
-    }
-  }, [isConnected, isAuthenticated, login, isSigning])
-
-  // Reset auto-sign guard on disconnect
-  useEffect(() => {
-    if (!isConnected) {
-      autoSignAttempted.current = false
-      setAutoSignFailed(false)
-    }
-  }, [isConnected])
+  const { isAuthenticated, isSessionRestored, isLoading } = useProfile()
+  const { login, logout, isSigning } = useAuth()
 
   const currentLinks = NAV_LINKS_BY_TAB[activeTab]
 
@@ -96,21 +78,17 @@ export function Header() {
             Sign Out
           </Button>
         </div>
-      ) : isConnected && !isAuthenticated && autoSignFailed ? (
+      ) : isConnected && isSessionRestored && !isAuthenticated ? (
         <Button
           size="sm"
-          onClick={() => {
-            setAutoSignFailed(false)
-            login().then((success) => {
-              if (!success) setAutoSignFailed(true)
-            })
-          }}
+          onClick={() => login()}
+          disabled={isSigning}
         >
-          Sign In
+          {isSigning ? 'Signing…' : 'Sign In'}
         </Button>
-      ) : isConnected && isSigning ? (
+      ) : isConnected && isLoading ? (
         <div className="rounded-lg bg-secondary px-4 py-2 text-sm font-medium text-muted-foreground">
-          Signing…
+          Loading…
         </div>
       ) : (
         <ConnectButton />

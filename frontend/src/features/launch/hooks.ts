@@ -17,7 +17,7 @@ import { checkTickerAvailability, createProject } from './services'
 import { launchKeys } from './query-keys'
 import { projectKeys } from '@/features/project/query-keys'
 import { ApiError } from '@/lib/api'
-import { useAuthStore } from '@/stores/authStore'
+import { authKeys } from '@/features/auth/query-keys'
 
 interface CreateProjectForm {
   projectInfoForm: UseFormReturn<ProjectInfoValues>
@@ -141,7 +141,6 @@ export function useTickerAvailability(ticker: string) {
 /** Mutation hook for creating a project */
 export function useCreateProject() {
   const queryClient = useQueryClient()
-  const clearAccount = useAuthStore((s) => s.clearAccount)
 
   return useMutation({
     mutationFn: createProject,
@@ -151,7 +150,7 @@ export function useCreateProject() {
     onError: (error) => {
       if (error instanceof ApiError) {
         if (error.isUnauthorized) {
-          clearAccount()
+          queryClient.removeQueries({ queryKey: authKeys.all })
           toast.error('Session expired', {
             description: 'Please sign in again and retry.',
           })
