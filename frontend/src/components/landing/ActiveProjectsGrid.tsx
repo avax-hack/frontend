@@ -22,16 +22,21 @@ export function ActiveProjectsGrid({ projects }: ActiveProjectsGridProps) {
 
   return (
     <section className="flex flex-col gap-6">
-      <h2 className="text-2xl font-bold">Active Projects</h2>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <h2 className="text-2xl font-bold">Active Projects</h2>
+          <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-500">
+            Live Now
+          </span>
+        </div>
+        <Button asChild variant="outline" size="sm">
+          <Link href="/explore">View All Projects →</Link>
+        </Button>
+      </div>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {projects.map((project) => (
           <ProjectCard key={project.project_info.project_id} project={project} />
         ))}
-      </div>
-      <div className="flex justify-center">
-        <Button asChild variant="outline">
-          <Link href="/explore">View All Projects →</Link>
-        </Button>
       </div>
     </section>
   )

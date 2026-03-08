@@ -94,39 +94,43 @@ export default function LaunchPage() {
       }
     }
 
-    if (IS_MOCK) {
-      // Mock mode: use API mutation
-      const payload = {
-        name: projectInfo.name,
-        symbol: projectInfo.ticker,
-        category: projectInfo.category,
-        description: projectInfo.description,
-        image_uri: imageUri,
-        website: projectInfo.websiteUrl || null,
-        twitter: projectInfo.twitterUrl || null,
-        github: projectInfo.githubUrl || null,
-        target_raise: parseUnits(String(projectInfo.idoTokenAmount * projectInfo.tokenPrice), 6).toString(),
-        token_supply: parseUnits(String(projectInfo.idoTokenAmount), 18).toString(),
-        milestones: milestones.map((m, i) => ({
-          order: i + 1,
-          title: m.title,
-          description: m.description,
-          fund_allocation_percent: 25,
-        })),
-      }
+    // 1. Register metadata on backend
+    const payload = {
+      name: projectInfo.name,
+      symbol: projectInfo.ticker,
+      category: projectInfo.category,
+      description: projectInfo.description,
+      image_uri: imageUri,
+      website: projectInfo.websiteUrl || null,
+      twitter: projectInfo.twitterUrl || null,
+      github: projectInfo.githubUrl || null,
+      target_raise: parseUnits(String(projectInfo.idoTokenAmount * projectInfo.tokenPrice), 6).toString(),
+      token_supply: parseUnits(String(projectInfo.idoTokenAmount), 18).toString(),
+      deadline: Math.floor(new Date(projectInfo.deadline).getTime() / 1000),
+      milestones: milestones.map((m, i) => ({
+        order: i + 1,
+        title: m.title,
+        description: m.description,
+        fund_allocation_percent: 25,
+      })),
+    }
 
-      try {
-        const result = await createProjectMutation.mutateAsync(payload)
-        toast.success('Project launched successfully!', {
-          description: 'Your project has been created.',
-        })
-        reset()
-        router.push(`/projects/${getAddress(result.project_id)}`)
-      } catch {
-        // Error already handled by mutation's onError
-      }
+    let backendResult
+    try {
+      backendResult = await createProjectMutation.mutateAsync(payload)
+    } catch {
+      // Error already handled by mutation's onError
+      return
+    }
+
+    if (IS_MOCK) {
+      toast.success('Project launched successfully!', {
+        description: 'Your project has been created.',
+      })
+      reset()
+      router.push(`/projects/${getAddress(backendResult.project_id)}`)
     } else {
-      // Real mode: use contract call
+      // 2. Backend succeeded → execute contract
       const salt = `0x${Array.from(crypto.getRandomValues(new Uint8Array(32)), b => b.toString(16).padStart(2, '0')).join('')}` as `0x${string}`
 
       const params = {
@@ -146,7 +150,7 @@ export default function LaunchPage() {
         router.push(`/projects/${getAddress(result.tokenAddress)}`)
       }
     }
-  }, [isAuthenticated, login, projectInfoForm, milestonesForm, createProjectMutation, createContract, reset, router])
+  }, [isAuthenticated, login, projectInfoForm, milestonesForm, logoFile, createProjectMutation, createContract, reset, router])
 
   const handleCancel = useCallback(() => {
     reset()

@@ -2,8 +2,11 @@
 
 import { useFeaturedProjects, useProjectList } from '@/features/project/hooks'
 import { HeroSection } from '@/components/landing/HeroSection'
+import { StatsBar } from '@/components/landing/StatsBar'
 import { FeaturedCarousel } from '@/components/landing/FeaturedCarousel'
-import { ActiveProjectsGrid } from '@/components/landing/ActiveProjectsGrid'
+import { HowItWorks } from '@/components/landing/HowItWorks'
+import { WhyOpenLaunch } from '@/components/landing/WhyOpenLaunch'
+import { BottomCTA } from '@/components/landing/BottomCTA'
 import { SkeletonCard } from '@/components/common/SkeletonCard'
 import { EmptyState } from '@/components/common/EmptyState'
 
@@ -11,45 +14,57 @@ export default function HomePage() {
   const featured = useFeaturedProjects()
   const projectList = useProjectList('recent')
 
+  const projects = projectList.data?.data ?? []
+  const projectCount = projectList.data?.total_count ?? 0
+  const investorCount = projects.reduce(
+    (sum, p) => sum + (p.market_info.investor_count ?? 0),
+    0
+  )
+  const milestonesVerified = projects.reduce(
+    (sum, p) => sum + p.milestone_completed,
+    0
+  )
+  const totalCommittedNum = projects.reduce(
+    (sum, p) => sum + parseFloat(p.market_info.total_committed || '0'),
+    0
+  )
+  const totalCommitted =
+    totalCommittedNum >= 1_000_000
+      ? `$${(totalCommittedNum / 1_000_000).toFixed(1)}M`
+      : totalCommittedNum >= 1_000
+        ? `$${(totalCommittedNum / 1_000).toFixed(1)}K`
+        : `$${totalCommittedNum}`
+
   return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-12 px-4 pb-12 md:px-6">
+    <div className="flex flex-col">
       <HeroSection />
 
-      {featured.isLoading ? (
-        <SkeletonCard />
-      ) : featured.isError ? (
-        <EmptyState
-          message="Something went wrong"
-          actionLabel="Try Again"
-          onAction={() => featured.refetch()}
-        />
-      ) : featured.data?.projects?.length ? (
-        <FeaturedCarousel projects={featured.data.projects} />
-      ) : null}
+      <StatsBar
+        projectCount={projectCount}
+        totalCommitted={totalCommitted}
+        investorCount={investorCount}
+        milestonesVerified={milestonesVerified}
+      />
 
-      {projectList.isLoading ? (
-        <section className="flex flex-col gap-4">
-          <h2 className="text-2xl font-bold">Active Projects</h2>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 3 }, (_, i) => (
-              <SkeletonCard key={i} />
-            ))}
-          </div>
-        </section>
-      ) : projectList.isError ? (
-        <section className="flex flex-col gap-4">
-          <h2 className="text-2xl font-bold">Active Projects</h2>
+      <div className="mx-auto w-full max-w-[90%] py-12 lg:max-w-[80%]">
+        {featured.isLoading ? (
+          <SkeletonCard />
+        ) : featured.isError ? (
           <EmptyState
             message="Something went wrong"
             actionLabel="Try Again"
-            onAction={() => projectList.refetch()}
+            onAction={() => featured.refetch()}
           />
-        </section>
-      ) : (
-        <ActiveProjectsGrid
-          projects={(projectList.data?.data ?? []).slice(0, 6)}
-        />
-      )}
+        ) : featured.data?.projects?.length ? (
+          <FeaturedCarousel projects={featured.data.projects} />
+        ) : null}
+      </div>
+
+      <HowItWorks />
+
+      <WhyOpenLaunch />
+
+      <BottomCTA />
     </div>
   )
 }
