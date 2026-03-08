@@ -1,49 +1,23 @@
-import { CONTRACT_ADDRESSES } from './constants';
+import { OPENLAUNCH_CONTRACTS } from './constants';
+import IDO_ABI_JSON from './abi/IDO.json';
+import ERC20_ABI_JSON from './abi/ERC20.json';
+import POOL_MANAGER_ABI_JSON from './abi/PoolManager.json';
 
-// Contract ABIs — placeholder until actual contracts are deployed
-// Each ABI will be imported from the contracts package or defined here
-
-export const IDO_ABI = [] as const;
-
-export const LP_MANAGER_ABI = [] as const;
-
-export const ERC20_ABI = [
-  {
-    type: 'function',
-    name: 'balanceOf',
-    stateMutability: 'view',
-    inputs: [{ name: 'account', type: 'address' }],
-    outputs: [{ name: '', type: 'uint256' }],
-  },
-  {
-    type: 'function',
-    name: 'approve',
-    stateMutability: 'nonpayable',
-    inputs: [
-      { name: 'spender', type: 'address' },
-      { name: 'amount', type: 'uint256' },
-    ],
-    outputs: [{ name: '', type: 'bool' }],
-  },
-  {
-    type: 'function',
-    name: 'allowance',
-    stateMutability: 'view',
-    inputs: [
-      { name: 'owner', type: 'address' },
-      { name: 'spender', type: 'address' },
-    ],
-    outputs: [{ name: '', type: 'uint256' }],
-  },
-] as const;
+export const IDO_ABI = IDO_ABI_JSON;
+export const ERC20_ABI = ERC20_ABI_JSON;
+export const POOL_MANAGER_ABI = POOL_MANAGER_ABI_JSON;
 
 export const contracts = {
   ido: {
-    address: CONTRACT_ADDRESSES.ido,
+    address: OPENLAUNCH_CONTRACTS.IDO,
     abi: IDO_ABI,
   },
-  lpManager: {
-    address: CONTRACT_ADDRESSES.lpManager,
-    abi: LP_MANAGER_ABI,
+  usdc: {
+    address: OPENLAUNCH_CONTRACTS.USDC,
+    abi: ERC20_ABI,
+  },
+  poolManager: {
+    address: OPENLAUNCH_CONTRACTS.POOL_MANAGER,
+    abi: POOL_MANAGER_ABI,
   },
 } as const;

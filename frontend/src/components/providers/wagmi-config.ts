@@ -1,16 +1,35 @@
 import { createConfig, http, cookieStorage, createStorage } from 'wagmi'
-import { avalanche } from 'wagmi/chains'
 import { injected } from 'wagmi/connectors'
+import { avalancheMainnet, avalancheFuji } from '@/lib/constants'
 
-export const wagmiConfig = createConfig({
-  chains: [avalanche],
-  connectors: [
-    injected({ target: 'metaMask' }),
-    injected(), // Core Wallet and other injected wallets
-  ],
-  ssr: true,
-  storage: createStorage({ storage: cookieStorage }),
-  transports: {
-    [avalanche.id]: http(),
-  },
-})
+const network = process.env.NEXT_PUBLIC_NETWORK
+
+const chains = network === 'mainnet'
+  ? [avalancheMainnet] as const
+  : [avalancheFuji] as const
+
+export const wagmiConfig = network === 'mainnet'
+  ? createConfig({
+      chains: [avalancheMainnet],
+      connectors: [
+        injected({ target: 'metaMask' }),
+        injected(),
+      ],
+      ssr: true,
+      storage: createStorage({ storage: cookieStorage }),
+      transports: {
+        [avalancheMainnet.id]: http(),
+      },
+    })
+  : createConfig({
+      chains: [avalancheFuji],
+      connectors: [
+        injected({ target: 'metaMask' }),
+        injected(),
+      ],
+      ssr: true,
+      storage: createStorage({ storage: cookieStorage }),
+      transports: {
+        [avalancheFuji.id]: http(),
+      },
+    })

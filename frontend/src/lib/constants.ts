@@ -1,9 +1,10 @@
 import { defineChain } from 'viem';
+import type { Address } from 'viem';
 
-export const AVALANCHE_CHAIN_ID = 43114;
+// ===== Chain Definitions =====
 
-export const avalanche = defineChain({
-  id: AVALANCHE_CHAIN_ID,
+export const avalancheMainnet = defineChain({
+  id: 43114,
   name: 'Avalanche',
   nativeCurrency: {
     decimals: 18,
@@ -21,26 +22,89 @@ export const avalanche = defineChain({
       url: 'https://snowtrace.io',
     },
   },
+  contracts: {
+    multicall3: {
+      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+      blockCreated: 11907934,
+    },
+  },
+  testnet: false,
 });
 
-function isHexAddress(value: string): value is `0x${string}` {
-  return /^0x[0-9a-fA-F]{40}$/.test(value);
-}
+export const avalancheFuji = defineChain({
+  id: 43113,
+  name: 'Avalanche Fuji',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Avalanche',
+    symbol: 'AVAX',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://api.avax-test.network/ext/bc/C/rpc'],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: 'SnowTrace Testnet',
+      url: 'https://testnet.snowtrace.io',
+    },
+  },
+  contracts: {
+    multicall3: {
+      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+      blockCreated: 7096959,
+    },
+  },
+  testnet: true,
+});
 
-function toHexAddress(value: string | undefined): `0x${string}` | undefined {
-  if (!value) return undefined;
-  if (isHexAddress(value)) return value;
-  return undefined;
-}
+const network = process.env.NEXT_PUBLIC_NETWORK;
 
-export const CONTRACT_ADDRESSES = {
-  ido: toHexAddress(process.env.NEXT_PUBLIC_IDO_CONTRACT),
-  lpManager: toHexAddress(process.env.NEXT_PUBLIC_LP_MANAGER_CONTRACT),
-  usdc: toHexAddress(process.env.NEXT_PUBLIC_USDC_ADDRESS),
-  uniswapV4Router: toHexAddress(process.env.NEXT_PUBLIC_UNISWAP_V4_ROUTER),
+export const defaultChain = network === 'mainnet' ? avalancheMainnet : avalancheFuji;
+
+// ===== Contract Addresses =====
+
+type OpenLaunchContracts = {
+  IDO: Address;
+  LP_MANAGER: Address;
+  POOL_MANAGER: Address;
+  USDC: Address;
+  FEE_MANAGER: Address;
+  SWAP_FEE_HOOK: Address;
+  TREASURY: Address;
+};
+
+const CONTRACTS: Record<string, OpenLaunchContracts> = {
+  testnet: {
+    IDO: '0xe7f634dBa5F6a5d674a563371b8766d52b4E1334',
+    LP_MANAGER: '0xfC7B5BC0a67B8ae44942663E8AF9a865C3D75B58',
+    POOL_MANAGER: '0xCbe233D9d63dE61b73858724b62D2D97a1Ca20B6',
+    USDC: '0x568779EEe2bca1AcF4b0C8AD91A23136a6EA991d',
+    FEE_MANAGER: '0x25FaFBbF336AD8794ABBb7Da2439704ED8bb8aba',
+    SWAP_FEE_HOOK: '0xA1F2d4E79a572E8fC144E67f0885c68ff176C044',
+    TREASURY: '0xA82a05d61527ADeD7FD8d74A99d686dc35f63D36',
+  },
+  mainnet: {
+    IDO: '0x0000000000000000000000000000000000000000',
+    LP_MANAGER: '0x0000000000000000000000000000000000000000',
+    POOL_MANAGER: '0x0000000000000000000000000000000000000000',
+    USDC: '0x0000000000000000000000000000000000000000',
+    FEE_MANAGER: '0x0000000000000000000000000000000000000000',
+    SWAP_FEE_HOOK: '0x0000000000000000000000000000000000000000',
+    TREASURY: '0x0000000000000000000000000000000000000000',
+  },
 } as const;
 
-export const SNOWTRACE_URL = process.env.NEXT_PUBLIC_SNOWTRACE_URL ?? 'https://snowtrace.io';
+export const OPENLAUNCH_CONTRACTS = CONTRACTS[network === 'mainnet' ? 'mainnet' : 'testnet'];
+
+// ===== Explorer =====
+
+export const SNOWTRACE_URL = defaultChain.testnet
+  ? 'https://testnet.snowtrace.io'
+  : 'https://snowtrace.io';
+
+// ===== Navigation =====
 
 export const LAUNCHPAD_LINKS = [
   { href: '/explore', label: 'Explore' },
