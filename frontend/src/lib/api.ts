@@ -1,0 +1,90 @@
+type AuthMode = 'none' | 'cookie' | 'bearer';
+
+interface IFetchOptions {
+  body?: unknown;
+  auth?: AuthMode;
+  headers?: Record<string, string>;
+  signal?: AbortSignal;
+}
+
+export class ApiError extends Error {
+  constructor(
+    public status: number,
+    public serverMessage?: string,
+  ) {
+    super(serverMessage ?? `API Error: ${status}`);
+    this.name = 'ApiError';
+  }
+
+  get isUnauthorized() {
+    return this.status === 401;
+  }
+
+  get isNotFound() {
+    return this.status === 404;
+  }
+
+  get isServerError() {
+    return this.status >= 500;
+  }
+}
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? '';
+
+async function baseFetch<T>(
+  method: string,
+  path: string,
+  options?: IFetchOptions,
+): Promise<T> {
+  const url = `${API_BASE}${path}`;
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...options?.headers,
+  };
+
+  if (options?.auth === 'bearer') {
+    // Token will be added by auth interceptor when implemented
+  }
+
+  const res = await fetch(url, {
+    method,
+    headers,
+    body: options?.body ? JSON.stringify(options.body) : undefined,
+    credentials: options?.auth === 'cookie' ? 'include' : 'same-origin',
+    signal: options?.signal,
+  });
+
+  if (!res.ok) {
+    let serverMessage: string | undefined;
+    try {
+      const errorBody = await res.json();
+      serverMessage = errorBody.message ?? errorBody.error;
+    } catch {
+      // Response body is not JSON
+    }
+    throw new ApiError(res.status, serverMessage);
+  }
+
+  // Handle 204 No Content
+  if (res.status === 204) {
+    return undefined as T;
+  }
+
+  return res.json() as Promise<T>;
+}
+
+export const httpGet = <T>(path: string, options?: IFetchOptions) =>
+  baseFetch<T>('GET', path, options);
+
+export const httpPost = <T>(path: string, options?: IFetchOptions) =>
+  baseFetch<T>('POST', path, options);
+
+export const httpPut = <T>(path: string, options?: IFetchOptions) =>
+  baseFetch<T>('PUT', path, options);
+
+export const httpPatch = <T>(path: string, options?: IFetchOptions) =>
+  baseFetch<T>('PATCH', path, options);
+
+export const httpDelete = <T>(path: string, options?: IFetchOptions) =>
+  baseFetch<T>('DELETE', path, options);
