@@ -24,7 +24,6 @@ export interface ISwapRecord {
   event_type: 'BUY' | 'SELL'
   native_amount: string
   token_amount: string
-  native_price: string
   transaction_hash: string
   value: string
   account_info: IAccountInfo
@@ -48,6 +47,6 @@ export interface ITokenHolderListData {
 }
 
 // Union types for API params
-export type ChartResolution = '1' | '5' | '15' | '60' | '240' | '1D'
+export type ChartResolution = '1m' | '5m' | '15m' | '1h' | '4h' | '1D'
 export type SortType = 'mcap' | 'creation_time_desc' | 'trending' | 'most_funded'
 export type TokenCategory = 'all' | 'defi' | 'infra' | 'ai' | 'gaming' | 'social' | 'meme' | 'other'

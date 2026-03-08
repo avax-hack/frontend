@@ -4,11 +4,11 @@ import { Button } from '@/components/ui/button'
 import type { ChartResolution } from '@/features/trading/types'
 
 const INTERVALS = [
-  { label: '1m', value: '1' },
-  { label: '5m', value: '5' },
-  { label: '15m', value: '15' },
-  { label: '1h', value: '60' },
-  { label: '4h', value: '240' },
+  { label: '1m', value: '1m' },
+  { label: '5m', value: '5m' },
+  { label: '15m', value: '15m' },
+  { label: '1h', value: '1h' },
+  { label: '4h', value: '4h' },
   { label: '1D', value: '1D' },
 ] as const
 

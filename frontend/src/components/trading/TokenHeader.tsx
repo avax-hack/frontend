@@ -40,35 +40,30 @@ export function TokenHeader({ token }: TokenHeaderProps) {
         )}
         <div className="flex flex-col gap-1">
           <span className="text-xl font-bold">{token_info.name}</span>
-          <span className="text-sm text-muted-foreground">{token_info.symbol}</span>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">{token_info.symbol}</span>
+            <span className="text-xs text-muted-foreground">
+              {truncateAddress(token_info.token_id)}
+            </span>
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              aria-label="Copy contract address"
+              onClick={handleCopy}
+            >
+              {copied ? (
+                <CheckIcon className="size-3" />
+              ) : (
+                <CopyIcon className="size-3" />
+              )}
+            </Button>
+            {token_info.is_graduated ? (
+              <StatusBadge label="V4" variant="green" />
+            ) : (
+              <StatusBadge label="Bonding" variant="amber" />
+            )}
+          </div>
         </div>
-      </div>
-
-      <div className="flex gap-2">
-        {token_info.is_graduated ? (
-          <StatusBadge label="DEX" variant="green" />
-        ) : (
-          <StatusBadge label="Bonding" variant="amber" />
-        )}
-        <StatusBadge label="Avalanche" variant="blue" />
-      </div>
-
-      <div className="flex items-center gap-2">
-        <span className="text-xs text-muted-foreground break-all">
-          {truncateAddress(token_info.token_id)}
-        </span>
-        <Button
-          variant="ghost"
-          size="sm"
-          aria-label="Copy contract address"
-          onClick={handleCopy}
-        >
-          {copied ? (
-            <CheckIcon className="size-4" />
-          ) : (
-            <CopyIcon className="size-4" />
-          )}
-        </Button>
       </div>
 
       <div className="flex gap-2">

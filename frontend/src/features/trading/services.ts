@@ -39,7 +39,6 @@ export function getChartData(
     from: number
     to: number
     countback?: number
-    chart_type?: string
   },
 ): Promise<ITradingChartData> {
   const searchParams = new URLSearchParams()
@@ -47,7 +46,6 @@ export function getChartData(
   searchParams.set('from', String(params.from))
   searchParams.set('to', String(params.to))
   if (params.countback !== undefined) searchParams.set('countback', String(params.countback))
-  if (params.chart_type) searchParams.set('chart_type', params.chart_type)
   return httpGet<ITradingChartData>(
     `/trade/chart/${tokenAddress}?${searchParams.toString()}`,
   )
