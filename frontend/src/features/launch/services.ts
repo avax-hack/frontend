@@ -1,14 +1,31 @@
-import { httpPost } from '@/lib/api'
+import { httpGet, httpPost } from '@/lib/api'
 
-const TAKEN_TICKERS = new Set(['AVAX', 'ETH'])
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? ''
 
-/** Mock ticker availability check. Rejects "AVAX" and "ETH". */
-export async function checkTickerAvailability(
+export function checkTickerAvailability(
   ticker: string
 ): Promise<{ available: boolean }> {
-  // Simulate network delay
-  await new Promise((r) => setTimeout(r, 300))
-  return { available: !TAKEN_TICKERS.has(ticker.toUpperCase()) }
+  return httpGet<{ available: boolean }>(
+    `/project/validate-symbol?symbol=${encodeURIComponent(ticker)}`,
+  )
+}
+
+export async function uploadImage(file: File): Promise<{ uri: string }> {
+  const formData = new FormData()
+  formData.append('image', file)
+
+  const res = await fetch(`${API_BASE}/metadata/image`, {
+    method: 'POST',
+    body: formData,
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err.message ?? 'Image upload failed')
+  }
+
+  return res.json()
 }
 
 // --- Project Creation ---
