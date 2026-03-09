@@ -19,20 +19,27 @@ export function useTradingSubscription(tokenId: string) {
     const ws = getWsClient()
     ws.connect()
 
+    const timers: ReturnType<typeof setTimeout>[] = []
+
     const k1 = ws.subscribe('trade_subscribe', { token_id: tokenId }, () => {
-      qc.invalidateQueries({ queryKey: tradingKeys.detail(tokenId) })
-      qc.invalidateQueries({ queryKey: tradingKeys.swapHistory(tokenId) })
-      qc.invalidateQueries({ queryKey: tradingKeys.holders(tokenId) })
+      timers.push(setTimeout(() => {
+        qc.invalidateQueries({ queryKey: tradingKeys.detail(tokenId) })
+        qc.invalidateQueries({ queryKey: tradingKeys.swapHistory(tokenId) })
+        qc.invalidateQueries({ queryKey: tradingKeys.holders(tokenId) })
+      }, 3000))
     })
 
     const k2 = ws.subscribe('price_subscribe', { token_id: tokenId }, () => {
-      qc.invalidateQueries({ queryKey: tradingKeys.detail(tokenId) })
-      for (const r of CHART_RESOLUTIONS) {
-        qc.invalidateQueries({ queryKey: tradingKeys.chart(tokenId, r) })
-      }
+      timers.push(setTimeout(() => {
+        qc.invalidateQueries({ queryKey: tradingKeys.detail(tokenId) })
+        for (const r of CHART_RESOLUTIONS) {
+          qc.invalidateQueries({ queryKey: tradingKeys.chart(tokenId, r) })
+        }
+      }, 3000))
     })
 
     return () => {
+      timers.forEach(clearTimeout)
       ws.unsubscribe(k1)
       ws.unsubscribe(k2)
     }
