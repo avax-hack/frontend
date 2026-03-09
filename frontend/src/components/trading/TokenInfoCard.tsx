@@ -13,7 +13,6 @@ export function TokenInfoCard({ token }: TokenInfoCardProps) {
 
   const rows = [
     { label: 'Price (USD)', value: `$${formatNumber(Number(market_info.token_price), 6)}` },
-    { label: 'Price (AVAX)', value: market_info.native_price && !isNaN(Number(market_info.native_price)) ? `${formatNumber(Number(market_info.native_price), 6)} AVAX` : '–' },
     { label: 'FDV', value: `$${formatNumber(mcap, 2)}` },
     { label: 'Supply', value: formatNumber(Number(market_info.total_supply), 0) },
   ]
