@@ -7,6 +7,7 @@ import { StatsBar } from '@/components/landing/StatsBar'
 import { FeaturedCarousel } from '@/components/landing/FeaturedCarousel'
 import { HowItWorks } from '@/components/landing/HowItWorks'
 import { WhyOpenLaunch } from '@/components/landing/WhyOpenLaunch'
+import { SuccessStories } from '@/components/landing/SuccessStories'
 import { BottomCTA } from '@/components/landing/BottomCTA'
 import { SkeletonCard } from '@/components/common/SkeletonCard'
 import { EmptyState } from '@/components/common/EmptyState'
@@ -65,6 +66,8 @@ export default function HomePage() {
       <HowItWorks />
 
       <WhyOpenLaunch />
+
+      <SuccessStories />
 
       <BottomCTA />
     </div>
