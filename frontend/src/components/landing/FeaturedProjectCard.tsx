@@ -29,15 +29,10 @@ export function FeaturedProjectCard({ project }: FeaturedProjectCardProps) {
   const category = categoryVariants[project_info.category] ?? { label: project_info.category ?? 'Unknown', variant: 'gray' as const }
   const status = statusVariants[market_info.status] ?? { label: market_info.status ?? 'Unknown', variant: 'gray' as const }
   const checkedId = safeGetAddress(project_info.project_id)
-  const href = checkedId ? `/projects/${checkedId}` : null
+  const href = checkedId ? `/projects/${checkedId}` : undefined
 
-  const Wrapper = href ? Link : 'div'
-
-  return (
-    <Wrapper
-      {...(href ? { href } : {})}
-      className="group relative flex flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 transition-all hover:border-red-500/30 hover:shadow-lg hover:shadow-red-500/10"
-    >
+  const cardContent = (
+    <>
       {/* Info */}
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div className="flex items-center gap-1.5">
@@ -76,6 +71,14 @@ export function FeaturedProjectCard({ project }: FeaturedProjectCardProps) {
 
       {/* Bottom glow */}
       <div className="h-[2px] bg-gradient-to-r from-red-500/0 via-red-500/60 to-red-500/0" />
-    </Wrapper>
+    </>
   )
+
+  const className = "group relative flex flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 transition-all hover:border-red-500/30 hover:shadow-lg hover:shadow-red-500/10"
+
+  if (href) {
+    return <Link href={href} className={className}>{cardContent}</Link>
+  }
+
+  return <div className={className}>{cardContent}</div>
 }
