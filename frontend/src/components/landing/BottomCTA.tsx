@@ -19,7 +19,7 @@ export function BottomCTA() {
           Launch your project or explore opportunities today.
         </p>
         <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-          <Button asChild size="lg" className="bg-red-600 text-white hover:bg-red-700">
+          <Button asChild size="lg" className="bg-gradient-to-r from-white via-rose-200 to-red-500 text-gray-900 font-semibold shadow-lg shadow-red-500/20 hover:to-red-400">
             <Link href="/explore">Explore Projects</Link>
           </Button>
           <Button asChild variant="outline" size="lg" className="border-white/20 text-white hover:bg-white/10">

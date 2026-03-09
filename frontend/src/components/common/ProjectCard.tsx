@@ -10,12 +10,6 @@ interface ProjectCardProps {
   project: IProjectListItem
 }
 
-function getProgressColor(percent: number): 'green' | 'red' | 'blue' {
-  if (percent >= 75) return 'green'
-  if (percent >= 40) return 'blue'
-  return 'red'
-}
-
 export function ProjectCard({ project }: ProjectCardProps) {
   const { project_info, market_info, milestone_completed, milestone_total } = project
   const { funded_percent, target_raise, total_committed, investor_count, status } = market_info
@@ -75,7 +69,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </div>
 
         {/* Progress bar */}
-        <ProgressBar percent={funded_percent} color={getProgressColor(funded_percent)} size="sm" />
+        <ProgressBar percent={funded_percent} color="red" size="sm" />
 
         {/* Meta row */}
         <div className="flex items-center justify-between text-[11px]">
@@ -106,7 +100,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             asChild
             size="sm"
             variant="outline"
-            className="h-7 rounded-md border-red-500/20 bg-red-500/[0.06] px-3 text-xs font-medium text-rose-400/80 transition-all hover:border-red-500/40 hover:bg-red-500/10 hover:text-rose-300"
+            className="h-7 rounded-md bg-gradient-to-r from-white/90 via-rose-200/80 to-red-500/80 px-3 text-xs font-semibold text-gray-900 shadow shadow-red-500/10 transition-all hover:to-red-400/80"
           >
             <Link href={href}>View Project</Link>
           </Button>

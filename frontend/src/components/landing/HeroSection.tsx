@@ -45,7 +45,7 @@ export function HeroSection({ featuredProject, stats }: HeroSectionProps) {
           </p>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-            <Button asChild size="lg" className="bg-red-600 text-white hover:bg-red-700">
+            <Button asChild size="lg" className="bg-gradient-to-r from-white via-rose-200 to-red-500 text-gray-900 font-semibold shadow-lg shadow-red-500/20 hover:to-red-400">
               <Link href="/launch">Launch Project</Link>
             </Button>
             <Button

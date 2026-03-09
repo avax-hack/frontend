@@ -43,8 +43,8 @@ export default function ExplorePage() {
   })
 
   return (
-    <div className="relative flex min-h-screen flex-col">
-      {/* Full-page background */}
+    <div className="relative -mt-[var(--header-h)] flex min-h-screen flex-col pt-[var(--header-h)] [--header-h:65px]">
+      {/* Full-page background — extends behind sticky header */}
       <div className="absolute inset-0 -z-10">
         <img
           src="/hero-bg.webp"
@@ -56,7 +56,7 @@ export default function ExplorePage() {
       </div>
 
       {/* Hero heading */}
-      <section className="-mt-16 pt-16">
+      <section>
         <div className="flex flex-col gap-3 px-4 pt-16 pb-20 text-center lg:pt-24 lg:pb-28">
           <span className="text-sm font-semibold uppercase tracking-[0.2em] text-red-500">
             Explore

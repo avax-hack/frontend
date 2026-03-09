@@ -1,6 +1,7 @@
 const stories = [
   {
     name: 'AvalancheSwap',
+    banner: '/banner-swap.webp',
     description:
       'A next-generation DEX on Avalanche C-Chain featuring concentrated liquidity, limit orders, and cross-chain routing for optimal trading experience.',
     committed: '$12.5M',
@@ -8,6 +9,7 @@ const stories = [
   },
   {
     name: 'SnowBridge',
+    banner: '/banner-bridge.webp',
     description:
       'Trustless bridge protocol connecting Avalanche to Ethereum and major L2s with milestone-verified security audits and progressive fund release.',
     committed: '$8.2M',
@@ -38,8 +40,12 @@ export function SuccessStories() {
               className="flex flex-col overflow-hidden rounded-xl bg-white shadow-md transition-shadow hover:shadow-lg hover:shadow-red-500/10"
             >
               {/* Banner */}
-              <div className="flex h-[200px] items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800">
-                <span className="text-sm text-white/40">Banner</span>
+              <div className="relative h-[200px] overflow-hidden">
+                <img
+                  src={story.banner}
+                  alt={`${story.name} banner`}
+                  className="h-full w-full object-cover"
+                />
               </div>
 
               {/* Content */}

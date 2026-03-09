@@ -103,7 +103,7 @@ export function LiveLaunchCard({ project }: LiveLaunchCardProps) {
       {/* CTA */}
       <Link
         href={href}
-        className="flex h-10 w-full items-center justify-center rounded-lg bg-red-600 text-sm font-semibold text-white transition-colors hover:bg-red-700"
+        className="flex h-10 w-full items-center justify-center rounded-lg bg-gradient-to-r from-white via-rose-200 to-red-500 text-sm font-semibold text-gray-900 shadow-lg shadow-red-500/20 transition-all hover:to-red-400"
       >
         View Project
       </Link>
