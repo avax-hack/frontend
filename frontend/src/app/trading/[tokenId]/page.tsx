@@ -26,8 +26,8 @@ interface TokenDetailPageProps {
 export default function TokenDetailPage({ params }: TokenDetailPageProps) {
   const { tokenId: rawTokenId } = use(params)
   const tokenId = getAddress(rawTokenId)
-  useTradingSubscription(tokenId)
   const [interval, setInterval_] = useState<ChartResolution>('1m')
+  useTradingSubscription(tokenId, interval)
 
   const { data: token, isLoading: tokenLoading, isError: tokenError } = useTokenDetail(tokenId)
   const { data: chartData } = useChartData(tokenId, interval)

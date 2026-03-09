@@ -1,17 +1,24 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { getWsClient } from '@/lib/ws'
 import { IS_MOCK } from '@/lib/mock'
 import { tradingKeys } from '@/features/trading/query-keys'
 import { projectKeys } from '@/features/project/query-keys'
 import { builderKeys } from '@/features/builder/query-keys'
+import type { ChartResolution } from '@/features/trading/types'
 
 const CHART_RESOLUTIONS = ['1m', '5m', '15m', '1h', '4h', '1D'] as const
 
-export function useTradingSubscription(tokenId: string) {
+const RESOLUTION_MAP: Record<string, string> = {
+  '1m': '1', '5m': '5', '15m': '15',
+  '1h': '60', '4h': '240', '1D': '1D',
+}
+
+export function useTradingSubscription(tokenId: string, chartResolution: ChartResolution) {
   const qc = useQueryClient()
+  const chartKeyRef = useRef<string | null>(null)
 
   useEffect(() => {
     if (IS_MOCK || !tokenId) return
@@ -44,6 +51,34 @@ export function useTradingSubscription(tokenId: string) {
       ws.unsubscribe(k2)
     }
   }, [tokenId, qc])
+
+  // chart_subscribe — re-subscribes when resolution changes
+  useEffect(() => {
+    if (IS_MOCK || !tokenId) return
+
+    const ws = getWsClient()
+    ws.connect()
+
+    // Unsubscribe previous chart subscription
+    if (chartKeyRef.current) {
+      ws.unsubscribe(chartKeyRef.current)
+    }
+
+    const resolution = RESOLUTION_MAP[chartResolution] ?? '1'
+    const k = ws.subscribe(
+      'chart_subscribe',
+      { token_id: tokenId, resolution },
+      () => {
+        qc.invalidateQueries({ queryKey: tradingKeys.chart(tokenId, chartResolution) })
+      },
+    )
+    chartKeyRef.current = k
+
+    return () => {
+      ws.unsubscribe(k)
+      chartKeyRef.current = null
+    }
+  }, [tokenId, chartResolution, qc])
 }
 
 export function useProjectSubscription(projectId: string) {
@@ -56,11 +91,11 @@ export function useProjectSubscription(projectId: string) {
     ws.connect()
 
     const k1 = ws.subscribe('project_subscribe', { project_id: projectId }, (params: unknown) => {
-      const p = params as { event?: string }
+      const p = params as { type?: string }
 
       qc.invalidateQueries({ queryKey: projectKeys.detail(projectId) })
 
-      if (p.event === 'GRADUATED' || p.event === 'FAILED') {
+      if (p.type === 'GRADUATED' || p.type === 'PROJECT_FAILED') {
         qc.invalidateQueries({ queryKey: projectKeys.all })
       }
     })
@@ -87,17 +122,17 @@ export function useNewContentSubscription() {
     ws.connect()
 
     const k = ws.subscribe('new_content_subscribe', {}, (params: unknown) => {
-      const p = params as { event?: string }
+      const p = params as { type?: string }
 
       if (
-        p.event === 'PROJECT_CREATED' ||
-        p.event === 'GRADUATED' ||
-        p.event === 'FAILED'
+        p.type === 'PROJECT_CREATED' ||
+        p.type === 'GRADUATED' ||
+        p.type === 'PROJECT_FAILED'
       ) {
         qc.invalidateQueries({ queryKey: projectKeys.all })
       }
 
-      if (p.event === 'LIQUIDITY_ALLOCATED') {
+      if (p.type === 'LIQUIDITY_ALLOCATED') {
         qc.invalidateQueries({ queryKey: tradingKeys.all })
       }
     })

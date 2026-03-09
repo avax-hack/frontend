@@ -38,9 +38,15 @@ export class WebSocketClient {
         const msg = JSON.parse(e.data as string)
         // JSON-RPC notification: { method, params }
         if (msg.method && msg.params) {
+          const result = msg.params.result
+          if (result?.type === 'SUBSCRIPTION_ERROR') {
+            const channel = msg.params.subscription
+            console.warn('[ws] subscription error:', channel, result)
+            return
+          }
           for (const sub of this.subs.values()) {
             if (sub.method === msg.method) {
-              sub.handler(msg.params)
+              sub.handler(result)
             }
           }
         }
@@ -83,7 +89,12 @@ export class WebSocketClient {
   }
 
   unsubscribe(key: string) {
-    this.subs.delete(key)
+    const sub = this.subs.get(key)
+    if (sub) {
+      const unsubMethod = sub.method.replace('_subscribe', '_unsubscribe')
+      this.sendSubscribe(unsubMethod, sub.params)
+      this.subs.delete(key)
+    }
   }
 
   private sendSubscribe(method: string, params: Record<string, unknown>) {
