@@ -24,59 +24,77 @@ interface ProjectDetailPageProps {
   params: Promise<{ id: string }>
 }
 
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-sm font-semibold uppercase tracking-widest text-primary">
+      {children}
+    </p>
+  )
+}
+
 function ProjectDetailSkeleton() {
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-8 md:px-6">
+    <div className="flex flex-col">
       {/* Hero skeleton */}
-      <div className="flex items-start gap-4">
-        <Skeleton className="size-16 shrink-0 rounded-xl" />
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <Skeleton className="h-8 w-48" />
-            <Skeleton className="h-6 w-16" />
-          </div>
-          <Skeleton className="h-4 w-64" />
-          <div className="flex gap-2">
-            <Skeleton className="h-6 w-20 rounded-full" />
-            <Skeleton className="h-6 w-24 rounded-full" />
+      <div className="bg-secondary/20">
+        <div className="mx-auto max-w-5xl px-4 py-12 md:px-6 lg:py-16">
+          <div className="flex items-start gap-4">
+            <Skeleton className="size-16 shrink-0 rounded-xl" />
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-8 w-48" />
+                <Skeleton className="h-6 w-16" />
+              </div>
+              <Skeleton className="h-4 w-64" />
+              <div className="flex gap-2">
+                <Skeleton className="h-6 w-20 rounded-full" />
+                <Skeleton className="h-6 w-24 rounded-full" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Stats skeleton */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        {Array.from({ length: 3 }, (_, i) => (
-          <Card key={i} className="flex flex-col gap-2 p-4">
-            <Skeleton className="h-3 w-24" />
-            <Skeleton className="h-6 w-32" />
-          </Card>
-        ))}
-      </div>
-
-      {/* Two-column skeleton */}
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        <div className="flex flex-col gap-6 lg:col-span-2">
-          <Skeleton className="h-4 w-full rounded-full" />
-          <Skeleton className="h-3 w-48" />
-          <div className="flex flex-col gap-2">
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-3 w-full" />
-            <Skeleton className="h-3 w-full" />
-            <Skeleton className="h-3 w-3/4" />
+      <div className="border-y border-border bg-secondary/30">
+        <div className="mx-auto max-w-5xl px-4 py-8 md:px-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {Array.from({ length: 3 }, (_, i) => (
+              <Card key={i} className="flex flex-col gap-2 p-4">
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-6 w-32" />
+              </Card>
+            ))}
           </div>
         </div>
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-2">
-            <Skeleton className="h-4 w-32" />
-            <div className="flex gap-2">
-              {Array.from({ length: 4 }, (_, i) => (
-                <Skeleton key={i} className="size-8 rounded-full" />
-              ))}
+      </div>
+
+      {/* Content skeleton */}
+      <div className="mx-auto max-w-5xl px-4 py-12 pb-24 md:px-6 lg:py-16">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
+          <div className="flex flex-col gap-6 lg:col-span-2">
+            <Skeleton className="h-4 w-full rounded-full" />
+            <Skeleton className="h-3 w-48" />
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-3 w-full" />
+              <Skeleton className="h-3 w-full" />
+              <Skeleton className="h-3 w-3/4" />
             </div>
           </div>
-          <div className="flex flex-col gap-2">
-            <Skeleton className="h-4 w-32" />
-            <Skeleton className="h-6 w-full rounded-full" />
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-4 w-32" />
+              <div className="flex gap-2">
+                {Array.from({ length: 4 }, (_, i) => (
+                  <Skeleton key={i} className="size-8 rounded-full" />
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-6 w-full rounded-full" />
+            </div>
           </div>
         </div>
       </div>
@@ -131,33 +149,53 @@ function ProjectDetailContent({ id }: { id: string }) {
 
   return (
     <>
-      <div className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-8 pb-24 md:px-6">
-        {/* Hero — full width */}
-        <ProjectHero project={project} />
+      {/* Hero section */}
+      <section className="bg-secondary/20">
+        <div className="mx-auto max-w-5xl px-4 py-12 md:px-6 lg:py-16">
+          <ProjectHero project={project} />
+        </div>
+      </section>
 
-        {/* Funding stats — full width */}
-        <FundingStats project={project} />
+      {/* Stats band */}
+      <section className="border-y border-border bg-secondary/30">
+        <div className="mx-auto max-w-5xl px-4 py-8 md:px-6">
+          <FundingStats project={project} />
+        </div>
+      </section>
 
-        {/* Two-column layout */}
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+      {/* Content section */}
+      <section className="mx-auto max-w-5xl px-4 py-12 pb-24 md:px-6 lg:py-16">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
           {/* Left column — 2/3 */}
-          <div className="flex flex-col gap-8 lg:col-span-2">
+          <div className="flex flex-col gap-10 lg:col-span-2">
             <FundingProgress project={project} />
 
             {project.project_info.description && (
-              <ProjectOverview description={project.project_info.description} />
+              <div className="flex flex-col gap-4">
+                <SectionLabel>About</SectionLabel>
+                <ProjectOverview description={project.project_info.description} />
+              </div>
             )}
 
-            <TeamSection project={project} />
+            <div className="flex flex-col gap-4">
+              <SectionLabel>Team & Links</SectionLabel>
+              <TeamSection project={project} />
+            </div>
           </div>
 
           {/* Right column — 1/3 sidebar */}
-          <aside className="flex flex-col gap-8" aria-label="Project milestones and allocation">
-            <MilestoneRoadmap milestones={project.milestones} />
-            <FundAllocationBar milestones={project.milestones} />
+          <aside className="flex flex-col gap-10" aria-label="Project milestones and allocation">
+            <div className="flex flex-col gap-4">
+              <SectionLabel>Milestones</SectionLabel>
+              <MilestoneRoadmap milestones={project.milestones} />
+            </div>
+            <div className="flex flex-col gap-4">
+              <SectionLabel>Fund Allocation</SectionLabel>
+              <FundAllocationBar milestones={project.milestones} />
+            </div>
           </aside>
         </div>
-      </div>
+      </section>
 
       {/* Sticky bottom invest panel */}
       <InvestPanel project={project} />
