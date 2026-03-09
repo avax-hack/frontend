@@ -1,7 +1,5 @@
 'use client'
 
-import { Card } from '@/components/ui/card'
-
 interface MilestoneStatusCardProps {
   completed: number
   total: number
@@ -11,10 +9,12 @@ export function MilestoneStatusCard({ completed, total }: MilestoneStatusCardPro
   if (total === 0) return null
 
   return (
-    <Card className="p-4 flex flex-col gap-3">
+    <div className="rounded-xl border border-border bg-card p-4 flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium">Milestone Status</span>
-        <span className="text-sm font-medium">{completed}/{total}</span>
+        <span className="text-sm font-semibold">Milestone Progress</span>
+        <span className="text-xs text-muted-foreground font-medium">
+          {completed}/{total}
+        </span>
       </div>
       <div className="flex gap-1.5">
         {Array.from({ length: total }).map((_, i) => (
@@ -26,6 +26,6 @@ export function MilestoneStatusCard({ completed, total }: MilestoneStatusCardPro
           />
         ))}
       </div>
-    </Card>
+    </div>
   )
 }

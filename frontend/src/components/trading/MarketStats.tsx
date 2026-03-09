@@ -29,11 +29,14 @@ export function MarketStats({ marketInfo }: MarketStatsProps) {
   ]
 
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
       {stats.map((stat) => (
-        <div key={stat.label} className="flex flex-col gap-1">
+        <div
+          key={stat.label}
+          className="rounded-lg border border-border bg-card px-4 py-3 flex flex-col gap-1"
+        >
           <span className="text-xs text-muted-foreground">{stat.label}</span>
-          <span className="text-sm font-medium">{stat.value}</span>
+          <span className="text-sm font-semibold">{stat.value}</span>
         </div>
       ))}
     </div>
