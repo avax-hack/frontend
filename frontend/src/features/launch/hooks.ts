@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
   projectInfoSchema,
@@ -13,8 +13,7 @@ import {
   type MilestonesFormValues,
 } from './schemas'
 import { useCreateProjectStore, type FormStep } from './store'
-import { checkTickerAvailability, createProject } from './services'
-import { launchKeys } from './query-keys'
+import { createProject } from './services'
 import { projectKeys } from '@/features/project/query-keys'
 import { ApiError } from '@/lib/api'
 import { authKeys } from '@/features/auth/query-keys'
@@ -125,17 +124,6 @@ export function useCreateProjectForm(): CreateProjectForm {
     setLogo: store.setLogo,
     reset,
   }
-}
-
-/** Debounced ticker availability check */
-export function useTickerAvailability(ticker: string) {
-  const trimmed = ticker.trim().toUpperCase()
-  return useQuery({
-    queryKey: launchKeys.tickerCheck(trimmed),
-    queryFn: () => checkTickerAvailability(trimmed),
-    enabled: trimmed.length >= 2,
-    staleTime: 30_000,
-  })
 }
 
 /** Mutation hook for creating a project */

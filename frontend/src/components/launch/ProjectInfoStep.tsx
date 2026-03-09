@@ -1,13 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { LogoUpload } from './LogoUpload'
-import { useTickerAvailability } from '@/features/launch/hooks'
 import type { ProjectInfoValues } from '@/features/launch/schemas'
 
 interface ProjectInfoStepProps {
@@ -27,35 +25,8 @@ export function ProjectInfoStep({
     register,
     watch,
     setValue,
-    setError,
-    clearErrors,
     formState: { errors },
   } = useFormContext<ProjectInfoValues>()
-
-  // Debounced ticker validation
-  const tickerValue = watch('ticker')
-  const [debouncedTicker, setDebouncedTicker] = useState('')
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedTicker(tickerValue || '')
-    }, 500)
-    return () => clearTimeout(timer)
-  }, [tickerValue])
-
-  const { data: tickerCheck, isFetching: isCheckingTicker } =
-    useTickerAvailability(debouncedTicker)
-
-  useEffect(() => {
-    if (tickerCheck && !tickerCheck.available) {
-      setError('ticker', {
-        type: 'validate',
-        message: `Ticker "${debouncedTicker}" is already taken`,
-      })
-    } else if (tickerCheck?.available && errors.ticker?.type === 'validate') {
-      clearErrors('ticker')
-    }
-  }, [tickerCheck, debouncedTicker, setError, clearErrors, errors.ticker?.type])
 
   // Compute minimum deadline (tomorrow)
   const tomorrow = new Date()
@@ -132,16 +103,6 @@ export function ProjectInfoStep({
               },
             })}
           />
-          {isCheckingTicker && (
-            <span className="absolute top-1/2 right-3 -translate-y-1/2 text-xs text-muted-foreground">
-              Checking…
-            </span>
-          )}
-          {tickerCheck?.available && debouncedTicker.length >= 2 && !isCheckingTicker && (
-            <span className="absolute top-1/2 right-3 -translate-y-1/2 text-xs text-green-500">
-              Available
-            </span>
-          )}
         </div>
         {errors.ticker && (
           <p className="text-sm text-destructive" role="alert">

@@ -26,40 +26,43 @@ export function ProjectOverviewCard({ data, isLoading }: ProjectOverviewCardProp
 
   if (!data) return null
 
-  const { project_info, market_info, current_milestone, total_milestones } = data
+  const { name, symbol, image_uri, status, usdc_raised, investor_count, current_milestone, total_milestones } = data
+  const fundedPercent = Number(data.target_raise) > 0
+    ? (Number(usdc_raised) / Number(data.target_raise)) * 100
+    : 0
 
   return (
     <Card className="p-6 flex flex-col gap-4 bg-card">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 min-w-0">
-          {project_info.image_uri ? (
-            <img src={project_info.image_uri} alt="" className="size-10 rounded-full" />
+          {image_uri ? (
+            <img src={image_uri} alt="" className="size-10 rounded-full" />
           ) : (
             <div className="size-10 rounded-full bg-secondary flex items-center justify-center font-bold">
-              {project_info.symbol.charAt(0)}
+              {symbol.charAt(0)}
             </div>
           )}
           <div className="flex flex-col min-w-0">
-            <span className="text-lg font-bold truncate">{project_info.name}</span>
-            <span className="text-sm text-muted-foreground">{project_info.symbol}</span>
+            <span className="text-lg font-bold truncate">{name}</span>
+            <span className="text-sm text-muted-foreground">{symbol}</span>
           </div>
         </div>
         <StatusBadge
-          label={market_info.status}
-          variant={statusVariant[market_info.status] ?? 'gray'}
+          label={status}
+          variant={statusVariant[status] ?? 'gray'}
         />
       </div>
 
-      <ProgressBar percent={market_info.funded_percent} color="green" showLabel />
+      <ProgressBar percent={fundedPercent} color="green" showLabel />
 
       <div className="grid grid-cols-3 gap-4">
         <div className="flex flex-col gap-1">
           <span className="text-xs text-muted-foreground">Total Raised</span>
-          <span className="font-bold">{formatTokenToUSD(market_info.total_committed)}</span>
+          <span className="font-bold">{formatTokenToUSD(usdc_raised)}</span>
         </div>
         <div className="flex flex-col gap-1">
           <span className="text-xs text-muted-foreground">Investors</span>
-          <span className="font-bold">{formatNumber(market_info.investor_count)}</span>
+          <span className="font-bold">{formatNumber(investor_count)}</span>
         </div>
         <div className="flex flex-col gap-1">
           <span className="text-xs text-muted-foreground">Current Milestone</span>

@@ -125,9 +125,10 @@ export default function LaunchPage() {
 
     if (IS_MOCK) {
       toast.success('Project launched successfully!', {
-        description: 'Your project has been created.',
+        description: 'Your project has been created. Redirecting…',
       })
       reset()
+      await new Promise((r) => setTimeout(r, 5000))
       router.push(`/projects/${getAddress(backendResult.project_id)}`)
     } else {
       // 2. Backend succeeded → execute contract
@@ -147,6 +148,7 @@ export default function LaunchPage() {
       const result = await createContract.execute(params)
       if (result) {
         reset()
+        await new Promise((r) => setTimeout(r, 5000))
         router.push(`/projects/${getAddress(result.tokenAddress)}`)
       }
     }

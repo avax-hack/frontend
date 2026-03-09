@@ -2,14 +2,6 @@ import { httpGet, httpPost } from '@/lib/api'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? ''
 
-export function checkTickerAvailability(
-  ticker: string
-): Promise<{ available: boolean }> {
-  return httpGet<{ available: boolean }>(
-    `/project/validate-symbol?symbol=${encodeURIComponent(ticker)}`,
-  )
-}
-
 export async function uploadImage(file: File): Promise<{ image_uri: string }> {
   const formData = new FormData()
   formData.append('file', file)

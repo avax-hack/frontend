@@ -1,4 +1,5 @@
 import type { IProjectInfo, IProjectMarketInfo } from '@/types/project'
+import type { IMilestoneInfo } from '@/types/milestone'
 
 // GET /profile/tokens/created/:accountId — item shape
 export interface ICreatedProjectItem {
@@ -17,14 +18,22 @@ export interface IAccountCreatedTokenData {
 
 // GET /builder/overview/:projectId
 export interface IBuilderOverviewData {
-  project_info: IProjectInfo
-  market_info: IProjectMarketInfo
+  project_id: string
+  name: string
+  symbol: string
+  image_uri: string
+  status: string
+  target_raise: string
+  usdc_raised: string
+  investor_count: number
+  milestones: IMilestoneInfo[]
   current_milestone: {
     order: number
     title: string
     status: string
   }
   total_milestones: number
+  created_at: number
 }
 
 // GET /builder/stats/:projectId
