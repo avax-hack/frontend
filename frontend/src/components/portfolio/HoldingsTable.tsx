@@ -97,11 +97,19 @@ export function HoldingsTable({ tokens, isLoading }: HoldingsTableProps) {
                   ${formatNumber(value, 2)}
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button asChild size="sm" variant="outline">
-                    <Link href={`/trading/${getAddress(item.token_info.token_id)}`}>
-                      Trade
-                    </Link>
-                  </Button>
+                  {item.token_info.is_graduated ? (
+                    <Button asChild size="sm" variant="outline">
+                      <Link href={`/trading/${getAddress(item.token_info.token_id)}`}>
+                        Trade
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button asChild size="sm" variant="ghost" className="text-muted-foreground">
+                      <Link href={`/projects/${getAddress(item.token_info.project_id ?? item.token_info.token_id)}`}>
+                        View IDO
+                      </Link>
+                    </Button>
+                  )}
                 </TableCell>
               </TableRow>
             )
