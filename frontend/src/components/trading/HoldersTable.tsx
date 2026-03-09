@@ -1,6 +1,6 @@
 'use client'
 
-import { truncateAddress, formatNumber } from '@/lib/utils'
+import { truncateAddress, formatTokenAmount } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table,
@@ -53,7 +53,7 @@ export function HoldersTable({ holders, isLoading }: HoldersTableProps) {
               {truncateAddress(holder.account_info.account_id)}
             </TableCell>
             <TableCell className="text-right">
-              {formatNumber(Number(holder.balance), 2)}
+              {formatTokenAmount(holder.balance)}
             </TableCell>
           </TableRow>
         ))}

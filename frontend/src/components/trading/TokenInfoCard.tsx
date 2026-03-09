@@ -1,6 +1,6 @@
 'use client'
 
-import { formatNumber } from '@/lib/utils'
+import { formatNumber, formatLargeNumber } from '@/lib/utils'
 import type { ITokenData } from '@/features/trading/types'
 
 interface TokenInfoCardProps {
@@ -13,8 +13,8 @@ export function TokenInfoCard({ token }: TokenInfoCardProps) {
 
   const rows = [
     { label: 'Price (USD)', value: `$${formatNumber(Number(market_info.token_price), 6)}` },
-    { label: 'FDV', value: `$${formatNumber(mcap, 2)}` },
-    { label: 'Supply', value: formatNumber(Number(market_info.total_supply), 0) },
+    { label: 'FDV', value: `$${formatLargeNumber(mcap)}` },
+    { label: 'Supply', value: formatLargeNumber(Number(market_info.total_supply)) },
   ]
 
   return (
