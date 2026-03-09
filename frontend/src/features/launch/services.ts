@@ -20,7 +20,34 @@ export async function uploadImage(file: File): Promise<{ image_uri: string }> {
   return res.json()
 }
 
-// --- Project Creation ---
+// --- Metadata Creation (step 2: get metadata_uri for on-chain) ---
+
+export interface CreateMetadataPayload {
+  name: string
+  symbol: string
+  image_uri: string
+  category: string
+  homepage?: string
+  twitter?: string
+  telegram?: string
+  discord?: string
+  milestones: { title: string; description: string }[]
+}
+
+export interface CreateMetadataResponse {
+  metadata_uri: string
+}
+
+export function createMetadata(
+  payload: CreateMetadataPayload,
+): Promise<CreateMetadataResponse> {
+  return httpPost<CreateMetadataResponse>('/metadata/create', {
+    body: payload,
+    auth: 'cookie',
+  })
+}
+
+// --- Project Creation (step 3) ---
 
 export interface CreateProjectPayload {
   name: string

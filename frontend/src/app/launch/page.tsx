@@ -16,10 +16,36 @@ import {
   ReviewStep,
 } from '@/components/launch'
 import { useCreateProjectForm, useCreateProject } from '@/features/launch/hooks'
-import { uploadImage } from '@/features/launch/services'
+import { uploadImage, createMetadata } from '@/features/launch/services'
 import { useCreateProjectContract } from '@/features/contracts'
+import { getProjectDetail } from '@/features/project/services'
 import { useProfile, useAuth } from '@/features/auth/hooks'
 import { IS_MOCK } from '@/lib/mock'
+
+/** Poll until the project appears in the DB, then redirect */
+async function waitForProjectAndRedirect(
+  projectId: string,
+  router: ReturnType<typeof useRouter>,
+  reset: () => void,
+) {
+  const addr = getAddress(projectId)
+  const maxAttempts = 120 // ~2 min at 1s intervals
+  for (let i = 0; i < maxAttempts; i++) {
+    try {
+      await getProjectDetail(addr)
+      // Project exists in DB
+      reset()
+      router.push(`/projects/${addr}`)
+      return
+    } catch {
+      // Not yet — wait and retry
+      await new Promise((r) => setTimeout(r, 1000))
+    }
+  }
+  // Fallback: redirect anyway after timeout
+  reset()
+  router.push(`/projects/${addr}`)
+}
 
 export default function LaunchPage() {
   const {
@@ -82,7 +108,14 @@ export default function LaunchPage() {
     const projectInfo = projectInfoForm.getValues()
     const milestones = milestonesForm.getValues().milestones
 
-    // Upload logo if provided
+    const milestonePayload = milestones.map((m, i) => ({
+      order: i + 1,
+      title: m.title,
+      description: m.description,
+      fund_allocation_percent: 25,
+    }))
+
+    // Step 1: Upload image
     let imageUri = ''
     if (logoFile) {
       try {
@@ -94,7 +127,26 @@ export default function LaunchPage() {
       }
     }
 
-    // 1. Register metadata on backend
+    // Step 2: Create metadata JSON on R2
+    let metadataUri = ''
+    try {
+      const { metadata_uri } = await createMetadata({
+        name: projectInfo.name,
+        symbol: projectInfo.ticker,
+        image_uri: imageUri,
+        category: projectInfo.category,
+        homepage: projectInfo.websiteUrl || undefined,
+        twitter: projectInfo.twitterUrl || undefined,
+        telegram: projectInfo.telegramUrl || undefined,
+        milestones: milestonePayload,
+      })
+      metadataUri = metadata_uri
+    } catch {
+      toast.error('Failed to create metadata')
+      return
+    }
+
+    // Step 3: Register project on backend
     const payload = {
       name: projectInfo.name,
       symbol: projectInfo.ticker,
@@ -107,12 +159,7 @@ export default function LaunchPage() {
       target_raise: parseUnits(String(projectInfo.idoTokenAmount * projectInfo.tokenPrice), 6).toString(),
       token_supply: parseUnits(String(projectInfo.idoTokenAmount), 18).toString(),
       deadline: Math.floor(new Date(projectInfo.deadline).getTime() / 1000),
-      milestones: milestones.map((m, i) => ({
-        order: i + 1,
-        title: m.title,
-        description: m.description,
-        fund_allocation_percent: 25,
-      })),
+      milestones: milestonePayload,
     }
 
     let backendResult
@@ -125,19 +172,17 @@ export default function LaunchPage() {
 
     if (IS_MOCK) {
       toast.success('Project launched successfully!', {
-        description: 'Your project has been created. Redirecting…',
+        description: 'Waiting for project to appear on-chain…',
       })
-      reset()
-      await new Promise((r) => setTimeout(r, 5000))
-      router.push(`/projects/${getAddress(backendResult.project_id)}`)
+      await waitForProjectAndRedirect(backendResult.project_id, router, reset)
     } else {
-      // 2. Backend succeeded → execute contract
+      // Step 4: Execute on-chain contract with metadata_uri as tokenURI
       const salt = `0x${Array.from(crypto.getRandomValues(new Uint8Array(32)), b => b.toString(16).padStart(2, '0')).join('')}` as `0x${string}`
 
       const params = {
         name: projectInfo.name,
         symbol: projectInfo.ticker,
-        tokenURI: imageUri,
+        tokenURI: metadataUri,
         idoTokenAmount: parseUnits(String(projectInfo.idoTokenAmount), 18),
         tokenPrice: parseUnits(String(projectInfo.tokenPrice), 6),
         deadline: BigInt(Math.floor(new Date(projectInfo.deadline).getTime() / 1000)),
@@ -147,9 +192,10 @@ export default function LaunchPage() {
 
       const result = await createContract.execute(params)
       if (result) {
-        reset()
-        await new Promise((r) => setTimeout(r, 5000))
-        router.push(`/projects/${getAddress(result.tokenAddress)}`)
+        toast.success('Project created on-chain!', {
+          description: 'Waiting for indexer to pick it up…',
+        })
+        await waitForProjectAndRedirect(result.tokenAddress, router, reset)
       }
     }
   }, [isAuthenticated, login, projectInfoForm, milestonesForm, logoFile, createProjectMutation, createContract, reset, router])

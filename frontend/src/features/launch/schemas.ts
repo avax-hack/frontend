@@ -23,7 +23,8 @@ export const projectInfoSchema = z.object({
     .regex(/^[A-Z0-9]+$/, 'Ticker must be uppercase alphanumeric'),
   description: z
     .string()
-    .trim(),
+    .trim()
+    .min(20, 'Description must be at least 20 characters'),
   websiteUrl: optionalUrl,
   twitterUrl: optionalUrl,
   telegramUrl: optionalUrl,
