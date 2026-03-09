@@ -110,16 +110,16 @@ export function LogoUpload({ value, preview, onChange, externalError }: LogoUplo
           'flex h-32 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed transition-colors',
           'focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50',
           isDragOver
-            ? 'border-primary bg-primary/4'
-            : 'border-muted-foreground/30 hover:border-muted-foreground/50',
+            ? 'border-red-500 bg-red-500/10'
+            : 'border-white/20 hover:border-white/40',
           (error || externalError) && 'border-destructive'
         )}
       >
-        <UploadIcon className="size-6 text-muted-foreground" aria-hidden="true" />
-        <p className="text-sm text-muted-foreground">
+        <UploadIcon className="size-6 text-white/40" aria-hidden="true" />
+        <p className="text-sm text-white/50">
           Drag & drop or click to upload
         </p>
-        <p className="text-xs text-muted-foreground">PNG or JPG, max 5MB</p>
+        <p className="text-xs text-white/30">PNG or JPG, max 5MB</p>
       </button>
       <input
         ref={inputRef}

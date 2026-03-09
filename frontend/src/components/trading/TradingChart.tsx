@@ -141,5 +141,5 @@ export function TradingChart({ data }: TradingChartProps) {
     chartRef.current.timeScale().fitContent()
   }, [data])
 
-  return <div ref={containerRef} className="h-[400px] w-full" />
+  return <div ref={containerRef} className="h-[400px] w-full rounded-xl bg-black/80" />
 }

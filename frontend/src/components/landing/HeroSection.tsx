@@ -1,11 +1,13 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { LiveLaunchCard } from './LiveLaunchCard'
 import { StatsBar } from './StatsBar'
 import type { IProjectListItem } from '@/types/project'
 
 interface HeroSectionProps {
   featuredProject: IProjectListItem | null
+  isLoading?: boolean
   stats: {
     projectCount: number
     totalCommitted: string
@@ -14,7 +16,7 @@ interface HeroSectionProps {
   }
 }
 
-export function HeroSection({ featuredProject, stats }: HeroSectionProps) {
+export function HeroSection({ featuredProject, isLoading, stats }: HeroSectionProps) {
   return (
     <section className="relative isolate -mt-14 flex min-h-screen flex-col justify-between">
       {/* Background */}
@@ -45,7 +47,7 @@ export function HeroSection({ featuredProject, stats }: HeroSectionProps) {
           </p>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-            <Button asChild size="lg" className="bg-gradient-to-r from-white via-rose-200 to-red-500 text-gray-900 font-semibold shadow-lg shadow-red-500/20 hover:to-red-400">
+            <Button asChild size="lg" variant="gradient">
               <Link href="/launch">Launch Project</Link>
             </Button>
             <Button
@@ -60,7 +62,36 @@ export function HeroSection({ featuredProject, stats }: HeroSectionProps) {
         </div>
 
         {/* Right: Live Launch Card */}
-        {featuredProject && <LiveLaunchCard project={featuredProject} />}
+        {isLoading ? (
+          <div className="w-full lg:w-[420px] rounded-2xl border border-white/10 bg-black/10 backdrop-blur-sm p-6 flex flex-col gap-5">
+            <div className="flex items-center justify-between">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-16" />
+            </div>
+            <div className="flex items-center gap-3">
+              <Skeleton className="size-12 rounded-xl" />
+              <div className="flex flex-col gap-2">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-4 w-20" />
+              </div>
+            </div>
+            <div className="flex flex-col gap-3">
+              <div className="flex justify-between">
+                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-4 w-12" />
+              </div>
+              <Skeleton className="h-2 w-full rounded-full" />
+            </div>
+            <div className="flex flex-col gap-2.5">
+              <div className="flex justify-between"><Skeleton className="h-4 w-20" /><Skeleton className="h-4 w-10" /></div>
+              <div className="flex justify-between"><Skeleton className="h-4 w-24" /><Skeleton className="h-4 w-10" /></div>
+              <div className="flex justify-between"><Skeleton className="h-4 w-14" /><Skeleton className="h-4 w-28" /></div>
+            </div>
+            <Skeleton className="h-10 w-full rounded-md" />
+          </div>
+        ) : featuredProject ? (
+          <LiveLaunchCard project={featuredProject} />
+        ) : null}
       </div>
 
       {/* Bottom: Stats Bar */}

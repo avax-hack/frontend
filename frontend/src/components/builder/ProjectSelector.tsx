@@ -54,11 +54,11 @@ export function ProjectSelector({
         aria-label="Select project"
       >
         <div className="flex flex-col min-w-0">
-          <span className="font-medium truncate">
+          <span className="font-medium truncate text-white">
             {selected?.name ?? 'Select a project'}
           </span>
           {selected && (
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-white/50">
               {selected.symbol}
             </span>
           )}
@@ -69,7 +69,7 @@ export function ProjectSelector({
       {open && (
         <div
           role="listbox"
-          className="absolute top-full left-0 z-10 mt-1 w-full rounded-lg border border-border bg-card shadow-lg"
+          className="absolute top-full left-0 z-10 mt-1 w-full rounded-lg border border-white/10 bg-[#0a0f1a]/95 backdrop-blur-xl shadow-lg"
         >
           {projects.map((project) => (
             <Button
@@ -97,8 +97,8 @@ export function ProjectSelector({
                 </div>
               )}
               <div className="flex flex-col min-w-0">
-                <span className="font-medium truncate">{project.name}</span>
-                <span className="text-xs text-muted-foreground">{project.symbol}</span>
+                <span className="font-medium truncate text-white">{project.name}</span>
+                <span className="text-xs text-white/50">{project.symbol}</span>
               </div>
             </Button>
           ))}

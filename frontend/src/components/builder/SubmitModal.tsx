@@ -72,7 +72,7 @@ export function SubmitModal({ milestone, open, onOpenChange }: SubmitModalProps)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="dark-form max-w-lg border-white/[0.06] bg-[#0a0f1a]/95 backdrop-blur-xl text-white">
         <DialogHeader>
           <DialogTitle>Submit Milestone for Verification</DialogTitle>
           <DialogDescription>
@@ -143,7 +143,7 @@ export function SubmitModal({ milestone, open, onOpenChange }: SubmitModalProps)
           <Button
             onClick={handleSubmit}
             disabled={!evidenceText.trim() || isPending}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            className="bg-red-900/80 hover:bg-red-800 text-white border border-red-700/30"
           >
             {isPending ? 'Submitting...' : 'Submit to UMA Oracle'}
           </Button>

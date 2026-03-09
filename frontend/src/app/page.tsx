@@ -43,6 +43,7 @@ export default function HomePage() {
     <div className="flex min-h-screen flex-col bg-[#070b14]">
       <HeroSection
         featuredProject={featuredProject}
+        isLoading={featured.isLoading}
         stats={{ projectCount, totalCommitted, investorCount, milestonesVerified }}
       />
 

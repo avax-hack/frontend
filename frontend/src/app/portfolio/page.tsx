@@ -34,7 +34,14 @@ function PortfolioContent() {
   const activityLoading = idoLoading || swapLoading || refundLoading
 
   return (
-    <div className="px-4 py-6 mx-auto max-w-7xl flex flex-col gap-8">
+    <main className="dark-form relative -mt-[var(--header-h)] min-h-screen pt-[var(--header-h)] [--header-h:65px]">
+      {/* Background */}
+      <div className="absolute inset-0 -z-10">
+        <img src="/hero-bg.webp" alt="" className="size-full object-cover" />
+        <div className="absolute inset-0 bg-[#070b14]/80 backdrop-blur-[2px]" />
+      </div>
+
+      <div className="px-4 py-6 mx-auto max-w-7xl flex flex-col gap-8">
       <h1 className="text-2xl font-bold">Portfolio</h1>
 
       <PortfolioOverview data={summary} isLoading={summaryLoading} />
@@ -53,6 +60,7 @@ function PortfolioContent() {
         refundHistory={refundData?.data}
         isLoading={activityLoading}
       />
-    </div>
+      </div>
+    </main>
   )
 }

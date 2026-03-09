@@ -59,6 +59,71 @@
   --chart-5: hsl(340 75% 55%);
 }
 
+/* Dark form scope — for launch/explore pages on dark backgrounds */
+.dark-form {
+  --background: transparent;
+  --foreground: hsl(0 0% 100%);
+  --card: hsl(0 0% 100% / 0.05);
+  --card-foreground: hsl(0 0% 95%);
+  --popover: hsl(224 20% 10%);
+  --popover-foreground: hsl(0 0% 95%);
+  --primary: hsl(0 72% 51%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(0 0% 100% / 0.06);
+  --secondary-foreground: hsl(0 0% 95%);
+  --muted: hsl(0 0% 100% / 0.06);
+  --muted-foreground: hsl(0 0% 100% / 0.5);
+  --accent: hsl(0 0% 100% / 0.08);
+  --accent-foreground: hsl(0 0% 95%);
+  --destructive: hsl(0 72% 60%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(0 0% 100% / 0.1);
+  --input: hsl(0 0% 100% / 0.1);
+  --ring: hsl(0 72% 51% / 0.5);
+  color-scheme: dark;
+
+  /* Labels — pure white */
+  [data-slot="label"],
+  legend {
+    color: hsl(0 0% 100%);
+  }
+
+  /* Glassmorphism — frosted glass effect for dark-form components */
+
+  /* Card — subtle glass panel */
+  [data-slot="card"] {
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  }
+
+  /* Outline / ghost buttons — subtle glass */
+  [data-slot="button"][data-variant="outline"],
+  [data-slot="button"][data-variant="ghost"] {
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+  }
+
+  /* Input / textarea — light frost + white text */
+  [data-slot="input"],
+  [data-slot="textarea"] {
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    color: white;
+  }
+  [data-slot="input"]::placeholder,
+  [data-slot="textarea"]::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  /* Dialog — slightly stronger glass + shadow */
+  &[data-slot="dialog-content"] {
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  }
+}
+
 /* ===== Step 2: Map to Tailwind ===== */
 @theme inline {
   --color-background: var(--background);

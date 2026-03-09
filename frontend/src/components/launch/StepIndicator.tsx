@@ -15,7 +15,7 @@ interface StepIndicatorProps {
 
 export function StepIndicator({ currentStep }: StepIndicatorProps) {
   return (
-    <nav aria-label="Project creation progress" className="flex items-center gap-2">
+    <nav aria-label="Project creation progress" className="flex items-center justify-center gap-2">
       {STEPS.map((step, i) => {
         const stepNumber = ([1, 2, 3] as const)[i]
         const isDone = stepNumber < currentStep
@@ -30,9 +30,9 @@ export function StepIndicator({ currentStep }: StepIndicatorProps) {
                 aria-current={isActive ? 'step' : undefined}
                 className={cn(
                   'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-medium transition-colors',
-                  isDone && 'bg-green-500 text-white',
-                  isActive && 'bg-primary text-primary-foreground',
-                  isPending && 'border-2 border-muted-foreground/30 text-muted-foreground'
+                  isDone && 'bg-red-500 text-white',
+                  isActive && 'border-2 border-red-500 text-red-400',
+                  isPending && 'border-2 border-white/20 text-white/30'
                 )}
               >
                 {isDone ? (
@@ -50,9 +50,9 @@ export function StepIndicator({ currentStep }: StepIndicatorProps) {
               <span
                 className={cn(
                   'hidden text-sm font-medium sm:inline',
-                  isDone && 'text-green-500',
-                  isActive && 'text-foreground',
-                  isPending && 'text-muted-foreground'
+                  isDone && 'text-red-400',
+                  isActive && 'text-white',
+                  isPending && 'text-white/30'
                 )}
               >
                 {step.label}
@@ -65,7 +65,7 @@ export function StepIndicator({ currentStep }: StepIndicatorProps) {
                 aria-hidden="true"
                 className={cn(
                   'h-px w-8 sm:w-12',
-                  stepNumber < currentStep ? 'bg-green-500' : 'bg-muted-foreground/30'
+                  stepNumber < currentStep ? 'bg-red-500' : 'bg-white/20'
                 )}
               />
             )}

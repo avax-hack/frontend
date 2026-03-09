@@ -27,6 +27,11 @@ export default function TradingPage() {
   })
 
   return (
+    <main className="dark-form relative -mt-[var(--header-h)] min-h-screen pt-[var(--header-h)] [--header-h:65px]">
+      <div className="absolute inset-0 -z-10">
+        <img src="/trading-bg.webp" alt="" className="size-full object-cover" />
+        <div className="absolute inset-0 bg-[#070b14]/80 backdrop-blur-[2px]" />
+      </div>
     <div className="flex flex-col gap-6 px-4 py-6 mx-auto max-w-7xl">
       <h1 className="text-2xl font-bold">Trading</h1>
 
@@ -55,5 +60,6 @@ export default function TradingPage() {
         </div>
       )}
     </div>
+    </main>
   )
 }

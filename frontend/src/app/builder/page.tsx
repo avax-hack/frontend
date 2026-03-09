@@ -20,8 +20,10 @@ export default function BuilderPage() {
   const { account, isAuthenticated, isLoading } = useProfile()
   const accountId = account?.account_id
 
+  let content: React.ReactNode
+
   if (isConnected && isLoading) {
-    return (
+    content = (
       <div className="flex flex-col items-center gap-4 py-24 text-center px-4">
         <div className="text-muted-foreground" aria-hidden="true">
           <WalletIcon className="size-12" />
@@ -29,11 +31,8 @@ export default function BuilderPage() {
         <h1 className="text-xl font-bold">Checking session…</h1>
       </div>
     )
-  }
-
-  // Auth gate
-  if (!isConnected) {
-    return (
+  } else if (!isConnected) {
+    content = (
       <div className="flex flex-col items-center gap-4 py-24 text-center px-4">
         <div className="text-muted-foreground" aria-hidden="true">
           <WalletIcon className="size-12" />
@@ -45,10 +44,8 @@ export default function BuilderPage() {
         <ConnectButton />
       </div>
     )
-  }
-
-  if (!isAuthenticated) {
-    return (
+  } else if (!isAuthenticated) {
+    content = (
       <div className="flex flex-col items-center gap-4 py-24 text-center px-4">
         <div className="text-muted-foreground" aria-hidden="true">
           <WalletIcon className="size-12" />
@@ -60,9 +57,19 @@ export default function BuilderPage() {
         <ConnectButton />
       </div>
     )
+  } else {
+    content = <BuilderContent accountId={accountId!} />
   }
 
-  return <BuilderContent accountId={accountId!} />
+  return (
+    <main className="dark-form relative -mt-[var(--header-h)] min-h-screen pt-[var(--header-h)] [--header-h:65px]">
+      <div className="absolute inset-0 -z-10">
+        <img src="/hero-bg.webp" alt="" className="size-full object-cover" />
+        <div className="absolute inset-0 bg-[#070b14]/80 backdrop-blur-[2px]" />
+      </div>
+      {content}
+    </main>
+  )
 }
 
 function BuilderContent({ accountId }: { accountId: string }) {

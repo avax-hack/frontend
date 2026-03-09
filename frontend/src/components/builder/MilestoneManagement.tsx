@@ -118,7 +118,7 @@ export function MilestoneManagement({
 
             {isSubmittable && (
               <Button
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="bg-red-900/80 hover:bg-red-800 text-white border border-red-700/30"
                 onClick={() => onSubmit(milestone)}
               >
                 Submit for Verification

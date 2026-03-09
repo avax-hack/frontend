@@ -59,20 +59,20 @@ export function ReviewStep({
 
   return (
     <div className="flex flex-col gap-6">
-      <h2 className="text-lg font-semibold">Review & Launch</h2>
+      <h2 className="text-lg font-semibold text-white">Review & Launch</h2>
 
       {/* Warnings */}
       {warnings.length > 0 && (
-        <Card className="border-amber-500/50 bg-amber-500/4">
-          <CardContent className="flex flex-col gap-2 pt-4">
+        <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
+          <div className="flex flex-col gap-2">
             {warnings.map((w) => (
-              <div key={w} className="flex items-center gap-2 text-sm text-amber-600">
+              <div key={w} className="flex items-center gap-2 text-sm text-amber-400">
                 <AlertTriangleIcon className="size-4 shrink-0" aria-hidden="true" />
                 {w}
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* Project Info Summary */}

@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 import { ArrowLeftIcon, ArrowRightIcon, LoaderIcon, RocketIcon, XIcon } from 'lucide-react'
 import { parseUnits, getAddress } from 'viem'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+// Card removed — using glass div for dark theme
 import {
   StepIndicator,
   ProjectInfoStep,
@@ -218,28 +218,36 @@ export default function LaunchPage() {
         : 'Launch Project'
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-8 px-4 py-8">
-      {/* Header row */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Launch Your Project</h1>
-        <Button
-          variant="ghost"
-          size="sm"
-          asChild
-        >
-          <Link href="/explore" onClick={handleCancel}>
-            <XIcon className="size-4" aria-hidden="true" />
-            Cancel
-          </Link>
-        </Button>
+    <div className="relative -mt-[var(--header-h)] flex min-h-screen flex-col pt-[var(--header-h)] [--header-h:65px]">
+      {/* Full-page background */}
+      <div className="absolute inset-0 -z-10">
+        <img src="/hero-bg.webp" alt="" className="h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-[#070b14]/80 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-[#070b14]/90" />
       </div>
 
-      {/* Step indicator */}
-      <StepIndicator currentStep={step} />
+      <div className="dark-form mx-auto flex w-full max-w-2xl flex-col gap-8 px-4 pt-12 pb-16">
+        {/* Header row */}
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-white">Launch Your Project</h1>
+          <Button
+            variant="ghost"
+            size="sm"
+            asChild
+            className="text-white/60 hover:text-white hover:bg-white/10"
+          >
+            <Link href="/explore" onClick={handleCancel}>
+              <XIcon className="size-4" aria-hidden="true" />
+              Cancel
+            </Link>
+          </Button>
+        </div>
 
-      {/* Form content in card */}
-      <Card>
-        <CardContent className="p-6">
+        {/* Step indicator */}
+        <StepIndicator currentStep={step} />
+
+        {/* Form content in glass card */}
+        <div className="rounded-xl border border-white/[0.06] bg-white/[0.03] p-6 backdrop-blur-sm">
           {step === 1 && (
             <FormProvider {...projectInfoForm}>
               <ProjectInfoStep
@@ -265,59 +273,62 @@ export default function LaunchPage() {
               logoPreview={logoPreview}
             />
           )}
-        </CardContent>
-      </Card>
+        </div>
 
-      {/* Navigation buttons */}
-      <nav aria-label="Form navigation" className="flex items-center justify-between">
-        {step > 1 ? (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={goBack}
-            disabled={isValidating}
-          >
-            <ArrowLeftIcon className="size-4" aria-hidden="true" />
-            Back
-          </Button>
-        ) : (
-          <Button variant="outline" asChild>
-            <Link href="/explore">
+        {/* Navigation buttons */}
+        <nav aria-label="Form navigation" className="flex items-center justify-between">
+          {step > 1 ? (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={goBack}
+              disabled={isValidating}
+              className="border-white/10 text-white hover:bg-white/5"
+            >
               <ArrowLeftIcon className="size-4" aria-hidden="true" />
-              Explore
-            </Link>
-          </Button>
-        )}
+              Back
+            </Button>
+          ) : (
+            <Button variant="outline" asChild className="border-white/10 text-white hover:bg-white/5">
+              <Link href="/explore">
+                <ArrowLeftIcon className="size-4" aria-hidden="true" />
+                Explore
+              </Link>
+            </Button>
+          )}
 
-        {step < 3 ? (
-          <Button
-            type="button"
-            onClick={handleNext}
-            disabled={isValidating}
-          >
-            {isValidating ? (
-              <LoaderIcon className="size-4 animate-spin" aria-hidden="true" />
-            ) : null}
-            Next
-            {!isValidating && (
-              <ArrowRightIcon className="size-4" aria-hidden="true" />
-            )}
-          </Button>
-        ) : (
-          <Button
-            type="button"
-            onClick={handleLaunch}
-            disabled={isLaunching}
-          >
-            {isLaunching ? (
-              <LoaderIcon className="size-4 animate-spin" aria-hidden="true" />
-            ) : (
-              <RocketIcon className="size-4" aria-hidden="true" />
-            )}
-            {launchButtonText}
-          </Button>
-        )}
-      </nav>
+          {step < 3 ? (
+            <Button
+              type="button"
+              onClick={handleNext}
+              disabled={isValidating}
+              variant="gradient"
+            >
+              {isValidating ? (
+                <LoaderIcon className="size-4 animate-spin" aria-hidden="true" />
+              ) : null}
+              Next
+              {!isValidating && (
+                <ArrowRightIcon className="size-4" aria-hidden="true" />
+              )}
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              onClick={handleLaunch}
+              disabled={isLaunching}
+              variant="gradient"
+            >
+              {isLaunching ? (
+                <LoaderIcon className="size-4 animate-spin" aria-hidden="true" />
+              ) : (
+                <RocketIcon className="size-4" aria-hidden="true" />
+              )}
+              {launchButtonText}
+            </Button>
+          )}
+        </nav>
+      </div>
     </div>
   )
 }

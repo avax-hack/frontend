@@ -32,8 +32,8 @@ export function MilestoneStep() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Milestones</h2>
-        <p className="text-sm text-muted-foreground">
+        <h2 className="text-lg font-semibold text-white">Milestones</h2>
+        <p className="text-sm text-white/40">
           4 milestones · 25% each
         </p>
       </div>

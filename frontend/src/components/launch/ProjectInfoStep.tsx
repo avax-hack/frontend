@@ -68,8 +68,8 @@ export function ProjectInfoStep({
               className={cn(
                 'rounded-full border px-3 py-1.5 text-sm capitalize transition-colors',
                 watch('category') === cat
-                  ? 'border-primary bg-primary text-primary-foreground'
-                  : 'border-border bg-background text-muted-foreground hover:bg-accent',
+                  ? 'border-red-500 bg-red-500/20 text-red-400'
+                  : 'border-white/10 bg-white/[0.04] text-white/50 hover:bg-white/[0.08]',
               )}
               onClick={() => setValue('category', cat, { shouldValidate: true })}
             >

@@ -124,7 +124,7 @@ export function InvestModal({ project, amount, open, onOpenChange, onSuccess }: 
     <Dialog open={open} onOpenChange={(v) => !isPending && onOpenChange(v)}>
       <DialogContent className="dark-form border-white/[0.06] bg-[#0a0f1a]/95 backdrop-blur-xl">
         <DialogHeader>
-          <DialogTitle>Confirm Investment</DialogTitle>
+          <DialogTitle className="text-white">Confirm Investment</DialogTitle>
           <DialogDescription>
             Review your investment details before confirming.
           </DialogDescription>
@@ -133,15 +133,15 @@ export function InvestModal({ project, amount, open, onOpenChange, onSuccess }: 
         <div className="flex flex-col gap-3 py-4">
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Project</span>
-            <span className="font-medium">{project_info.name} ({project_info.symbol})</span>
+            <span className="font-medium text-white">{project_info.name} ({project_info.symbol})</span>
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Amount</span>
-            <span className="font-medium">${amount.toLocaleString()}</span>
+            <span className="font-medium text-white">${amount.toLocaleString()}</span>
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Network</span>
-            <span className="font-medium">Avalanche C-Chain</span>
+            <span className="font-medium text-white">Avalanche C-Chain</span>
           </div>
 
           {/* TX step progress (real mode only) */}
@@ -173,6 +173,7 @@ export function InvestModal({ project, amount, open, onOpenChange, onSuccess }: 
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={isPending}
+            className="text-white border-white/20"
           >
             Cancel
           </Button>
