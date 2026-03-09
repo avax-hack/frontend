@@ -5,10 +5,10 @@ import { useQueryClient } from '@tanstack/react-query'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { cn } from '@/lib/utils'
+import { cn, safeGetAddress } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useAccount } from 'wagmi'
-import { parseUnits, formatUnits, getAddress } from 'viem'
+import { parseUnits, formatUnits } from 'viem'
 import { useSwap, useTokenBalance, useUsdcBalance, useQuote } from '@/features/contracts'
 import { IS_MOCK } from '@/lib/mock'
 import { SNOWTRACE_URL } from '@/lib/constants'
@@ -43,18 +43,19 @@ export function TradePanel({ token }: TradePanelProps) {
   const [showSlippage, setShowSlippage] = useState(false)
 
   const { token_info } = token
+  const tokenAddress = safeGetAddress(token_info.token_id)
 
   const { address } = useAccount()
   const queryClient = useQueryClient()
   const swap = useSwap()
   const { data: usdcBalance } = useUsdcBalance(address)
   const { data: tokenBalance } = useTokenBalance(
-    getAddress(token_info.token_id),
+    tokenAddress,
     address,
   )
 
   const { data: quoteOut, isFetching: isQuoting } = useQuote({
-    tokenAddress: getAddress(token_info.token_id),
+    tokenAddress,
     side,
     amount,
   })
@@ -86,13 +87,14 @@ export function TradePanel({ token }: TradePanelProps) {
         <p className="text-sm text-muted-foreground">
           This token is still in IDO phase. Trading will be available after graduation.
         </p>
-        {token.token_info.project_id && (
-          <Button asChild variant="outline" size="sm">
-            <Link href={`/projects/${getAddress(token.token_info.project_id)}`}>
-              Go to Project Page
-            </Link>
-          </Button>
-        )}
+        {token.token_info.project_id && (() => {
+          const projectAddr = safeGetAddress(token.token_info.project_id)
+          return projectAddr ? (
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/projects/${projectAddr}`}>Go to Project Page</Link>
+            </Button>
+          ) : null
+        })()}
       </Card>
     )
   }
@@ -165,8 +167,10 @@ export function TradePanel({ token }: TradePanelProps) {
     const decimals = side === 'buy' ? 6 : 18
     const amountBigInt = parseUnits(amount, decimals)
 
+    if (!tokenAddress) return
+
     const hash = await swap.execute({
-      tokenAddress: getAddress(token_info.token_id),
+      tokenAddress,
       side,
       amount: amountBigInt,
       slippageBps,

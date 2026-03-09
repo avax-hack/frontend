@@ -15,7 +15,7 @@ import { IS_MOCK } from '@/lib/mock'
 import { SNOWTRACE_URL } from '@/lib/constants'
 import { InvestModal } from './InvestModal'
 import type { IProjectData } from '@/types/project'
-import { getAddress } from 'viem'
+import { safeGetAddress } from '@/lib/utils'
 
 interface InvestPanelProps {
   project: IProjectData
@@ -32,7 +32,7 @@ export function InvestPanel({ project }: InvestPanelProps) {
   const [modalOpen, setModalOpen] = useState(false)
   // Refund hooks (unconditional, per React rules)
   const refund = useRefund()
-  const projectTokenAddress = getAddress(project.project_info.project_id)
+  const projectTokenAddress = safeGetAddress(project.project_info.project_id)
   const { data: projectTokenBalanceRaw } = useTokenBalance(projectTokenAddress, address)
   const projectTokenBalanceData = projectTokenBalanceRaw as bigint | undefined
   const [isMockRefunding, setIsMockRefunding] = useState(false)
@@ -117,7 +117,7 @@ export function InvestPanel({ project }: InvestPanelProps) {
 
     // Real refund flow — refund all project tokens
     const tokenBalance = projectTokenBalanceData
-    if (!tokenBalance || tokenBalance === BigInt(0)) return
+    if (!tokenBalance || tokenBalance === BigInt(0) || !projectTokenAddress) return
 
     const refundHash = await refund.execute(projectTokenAddress, tokenBalance)
     if (refundHash) {
@@ -206,7 +206,7 @@ export function InvestPanel({ project }: InvestPanelProps) {
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     aria-label="Investment amount in USD"
-                    className="h-10"
+                    className="h-10 backdrop-filter-none bg-white/10 border-white/20 text-white placeholder:text-white/40"
                   />
                 </div>
                 <div className="flex items-center gap-2 pl-5">
@@ -246,6 +246,7 @@ export function InvestPanel({ project }: InvestPanelProps) {
                 disabled={!isValidAmount}
                 onClick={handleCommitFunds}
                 aria-label="Commit Funds"
+                className={isValidAmount ? 'opacity-100 brightness-125' : ''}
               >
                 Commit Funds
               </Button>

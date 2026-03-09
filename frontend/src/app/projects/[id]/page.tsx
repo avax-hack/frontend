@@ -205,7 +205,26 @@ function ProjectDetailContent({ id }: { id: string }) {
 
 export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
   const { id: rawId } = React.use(params)
-  const id = getAddress(rawId)
+  let id: string
+  try {
+    id = getAddress(rawId)
+  } catch {
+    return (
+      <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-4 py-24 text-center md:px-6">
+        <SearchXIcon className="size-12 text-muted-foreground" aria-hidden="true" />
+        <h1 className="text-2xl font-bold">Invalid Address</h1>
+        <p className="text-sm text-muted-foreground">
+          The project address in the URL is not valid.
+        </p>
+        <Button asChild variant="outline">
+          <Link href="/explore">
+            <ArrowLeftIcon className="size-4" aria-hidden="true" />
+            Browse Projects
+          </Link>
+        </Button>
+      </div>
+    )
+  }
 
   return (
     <main className="dark-form relative -mt-[var(--header-h)] min-h-screen pt-[var(--header-h)] [--header-h:65px]">

@@ -25,7 +25,20 @@ interface TokenDetailPageProps {
 
 export default function TokenDetailPage({ params }: TokenDetailPageProps) {
   const { tokenId: rawTokenId } = use(params)
-  const tokenId = getAddress(rawTokenId)
+  let tokenId: string
+  try {
+    tokenId = getAddress(rawTokenId)
+  } catch {
+    return (
+      <div className="px-4 py-6 mx-auto max-w-7xl flex flex-col items-center gap-4">
+        <p className="text-xl font-bold leading-[1.2]">Invalid address</p>
+        <p className="text-sm text-muted-foreground leading-[1.2]">The token address in the URL is not valid.</p>
+        <Button asChild variant="outline">
+          <Link href="/trading">Back to Trading</Link>
+        </Button>
+      </div>
+    )
+  }
   const [interval, setInterval_] = useState<ChartResolution>('1m')
   useTradingSubscription(tokenId, interval)
 
@@ -91,6 +104,11 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
   const showBondingCurve = !token.token_info.is_graduated
 
   return (
+    <main className="dark-form relative -mt-[var(--header-h)] min-h-screen pt-[var(--header-h)] [--header-h:65px]">
+      <div className="absolute inset-0 -z-10">
+        <img src="/trading-bg.webp" alt="" className="size-full object-cover" />
+        <div className="absolute inset-0 bg-[#070b14]/80 backdrop-blur-[2px]" />
+      </div>
     <div className="px-4 py-6 mx-auto max-w-7xl flex flex-col gap-4">
       {/* Full-width header */}
       <TokenHeader token={token} />
@@ -181,5 +199,6 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
         </div>
       </div>
     </div>
+    </main>
   )
 }

@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { getAddress } from 'viem'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -14,7 +13,7 @@ import {
   TableCell,
 } from '@/components/ui/table'
 import { EmptyState } from '@/components/common/EmptyState'
-import { formatNumber } from '@/lib/utils'
+import { formatNumber, safeGetAddress } from '@/lib/utils'
 import { CoinsIcon } from 'lucide-react'
 import type { IHoldTokenItem } from '@/features/portfolio/types'
 
@@ -97,19 +96,25 @@ export function HoldingsTable({ tokens, isLoading }: HoldingsTableProps) {
                   ${formatNumber(value, 2)}
                 </TableCell>
                 <TableCell className="text-right">
-                  {item.token_info.is_graduated ? (
-                    <Button asChild size="sm" variant="outline">
-                      <Link href={`/trading/${getAddress(item.token_info.token_id)}`}>
-                        Trade
-                      </Link>
-                    </Button>
-                  ) : (
-                    <Button asChild size="sm" variant="ghost" className="text-muted-foreground">
-                      <Link href={`/projects/${getAddress(item.token_info.project_id ?? item.token_info.token_id)}`}>
-                        View IDO
-                      </Link>
-                    </Button>
-                  )}
+                  {item.token_info.is_graduated ? (() => {
+                    const tradeAddr = safeGetAddress(item.token_info.token_id)
+                    return tradeAddr ? (
+                      <Button asChild size="sm" variant="outline">
+                        <Link href={`/trading/${tradeAddr}`}>Trade</Link>
+                      </Button>
+                    ) : (
+                      <Button size="sm" variant="outline" disabled>Trade</Button>
+                    )
+                  })() : (() => {
+                    const idoAddr = safeGetAddress(item.token_info.project_id ?? item.token_info.token_id)
+                    return idoAddr ? (
+                      <Button asChild size="sm" variant="ghost" className="text-muted-foreground">
+                        <Link href={`/projects/${idoAddr}`}>View IDO</Link>
+                      </Button>
+                    ) : (
+                      <Button size="sm" variant="ghost" className="text-muted-foreground" disabled>View IDO</Button>
+                    )
+                  })()}
                 </TableCell>
               </TableRow>
             )

@@ -1,8 +1,8 @@
 import Link from 'next/link'
-import { getAddress } from 'viem'
+import { Button } from '@/components/ui/button'
 import { ProgressBar } from '@/components/common/ProgressBar'
 import { StatusBadge } from '@/components/common/StatusBadge'
-import { formatTokenToUSD } from '@/lib/utils'
+import { formatTokenToUSD, safeGetAddress } from '@/lib/utils'
 import type { IProjectListItem, ProjectCategory } from '@/types/project'
 
 interface LiveLaunchCardProps {
@@ -28,10 +28,11 @@ export function LiveLaunchCard({ project }: LiveLaunchCardProps) {
     label: project_info.category ?? 'Unknown',
     variant: 'gray' as const,
   }
-  const href = `/projects/${getAddress(project_info.project_id)}`
+  const checkedId = safeGetAddress(project_info.project_id)
+  const href = checkedId ? `/projects/${checkedId}` : null
 
   return (
-    <div className="w-full rounded-2xl border border-white/10 bg-black/60 p-6 backdrop-blur-xl lg:w-[420px]">
+    <div className="w-full bg-black/10 backdrop-blur-sm border border-white/10 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.6)] p-6 lg:w-[420px]">
       {/* Header */}
       <div className="flex items-center justify-between pb-4">
         <span className="text-xs font-bold uppercase tracking-widest text-white/60">
@@ -101,12 +102,15 @@ export function LiveLaunchCard({ project }: LiveLaunchCardProps) {
       </div>
 
       {/* CTA */}
-      <Link
-        href={href}
-        className="flex h-10 w-full items-center justify-center rounded-lg bg-gradient-to-r from-white via-rose-200 to-red-500 text-sm font-semibold text-gray-900 shadow-lg shadow-red-500/20 transition-all hover:to-red-400"
-      >
-        View Project
-      </Link>
+      {href ? (
+        <Button asChild variant="gradient" className="w-full">
+          <Link href={href}>View Project</Link>
+        </Button>
+      ) : (
+        <Button variant="gradient" className="w-full" disabled>
+          View Project
+        </Button>
+      )}
     </div>
   )
 }

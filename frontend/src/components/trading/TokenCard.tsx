@@ -1,11 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { getAddress } from 'viem'
 import { Card } from '@/components/ui/card'
 import { StatusBadge } from '@/components/common/StatusBadge'
 import { ProgressBar } from '@/components/common/ProgressBar'
-import { formatNumber } from '@/lib/utils'
+import { formatNumber, safeGetAddress } from '@/lib/utils'
 import type { ITokenData } from '@/features/trading/types'
 
 function getMilestoneVariant(milestone: number): 'gray' | 'amber' | 'green' {
@@ -33,9 +32,14 @@ export function TokenCard({ token }: TokenCardProps) {
   const price = Number(market_info.token_price)
   const mcap = Number(market_info.total_supply) * Number(market_info.token_price)
 
+  const checkedId = safeGetAddress(token_info.token_id)
+  const href = checkedId ? `/trading/${checkedId}` : null
+
+  const Wrapper = href ? Link : 'div'
+
   return (
-    <Link
-      href={`/trading/${getAddress(token_info.token_id)}`}
+    <Wrapper
+      {...(href ? { href } : {})}
       aria-label={`View ${token_info.name} trading`}
     >
       <Card className="flex flex-col gap-3 p-4 transition hover:bg-secondary/50">
@@ -81,6 +85,6 @@ export function TokenCard({ token }: TokenCardProps) {
 
         <ProgressBar percent={market_info.bonding_percent} size="sm" showLabel />
       </Card>
-    </Link>
+    </Wrapper>
   )
 }

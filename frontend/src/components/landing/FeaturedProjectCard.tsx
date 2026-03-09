@@ -1,7 +1,6 @@
 import Link from 'next/link'
-import { getAddress } from 'viem'
 import { StatusBadge } from '@/components/common/StatusBadge'
-import { formatTokenToUSD } from '@/lib/utils'
+import { formatTokenToUSD, safeGetAddress } from '@/lib/utils'
 import type { IProjectListItem, ProjectCategory, ProjectStatus } from '@/types/project'
 
 interface FeaturedProjectCardProps {
@@ -29,11 +28,14 @@ export function FeaturedProjectCard({ project }: FeaturedProjectCardProps) {
   const { project_info, market_info } = project
   const category = categoryVariants[project_info.category] ?? { label: project_info.category ?? 'Unknown', variant: 'gray' as const }
   const status = statusVariants[market_info.status] ?? { label: market_info.status ?? 'Unknown', variant: 'gray' as const }
-  const href = `/projects/${getAddress(project_info.project_id)}`
+  const checkedId = safeGetAddress(project_info.project_id)
+  const href = checkedId ? `/projects/${checkedId}` : null
+
+  const Wrapper = href ? Link : 'div'
 
   return (
-    <Link
-      href={href}
+    <Wrapper
+      {...(href ? { href } : {})}
       className="group relative flex flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 transition-all hover:border-red-500/30 hover:shadow-lg hover:shadow-red-500/10"
     >
       {/* Info */}
@@ -74,6 +76,6 @@ export function FeaturedProjectCard({ project }: FeaturedProjectCardProps) {
 
       {/* Bottom glow */}
       <div className="h-[2px] bg-gradient-to-r from-red-500/0 via-red-500/60 to-red-500/0" />
-    </Link>
+    </Wrapper>
   )
 }

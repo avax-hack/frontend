@@ -1,8 +1,7 @@
 import Link from 'next/link'
 import { UsersIcon } from 'lucide-react'
-import { getAddress } from 'viem'
 import { Button } from '@/components/ui/button'
-import { cn, formatTokenToUSD } from '@/lib/utils'
+import { cn, formatTokenToUSD, safeGetAddress } from '@/lib/utils'
 import { ProgressBar } from './ProgressBar'
 import type { IProjectListItem } from '@/types/project'
 
@@ -13,7 +12,8 @@ interface ProjectCardProps {
 export function ProjectCard({ project }: ProjectCardProps) {
   const { project_info, market_info, milestone_completed, milestone_total } = project
   const { funded_percent, target_raise, total_committed, investor_count, status } = market_info
-  const href = `/projects/${getAddress(project_info.project_id)}`
+  const checkedId = safeGetAddress(project_info.project_id)
+  const href = checkedId ? `/projects/${checkedId}` : null
 
   const stageLabel =
     status === 'funding'
@@ -96,14 +96,15 @@ export function ProjectCard({ project }: ProjectCardProps) {
           )}>
             Funded {Math.round(funded_percent)}%
           </span>
-          <Button
-            asChild
-            size="sm"
-            variant="outline"
-            className="h-7 rounded-md bg-gradient-to-r from-white/90 via-rose-200/80 to-red-500/80 px-3 text-xs font-semibold text-gray-900 shadow shadow-red-500/10 transition-all hover:to-red-400/80"
-          >
-            <Link href={href}>View Project</Link>
-          </Button>
+          {href ? (
+            <Button asChild size="sm" variant="gradient">
+              <Link href={href}>View Project</Link>
+            </Button>
+          ) : (
+            <Button size="sm" variant="gradient" disabled>
+              View Project
+            </Button>
+          )}
         </div>
       </div>
     </div>

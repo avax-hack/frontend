@@ -77,7 +77,7 @@ export function useTokenBalance(tokenAddress: Address | undefined, userAddress: 
  * Debounces input by 500ms to avoid spamming RPC.
  */
 export function useQuote(params: {
-  tokenAddress: Address
+  tokenAddress: Address | undefined
   side: 'buy' | 'sell'
   amount: string // raw user input string
 }) {
@@ -91,12 +91,12 @@ export function useQuote(params: {
   }, [amount])
 
   const parsedAmount = debouncedAmount ? parseFloat(debouncedAmount) : 0
-  const enabled = !IS_MOCK && parsedAmount > 0
+  const enabled = !IS_MOCK && parsedAmount > 0 && !!tokenAddress
 
   return useQuery({
     queryKey: ['v4-quote', tokenAddress, side, debouncedAmount],
     queryFn: async () => {
-      const token = getAddress(tokenAddress)
+      const token = getAddress(tokenAddress!)
       const usdc = getAddress(OPENLAUNCH_CONTRACTS.USDC as Address)
       const quoterAddress = getAddress(OPENLAUNCH_CONTRACTS.V4_QUOTER as Address)
 
