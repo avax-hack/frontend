@@ -33,15 +33,11 @@ export function TokenCard({ token }: TokenCardProps) {
   const mcap = Number(market_info.total_supply) * Number(market_info.token_price)
 
   const checkedId = safeGetAddress(token_info.token_id)
-  const href = checkedId ? `/trading/${checkedId}` : null
+  const href = checkedId ? `/trading/${checkedId}` : undefined
 
-  const Wrapper = href ? Link : 'div'
 
-  return (
-    <Wrapper
-      {...(href ? { href } : {})}
-      aria-label={`View ${token_info.name} trading`}
-    >
+  const inner = (
+    <>
       <Card className="flex flex-col gap-3 p-4 transition hover:bg-secondary/50">
         <div className="flex items-start justify-between">
           <StatusBadge
@@ -85,6 +81,11 @@ export function TokenCard({ token }: TokenCardProps) {
 
         <ProgressBar percent={market_info.bonding_percent} size="sm" showLabel />
       </Card>
-    </Wrapper>
+    </>
   )
+
+  if (href) {
+    return <Link href={href} aria-label={`View ${token_info.name} trading`}>{inner}</Link>
+  }
+  return <div>{inner}</div>
 }
