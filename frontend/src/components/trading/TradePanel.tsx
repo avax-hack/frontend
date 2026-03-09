@@ -20,17 +20,30 @@ interface TradePanelProps {
 }
 
 const SLIPPAGE_OPTIONS = ['0.5', '1', '3', '5'] as const
-const PERCENT_OPTIONS = [25, 50, 75, 100] as const
+const BUY_PRESETS = [
+  { label: 'Reset', value: 0 },
+  { label: '$10', value: 10 },
+  { label: '$50', value: 50 },
+  { label: '$100', value: 100 },
+  { label: 'Max', value: -1 },
+] as const
+const SELL_PRESETS = [
+  { label: 'Reset', value: 0 },
+  { label: '25%', value: 25 },
+  { label: '50%', value: 50 },
+  { label: '75%', value: 75 },
+  { label: 'Max', value: 100 },
+] as const
 
 export function TradePanel({ token }: TradePanelProps) {
   const [side, setSide] = useState<'buy' | 'sell'>('buy')
   const [amount, setAmount] = useState('')
   const [slippage, setSlippage] = useState('3')
   const [customSlippage, setCustomSlippage] = useState('')
+  const [showSlippage, setShowSlippage] = useState(false)
 
   const { token_info } = token
 
-  // Hooks (always called unconditionally)
   const { address } = useAccount()
   const queryClient = useQueryClient()
   const swap = useSwap()
@@ -40,13 +53,10 @@ export function TradePanel({ token }: TradePanelProps) {
     address,
   )
 
-  // Derived balance
   const currentBalance = useMemo(() => {
     if (side === 'buy') {
-      // USDC has 6 decimals
       return usdcBalance ? parseFloat(formatUnits(usdcBalance as bigint, 6)) : 0
     }
-    // sell side — token has 18 decimals
     return tokenBalance ? parseFloat(formatUnits(tokenBalance as bigint, 18)) : 0
   }, [side, usdcBalance, tokenBalance])
 
@@ -63,10 +73,10 @@ export function TradePanel({ token }: TradePanelProps) {
     return `${formatted} ${token_info.symbol}`
   }, [side, usdcBalance, tokenBalance, token_info.symbol])
 
-  // IDO tokens can't be swapped via DEX — they're bought through the project page
+  // IDO phase — not graduated
   if (!token.token_info.is_graduated) {
     return (
-      <Card className="p-6 flex flex-col items-center gap-3 text-center">
+      <Card className="p-5 flex flex-col items-center gap-3 text-center">
         <p className="text-sm text-muted-foreground">
           This token is still in IDO phase. Trading will be available after graduation.
         </p>
@@ -81,7 +91,6 @@ export function TradePanel({ token }: TradePanelProps) {
     )
   }
 
-  // Swap state helpers
   const isSwapping =
     swap.step !== 'idle' && swap.step !== 'success' && swap.step !== 'error'
 
@@ -116,10 +125,25 @@ export function TradePanel({ token }: TradePanelProps) {
     }
   }
 
-  function handlePresetPercent(percent: number) {
-    const val = (currentBalance * percent) / 100
-    const decimals = side === 'buy' ? 2 : 6
-    setAmount(String(parseFloat(val.toFixed(decimals))))
+  function handlePreset(preset: { label: string; value: number }) {
+    if (preset.value === 0) {
+      setAmount('')
+      return
+    }
+    if (side === 'buy') {
+      // Buy presets are dollar amounts (except Max)
+      if (preset.value === -1) {
+        const val = currentBalance
+        setAmount(String(parseFloat(val.toFixed(2))))
+      } else {
+        const val = Math.min(preset.value, currentBalance)
+        setAmount(String(parseFloat(val.toFixed(2))))
+      }
+    } else {
+      // Sell presets are percentages
+      const val = (currentBalance * preset.value) / 100
+      setAmount(String(parseFloat(val.toFixed(6))))
+    }
   }
 
   async function handleSubmit() {
@@ -132,7 +156,6 @@ export function TradePanel({ token }: TradePanelProps) {
 
     if (!amount || parsedAmount <= 0) return
 
-    // buy: USDC (6 decimals), sell: token (18 decimals)
     const decimals = side === 'buy' ? 6 : 18
     const amountBigInt = parseUnits(amount, decimals)
 
@@ -149,86 +172,76 @@ export function TradePanel({ token }: TradePanelProps) {
     }
   }
 
+  const presets = side === 'buy' ? BUY_PRESETS : SELL_PRESETS
+  const currencyLabel = side === 'buy' ? 'USDC' : token_info.symbol
+
   return (
-    <Card className="p-4 flex flex-col gap-4">
-      <div className="flex">
-        <Button
+    <Card className="p-4 flex flex-col gap-3">
+      {/* Buy / Sell toggle */}
+      <div className="bg-secondary rounded-full p-1 flex">
+        <button
+          type="button"
           className={cn(
-            'flex-1 rounded-r-none',
+            'flex-1 py-2 text-sm font-semibold rounded-full transition-colors',
             side === 'buy'
-              ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-              : 'bg-secondary text-muted-foreground',
+              ? 'bg-emerald-500 text-white shadow-sm'
+              : 'text-muted-foreground hover:text-foreground',
           )}
           onClick={() => { setSide('buy'); setAmount('') }}
         >
           Buy
-        </Button>
-        <Button
+        </button>
+        <button
+          type="button"
           className={cn(
-            'flex-1 rounded-l-none',
+            'flex-1 py-2 text-sm font-semibold rounded-full transition-colors',
             side === 'sell'
-              ? 'bg-red-600 hover:bg-red-700 text-white'
-              : 'bg-secondary text-muted-foreground',
+              ? 'bg-red-500 text-white shadow-sm'
+              : 'text-muted-foreground hover:text-foreground',
           )}
           onClick={() => { setSide('sell'); setAmount('') }}
         >
           Sell
-        </Button>
+        </button>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <label className="text-sm font-medium" htmlFor="trade-amount">
-          Amount
-        </label>
-        <Input
-          id="trade-amount"
-          type="text"
-          inputMode="decimal"
-          placeholder={
-            side === 'buy' ? '0.00 USDC…' : `0.00 ${token_info.symbol}…`
-          }
-          value={amount}
-          onChange={(e) => handleAmountChange(e.target.value)}
-          autoComplete="off"
-          spellCheck={false}
-        />
-        <div className="flex gap-2">
-          {PERCENT_OPTIONS.map((pct) => (
-            <Button
-              key={pct}
-              size="sm"
-              variant="outline"
-              onClick={() => handlePresetPercent(pct)}
-            >
-              {pct}%
-            </Button>
-          ))}
-        </div>
-        <span className="text-xs text-muted-foreground">
-          Balance: {balanceLabel}
-        </span>
+      {/* Slippage trigger */}
+      <div className="flex items-center justify-end">
+        <button
+          type="button"
+          className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+          onClick={() => setShowSlippage((v) => !v)}
+        >
+          <span>⚙</span>
+          <span>{activeSlippage}%</span>
+        </button>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <label className="text-sm font-medium">Slippage</label>
-        <div className="flex gap-2">
+      {/* Slippage options (collapsible) */}
+      {showSlippage && (
+        <div className="flex items-center gap-1.5">
           {SLIPPAGE_OPTIONS.map((opt) => (
-            <Button
+            <button
               key={opt}
-              size="sm"
-              variant={slippage === opt ? 'secondary' : 'outline'}
+              type="button"
+              className={cn(
+                'px-2.5 py-1 rounded-full text-xs font-medium transition-colors',
+                (slippage === opt && !customSlippage)
+                  ? 'bg-foreground text-background'
+                  : 'bg-secondary text-muted-foreground hover:text-foreground',
+              )}
               onClick={() => {
                 setSlippage(opt)
                 setCustomSlippage('')
               }}
             >
               {opt}%
-            </Button>
+            </button>
           ))}
           <Input
-            className="w-20 text-center"
+            className="w-16 h-7 text-xs text-center rounded-full px-2"
             inputMode="decimal"
-            placeholder="Custom%"
+            placeholder="Custom"
             value={customSlippage ? `${customSlippage}` : ''}
             onChange={(e) => handleCustomSlippageChange(e.target.value.replace('%', ''))}
             autoComplete="off"
@@ -236,14 +249,51 @@ export function TradePanel({ token }: TradePanelProps) {
             aria-label="Custom slippage"
           />
         </div>
+      )}
+
+      {/* Amount input */}
+      <div className="relative">
+        <Input
+          className="text-lg h-12 pr-16"
+          type="text"
+          inputMode="decimal"
+          placeholder="0.00"
+          value={amount}
+          onChange={(e) => handleAmountChange(e.target.value)}
+          autoComplete="off"
+          spellCheck={false}
+        />
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">
+          {currencyLabel}
+        </span>
       </div>
 
+      {/* Preset buttons */}
+      <div className="flex gap-1.5">
+        {presets.map((preset) => (
+          <button
+            key={preset.label}
+            type="button"
+            className="flex-1 px-2 py-1.5 rounded-full text-xs font-medium bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+            onClick={() => handlePreset(preset)}
+          >
+            {preset.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Balance */}
+      <p className="text-xs text-muted-foreground">
+        Balance: {balanceLabel}
+      </p>
+
+      {/* Submit */}
       <Button
         className={cn(
-          'w-full text-white',
+          'w-full rounded-xl h-12 text-base font-semibold text-white',
           side === 'buy'
-            ? 'bg-emerald-600 hover:bg-emerald-700'
-            : 'bg-red-600 hover:bg-red-700',
+            ? 'bg-emerald-500 hover:bg-emerald-600'
+            : 'bg-red-500 hover:bg-red-600',
         )}
         onClick={handleSubmit}
         disabled={isDisabled}
@@ -255,6 +305,7 @@ export function TradePanel({ token }: TradePanelProps) {
             : `Sell ${token_info.symbol}`}
       </Button>
 
+      {/* Tx result */}
       {swap.step === 'success' && swap.txHash && (
         <a
           href={`${SNOWTRACE_URL}/tx/${swap.txHash}`}
