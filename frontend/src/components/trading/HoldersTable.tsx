@@ -53,7 +53,7 @@ export function HoldersTable({ holders, isLoading }: HoldersTableProps) {
               {truncateAddress(holder.account_info.account_id)}
             </TableCell>
             <TableCell className="text-right">
-              {formatNumber(Number(holder.balance) / 1e18, 2)}
+              {formatNumber(Number(holder.balance), 2)}
             </TableCell>
           </TableRow>
         ))}
