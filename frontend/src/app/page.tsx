@@ -63,11 +63,11 @@ export default function HomePage() {
         ) : null}
       </div>
 
+      <SuccessStories />
+
       <HowItWorks />
 
       <WhyOpenLaunch />
-
-      <SuccessStories />
 
       <BottomCTA />
     </div>
