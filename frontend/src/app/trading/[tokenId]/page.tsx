@@ -26,22 +26,9 @@ interface TokenDetailPageProps {
 export default function TokenDetailPage({ params }: TokenDetailPageProps) {
   const { tokenId: rawTokenId } = use(params)
   let tokenId: string
-  let isInvalidAddress = false
   try {
     tokenId = getAddress(rawTokenId)
   } catch {
-    tokenId = rawTokenId
-    isInvalidAddress = true
-  }
-  const [interval, setInterval_] = useState<ChartResolution>('1m')
-  useTradingSubscription(isInvalidAddress ? '' : tokenId, interval)
-
-  const { data: token, isLoading: tokenLoading, isError: tokenError } = useTokenDetail(isInvalidAddress ? '' : tokenId)
-  const { data: chartData } = useChartData(isInvalidAddress ? '' : tokenId, interval)
-  const { data: swapData, isLoading: swapsLoading } = useSwapHistory(isInvalidAddress ? '' : tokenId)
-  const { data: holdersData, isLoading: holdersLoading } = useTokenHolders(isInvalidAddress ? '' : tokenId)
-
-  if (isInvalidAddress) {
     return (
       <div className="px-4 py-6 mx-auto max-w-7xl flex flex-col items-center gap-4">
         <p className="text-xl font-bold leading-[1.2]">Invalid address</p>
@@ -52,6 +39,13 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
       </div>
     )
   }
+  const [interval, setInterval_] = useState<ChartResolution>('1m')
+  useTradingSubscription(tokenId, interval)
+
+  const { data: token, isLoading: tokenLoading, isError: tokenError } = useTokenDetail(tokenId)
+  const { data: chartData } = useChartData(tokenId, interval)
+  const { data: swapData, isLoading: swapsLoading } = useSwapHistory(tokenId)
+  const { data: holdersData, isLoading: holdersLoading } = useTokenHolders(tokenId)
 
   if (tokenLoading) {
     return (

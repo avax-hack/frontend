@@ -33,57 +33,58 @@ export function TokenCard({ token }: TokenCardProps) {
   const mcap = Number(market_info.total_supply) * Number(market_info.token_price)
 
   const checkedId = safeGetAddress(token_info.token_id)
-  const href = checkedId ? `/trading/${checkedId}` : undefined
+  const href = checkedId ? `/trading/${checkedId}` : null
 
-  const cardContent = (
-    <Card className="flex flex-col gap-3 p-4 transition hover:bg-secondary/50">
-      <div className="flex items-start justify-between">
-        <StatusBadge
-          label={`${market_info.milestone_completed}/4`}
-          variant={getMilestoneVariant(market_info.milestone_completed)}
-          size="sm"
-        />
-        <span className="text-xs text-muted-foreground">{token_info.category}</span>
-      </div>
+  const Wrapper = href ? Link : 'div'
 
-      <div className="flex items-center gap-3">
-        {token_info.image_uri ? (
-          <img
-            src={token_info.image_uri}
-            alt={`${token_info.name} logo`}
-            className="size-10 rounded-full object-cover"
+  return (
+    <Wrapper
+      {...(href ? { href } : {})}
+      aria-label={`View ${token_info.name} trading`}
+    >
+      <Card className="flex flex-col gap-3 p-4 transition hover:bg-secondary/50">
+        <div className="flex items-start justify-between">
+          <StatusBadge
+            label={`${market_info.milestone_completed}/4`}
+            variant={getMilestoneVariant(market_info.milestone_completed)}
+            size="sm"
           />
-        ) : (
-          <div className="size-10 rounded-full bg-secondary" aria-hidden="true" />
-        )}
-        <div className="flex flex-col gap-1">
-          <span className="text-sm font-medium">{token_info.name}</span>
-          <span className="text-xs text-muted-foreground">{token_info.symbol}</span>
+          <span className="text-xs text-muted-foreground">{token_info.category}</span>
         </div>
-      </div>
 
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col gap-1">
-          <span className="text-xs text-muted-foreground">Price</span>
-          <span className="text-sm font-medium">${formatNumber(price)}</span>
+        <div className="flex items-center gap-3">
+          {token_info.image_uri ? (
+            <img
+              src={token_info.image_uri}
+              alt={`${token_info.name} logo`}
+              className="size-10 rounded-full object-cover"
+            />
+          ) : (
+            <div className="size-10 rounded-full bg-secondary" aria-hidden="true" />
+          )}
+          <div className="flex flex-col gap-1">
+            <span className="text-sm font-medium">{token_info.name}</span>
+            <span className="text-xs text-muted-foreground">{token_info.symbol}</span>
+          </div>
         </div>
-        <div className="flex flex-col gap-1">
-          <span className="text-xs text-muted-foreground">MCap</span>
-          <span className="text-sm font-medium">{formatCompactUSD(mcap)}</span>
-        </div>
-        <div className="flex flex-col gap-1">
-          <span className="text-xs text-muted-foreground">Holders</span>
-          <span className="text-sm font-medium">{formatNumber(market_info.holder_count, 0)}</span>
-        </div>
-      </div>
 
-      <ProgressBar percent={market_info.bonding_percent} size="sm" showLabel />
-    </Card>
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-muted-foreground">Price</span>
+            <span className="text-sm font-medium">${formatNumber(price)}</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-muted-foreground">MCap</span>
+            <span className="text-sm font-medium">{formatCompactUSD(mcap)}</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-muted-foreground">Holders</span>
+            <span className="text-sm font-medium">{formatNumber(market_info.holder_count, 0)}</span>
+          </div>
+        </div>
+
+        <ProgressBar percent={market_info.bonding_percent} size="sm" showLabel />
+      </Card>
+    </Wrapper>
   )
-
-  if (href) {
-    return <Link href={href} aria-label={`View ${token_info.name} trading`}>{cardContent}</Link>
-  }
-
-  return <div aria-label={`View ${token_info.name} trading`}>{cardContent}</div>
 }
