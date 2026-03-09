@@ -127,7 +127,7 @@ export function InvestPanel({ project }: InvestPanelProps) {
 
   return (
     <>
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 backdrop-blur-sm">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/[0.06] bg-[#070b14]/95 backdrop-blur-sm">
         <div className="mx-auto flex max-w-5xl items-center gap-4 px-4 py-3">
           {/* D-12: Wallet not connected */}
           {!isConnected && (
@@ -241,6 +241,7 @@ export function InvestPanel({ project }: InvestPanelProps) {
                 )}
               </div>
               <Button
+                variant="gradient"
                 size="lg"
                 disabled={!isValidAmount}
                 onClick={handleCommitFunds}

@@ -122,7 +122,7 @@ export function InvestModal({ project, amount, open, onOpenChange, onSuccess }: 
 
   return (
     <Dialog open={open} onOpenChange={(v) => !isPending && onOpenChange(v)}>
-      <DialogContent>
+      <DialogContent className="dark-form border-white/[0.06] bg-[#0a0f1a]/95 backdrop-blur-xl">
         <DialogHeader>
           <DialogTitle>Confirm Investment</DialogTitle>
           <DialogDescription>
@@ -154,8 +154,8 @@ export function InvestModal({ project, amount, open, onOpenChange, onSuccess }: 
 
           {/* TX success with Snowtrace link (real mode only) */}
           {!IS_MOCK && txStep === 'success' && txHash && (
-            <div className="flex items-center justify-between rounded-md bg-green-50 px-3 py-2 text-sm dark:bg-green-950">
-              <span className="text-green-700 dark:text-green-300">Transaction confirmed!</span>
+            <div className="flex items-center justify-between rounded-md bg-green-950 px-3 py-2 text-sm">
+              <span className="text-green-300">Transaction confirmed!</span>
               <a
                 href={`${SNOWTRACE_URL}/tx/${txHash}`}
                 target="_blank"

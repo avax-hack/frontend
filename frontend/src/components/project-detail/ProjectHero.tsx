@@ -21,14 +21,14 @@ export function ProjectHero({ project }: ProjectHeroProps) {
       <div className="flex items-start gap-4">
         {/* Logo placeholder */}
         <div
-          className="flex size-16 shrink-0 items-center justify-center rounded-xl bg-primary/20 text-2xl font-bold text-primary"
+          className="flex size-16 shrink-0 items-center justify-center rounded-xl bg-white/[0.06] ring-1 ring-white/10 text-2xl font-bold text-white"
           aria-hidden="true"
         >
           {project_info.image_uri ? (
             <img
               src={project_info.image_uri}
               alt=""
-              className="size-16 rounded-xl object-cover"
+              className="size-16 rounded-xl object-cover ring-1 ring-white/10"
             />
           ) : (
             project_info.name.charAt(0).toUpperCase()
@@ -37,16 +37,16 @@ export function ProjectHero({ project }: ProjectHeroProps) {
 
         <div className="flex min-w-0 flex-col gap-2">
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-bold">
+            <h1 className="text-2xl font-bold text-white">
               {project_info.name}{' '}
-              <span className="text-lg font-normal text-muted-foreground">
+              <span className="text-lg font-normal text-white/40">
                 ({project_info.symbol})
               </span>
             </h1>
           </div>
 
           {project_info.description && (
-            <p className="text-sm leading-[1.2] text-muted-foreground line-clamp-2">
+            <p className="text-sm leading-[1.2] text-white/60 line-clamp-2">
               {project_info.description}
             </p>
           )}

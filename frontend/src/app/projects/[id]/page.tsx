@@ -36,7 +36,7 @@ function ProjectDetailSkeleton() {
   return (
     <div className="flex flex-col">
       {/* Hero skeleton */}
-      <div className="bg-secondary/20">
+      <div>
         <div className="mx-auto max-w-5xl px-4 py-12 md:px-6 lg:py-16">
           <div className="flex items-start gap-4">
             <Skeleton className="size-16 shrink-0 rounded-xl" />
@@ -56,7 +56,7 @@ function ProjectDetailSkeleton() {
       </div>
 
       {/* Stats skeleton */}
-      <div className="border-y border-border bg-secondary/30">
+      <div className="border-y border-white/[0.06] bg-white/[0.02]">
         <div className="mx-auto max-w-5xl px-4 py-8 md:px-6">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             {Array.from({ length: 3 }, (_, i) => (
@@ -150,14 +150,14 @@ function ProjectDetailContent({ id }: { id: string }) {
   return (
     <>
       {/* Hero section */}
-      <section className="bg-secondary/20">
+      <section>
         <div className="mx-auto max-w-5xl px-4 py-12 md:px-6 lg:py-16">
           <ProjectHero project={project} />
         </div>
       </section>
 
       {/* Stats band */}
-      <section className="border-y border-border bg-secondary/30">
+      <section className="border-y border-white/[0.06] bg-white/[0.02]">
         <div className="mx-auto max-w-5xl px-4 py-8 md:px-6">
           <FundingStats project={project} />
         </div>
@@ -178,7 +178,7 @@ function ProjectDetailContent({ id }: { id: string }) {
             )}
 
             <div className="flex flex-col gap-4">
-              <SectionLabel>Team & Links</SectionLabel>
+              <SectionLabel>Creator & Links</SectionLabel>
               <TeamSection project={project} />
             </div>
           </div>
@@ -208,7 +208,12 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
   const id = getAddress(rawId)
 
   return (
-    <main>
+    <main className="dark-form relative -mt-[var(--header-h)] min-h-screen pt-[var(--header-h)] [--header-h:65px]">
+      <div className="absolute inset-0 -z-10">
+        <img src="/hero-bg.webp" alt="" className="h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-[#070b14]/80 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-[#070b14]/90" />
+      </div>
       <ProjectDetailContent id={id} />
     </main>
   )

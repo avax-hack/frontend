@@ -2,12 +2,6 @@ import { ProgressBar } from '@/components/common/ProgressBar'
 import { formatTokenToUSD } from '@/lib/utils'
 import type { IProjectData } from '@/types/project'
 
-function getProgressColor(percent: number): 'green' | 'purple' | 'blue' {
-  if (percent >= 75) return 'green'
-  if (percent >= 40) return 'blue'
-  return 'purple'
-}
-
 interface FundingProgressProps {
   project: IProjectData
 }
@@ -18,8 +12,8 @@ export function FundingProgress({ project }: FundingProgressProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      <ProgressBar percent={percent} color={getProgressColor(percent)} size="lg" />
-      <p className="text-sm leading-[1.2] text-muted-foreground">
+      <ProgressBar percent={percent} color="red" size="lg" />
+      <p className="text-sm leading-[1.2] text-white/60">
         {Math.round(percent)}% — {formatTokenToUSD(market_info.total_committed)} raised
       </p>
     </div>

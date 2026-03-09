@@ -28,11 +28,11 @@ export function FundAllocationBar({ milestones }: FundAllocationBarProps) {
 
   return (
     <div className="flex flex-col gap-3">
-      <h2 className="text-lg font-semibold">Fund Allocation</h2>
+      <h2 className="text-lg font-semibold text-white">Fund Allocation</h2>
 
       {/* Stacked bar */}
       <div
-        className="flex h-6 overflow-hidden rounded-full bg-secondary"
+        className="flex h-6 overflow-hidden rounded-full bg-white/[0.06]"
         role="img"
         aria-label="Fund allocation per milestone"
       >
@@ -64,7 +64,7 @@ export function FundAllocationBar({ milestones }: FundAllocationBarProps) {
               )}
               aria-hidden="true"
             />
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-white/50">
               {milestone.title} ({milestone.fund_allocation_percent}%)
             </span>
           </div>

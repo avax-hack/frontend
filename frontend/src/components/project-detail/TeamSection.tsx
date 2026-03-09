@@ -35,10 +35,10 @@ export function TeamSection({ project }: TeamSectionProps) {
 
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="text-lg font-semibold">Team</h2>
+      <h2 className="text-lg font-semibold text-white">Creator & Links</h2>
 
       {project_info.creator.bio && (
-        <p className="text-sm leading-[1.2] text-muted-foreground">
+        <p className="text-sm leading-[1.2] text-white/60">
           {project_info.creator.bio}
         </p>
       )}
@@ -50,6 +50,7 @@ export function TeamSection({ project }: TeamSectionProps) {
               key={link.label}
               variant="outline"
               size="sm"
+              className="border-white/[0.06] bg-white/[0.03] text-white/60 hover:bg-white/[0.06] hover:text-white"
               asChild
             >
               <a

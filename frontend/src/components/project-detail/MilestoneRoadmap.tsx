@@ -8,10 +8,10 @@ interface MilestoneRoadmapProps {
 }
 
 const STATUS_CONFIG: Record<MilestoneStatus, { icon: string; colorClass: string; label: string }> = {
-  completed: { icon: '✓', colorClass: 'bg-emerald-500 text-white', label: 'Completed' },
-  in_verification: { icon: '◐', colorClass: 'bg-amber-500 text-white', label: 'In Verification' },
-  submitted: { icon: '◐', colorClass: 'bg-amber-500 text-white', label: 'Submitted' },
-  pending: { icon: '○', colorClass: 'bg-secondary text-muted-foreground', label: 'Pending' },
+  completed: { icon: '✓', colorClass: 'bg-red-500 text-white', label: 'Completed' },
+  in_verification: { icon: '◐', colorClass: 'border-2 border-red-500 text-red-400', label: 'In Verification' },
+  submitted: { icon: '◐', colorClass: 'border-2 border-red-500 text-red-400', label: 'Submitted' },
+  pending: { icon: '○', colorClass: 'bg-white/[0.06] text-white/40', label: 'Pending' },
   failed: { icon: '✕', colorClass: 'bg-red-500 text-white', label: 'Failed' },
 }
 
@@ -20,7 +20,7 @@ export function MilestoneRoadmap({ milestones }: MilestoneRoadmapProps) {
 
   return (
     <div className="flex flex-col gap-3">
-      <h2 className="text-lg font-semibold">Milestone Roadmap</h2>
+      <h2 className="text-lg font-semibold text-white">Milestone Roadmap</h2>
 
       <div className="overflow-x-auto pb-2">
         <div
@@ -49,12 +49,12 @@ export function MilestoneRoadmap({ milestones }: MilestoneRoadmapProps) {
                   </div>
 
                   {/* Title */}
-                  <span className="max-w-[100px] text-center text-xs font-medium leading-[1.2]">
+                  <span className="max-w-[100px] text-center text-xs font-medium leading-[1.2] text-white">
                     {milestone.title}
                   </span>
 
                   {/* Fund release label (D-6) */}
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-white/50">
                     Fund Release {milestone.fund_allocation_percent}%
                   </span>
                 </div>
@@ -65,7 +65,7 @@ export function MilestoneRoadmap({ milestones }: MilestoneRoadmapProps) {
                     <div
                       className={cn(
                         'h-0.5 w-8',
-                        milestone.status === 'completed' ? 'bg-emerald-500' : 'bg-secondary',
+                        milestone.status === 'completed' ? 'bg-red-500' : 'bg-white/20',
                       )}
                     />
                   </div>
