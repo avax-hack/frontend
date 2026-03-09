@@ -24,7 +24,7 @@ const ConnectButton = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="rounded-lg bg-secondary px-4 py-2 text-sm font-medium text-muted-foreground">
+      <div className="rounded-full bg-gradient-to-r from-red-600 to-rose-500 px-5 py-2 text-sm font-semibold text-white">
         Connect Wallet
       </div>
     ),
@@ -71,10 +71,16 @@ export function Header() {
     <>
       {isConnected && isAuthenticated && address ? (
         <div className="flex items-center gap-2">
-          <span className="rounded-lg bg-secondary px-3 py-1.5 text-sm font-medium">
+          <span className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm font-medium text-white">
+            <span className="h-2 w-2 rounded-full bg-emerald-400" />
             {truncateAddress(address)}
           </span>
-          <Button variant="ghost" size="sm" onClick={logout}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={logout}
+            className="rounded-full text-white/50 hover:bg-white/5 hover:text-white"
+          >
             Sign Out
           </Button>
         </div>
@@ -83,12 +89,13 @@ export function Header() {
           size="sm"
           onClick={() => login()}
           disabled={isSigning}
+          className="rounded-full bg-gradient-to-r from-red-600 to-rose-500 text-white hover:from-red-500 hover:to-rose-400"
         >
-          {isSigning ? 'Signing…' : 'Sign In'}
+          {isSigning ? 'Signing...' : 'Sign In'}
         </Button>
       ) : isConnected && isLoading ? (
-        <div className="rounded-lg bg-secondary px-4 py-2 text-sm font-medium text-muted-foreground">
-          Loading…
+        <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/50">
+          Loading...
         </div>
       ) : (
         <ConnectButton />
@@ -97,16 +104,19 @@ export function Header() {
   )
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 md:px-6">
+    <header className="sticky top-0 z-50 border-b border-white/[0.06] bg-black/40 backdrop-blur-xl">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-6">
         {/* Left: Logo + Tabs + Nav */}
-        <div className="flex items-center gap-6">
-          <Link href="/" className="text-lg font-bold text-foreground">
+        <div className="flex items-center gap-8">
+          <Link href="/" className="flex items-center gap-2.5 text-lg font-bold tracking-tight text-white">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-red-500 to-rose-600 text-sm font-black text-white shadow-lg shadow-red-500/20">
+              O
+            </span>
             OpenLaunch
           </Link>
 
           {/* Tab Switcher — desktop */}
-          <div className="hidden items-center gap-1 rounded-lg bg-secondary p-1 md:flex" role="tablist" aria-label="Main sections">
+          <div className="hidden items-center rounded-full border border-white/[0.06] bg-white/[0.04] p-0.5 md:flex" role="tablist" aria-label="Main sections">
             {TABS.map((tab) => (
               <Link
                 key={tab.id}
@@ -114,10 +124,10 @@ export function Header() {
                 role="tab"
                 aria-selected={activeTab === tab.id}
                 className={cn(
-                  'rounded-md px-3 py-1 text-sm font-medium transition-colors',
+                  'rounded-full px-4 py-1.5 text-sm font-medium transition-all',
                   activeTab === tab.id
-                    ? 'bg-background text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground',
+                    ? 'bg-white/10 text-white shadow-sm'
+                    : 'text-white/40 hover:text-white/70',
                 )}
               >
                 {tab.label}
@@ -126,17 +136,17 @@ export function Header() {
           </div>
 
           {/* Nav Links — desktop */}
-          <nav className="hidden items-center gap-4 md:flex" aria-label="Page navigation">
+          <nav className="hidden items-center gap-6 md:flex" aria-label="Page navigation">
             {currentLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 aria-current={pathname === link.href ? 'page' : undefined}
                 className={cn(
-                  'text-sm transition-colors hover:text-foreground',
+                  'relative text-sm transition-colors hover:text-white',
                   pathname === link.href
-                    ? 'font-medium text-foreground'
-                    : 'text-muted-foreground',
+                    ? 'font-medium text-white after:absolute after:-bottom-[21px] after:left-0 after:h-px after:w-full after:bg-gradient-to-r after:from-red-500 after:to-rose-500'
+                    : 'text-white/40',
                 )}
               >
                 {link.label}
@@ -162,17 +172,17 @@ export function Header() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="md:hidden"
+                className="rounded-full border border-white/10 text-white/60 hover:bg-white/5 hover:text-white md:hidden"
                 aria-label="Open navigation menu"
               >
-                <MenuIcon aria-hidden="true" />
+                <MenuIcon className="h-4 w-4" aria-hidden="true" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="flex w-72 flex-col gap-6 p-6">
-              <SheetTitle className="text-lg font-bold">OpenLaunch</SheetTitle>
+            <SheetContent side="right" className="flex w-72 flex-col gap-6 border-white/10 bg-[#0a0e1a] p-6">
+              <SheetTitle className="text-lg font-bold text-white">OpenLaunch</SheetTitle>
 
               {/* Tab switcher — mobile */}
-              <div className="flex items-center gap-1 rounded-lg bg-secondary p-1" role="tablist" aria-label="Main sections">
+              <div className="flex items-center gap-1 rounded-full border border-white/[0.06] bg-white/[0.04] p-0.5" role="tablist" aria-label="Main sections">
                 {TABS.map((tab) => (
                   <Link
                     key={tab.id}
@@ -181,10 +191,10 @@ export function Header() {
                     aria-selected={activeTab === tab.id}
                     onClick={() => setMobileOpen(false)}
                     className={cn(
-                      'flex-1 rounded-md px-3 py-1 text-center text-sm font-medium transition-colors',
+                      'flex-1 rounded-full px-3 py-1.5 text-center text-sm font-medium transition-all',
                       activeTab === tab.id
-                        ? 'bg-background text-foreground shadow-sm'
-                        : 'text-muted-foreground hover:text-foreground',
+                        ? 'bg-white/10 text-white'
+                        : 'text-white/40 hover:text-white/70',
                     )}
                   >
                     {tab.label}
@@ -193,7 +203,7 @@ export function Header() {
               </div>
 
               {/* Nav links — mobile */}
-              <nav className="flex flex-col gap-3" aria-label="Mobile navigation">
+              <nav className="flex flex-col gap-1" aria-label="Mobile navigation">
                 {currentLinks.map((link) => (
                   <Link
                     key={link.href}
@@ -201,10 +211,10 @@ export function Header() {
                     aria-current={pathname === link.href ? 'page' : undefined}
                     onClick={() => setMobileOpen(false)}
                     className={cn(
-                      'rounded-md px-3 py-2 text-sm transition-colors',
+                      'rounded-lg px-3 py-2.5 text-sm transition-colors',
                       pathname === link.href
-                        ? 'bg-secondary font-medium text-foreground'
-                        : 'text-muted-foreground hover:bg-secondary hover:text-foreground',
+                        ? 'bg-white/10 font-medium text-white'
+                        : 'text-white/40 hover:bg-white/5 hover:text-white',
                     )}
                   >
                     {link.label}
@@ -212,7 +222,6 @@ export function Header() {
                 ))}
               </nav>
 
-              {/* Spacer to push wallet to bottom */}
               <div className="flex-1" />
               <div className="flex flex-col gap-3">
                 {defaultChain.testnet && <FaucetButton />}

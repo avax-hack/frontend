@@ -55,18 +55,19 @@ export function FaucetButton() {
 
   return (
     <div className="flex items-center gap-3">
-      <span className="text-xs text-muted-foreground">
+      <span className="text-xs text-white/40">
         {balance !== undefined ? `${formatUnits(balance as bigint, 6)} USDC` : '—'}
       </span>
       <Button
         size="sm"
         onClick={handleMint}
         disabled={isPending || isConfirming}
+        className="rounded-full bg-gradient-to-r from-red-600 to-rose-500 text-white hover:from-red-500 hover:to-rose-400"
       >
         {isPending ? 'Confirm...' : isConfirming ? 'Minting...' : 'Faucet 10,000 USDC'}
       </Button>
-      {isSuccess && <span className="text-xs text-green-600">Minted!</span>}
-      {error && <span className="text-xs text-red-500 max-w-[120px] truncate">{error}</span>}
+      {isSuccess && <span className="text-xs text-emerald-400">Minted!</span>}
+      {error && <span className="max-w-[120px] truncate text-xs text-red-400">{error}</span>}
     </div>
   )
 }
