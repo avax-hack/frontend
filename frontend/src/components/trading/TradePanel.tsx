@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useAccount } from 'wagmi'
 import { parseUnits, formatUnits, getAddress } from 'viem'
-import { useSwap, useTokenBalance, useUsdcBalance } from '@/features/contracts'
+import { useSwap, useTokenBalance, useUsdcBalance, useQuote } from '@/features/contracts'
 import { IS_MOCK } from '@/lib/mock'
 import { SNOWTRACE_URL } from '@/lib/constants'
 import type { ITokenData } from '@/features/trading/types'
@@ -52,6 +52,12 @@ export function TradePanel({ token }: TradePanelProps) {
     getAddress(token_info.token_id),
     address,
   )
+
+  const { data: quoteOut, isFetching: isQuoting } = useQuote({
+    tokenAddress: getAddress(token_info.token_id),
+    side,
+    amount,
+  })
 
   const currentBalance = useMemo(() => {
     if (side === 'buy') {
@@ -267,6 +273,20 @@ export function TradePanel({ token }: TradePanelProps) {
           {currencyLabel}
         </span>
       </div>
+
+      {/* Expected output */}
+      {(quoteOut || isQuoting) && (
+        <div className="flex items-center justify-between px-1">
+          <span className="text-xs text-muted-foreground">Expected</span>
+          <span className="text-xs text-foreground">
+            {isQuoting
+              ? '...'
+              : `~${parseFloat(quoteOut!).toLocaleString(undefined, {
+                  maximumFractionDigits: side === 'buy' ? 4 : 2,
+                })} ${side === 'buy' ? token_info.symbol : 'USDC'}`}
+          </span>
+        </div>
+      )}
 
       {/* Preset buttons */}
       <div className="flex gap-1.5">
