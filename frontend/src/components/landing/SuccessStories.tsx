@@ -17,16 +17,16 @@ const stories = [
 
 export function SuccessStories() {
   return (
-    <section className="border-y border-border bg-secondary/30">
+    <section>
       <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-16 md:px-6 lg:py-20">
         <div className="flex flex-col gap-3 text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest text-primary">
+          <span className="text-sm font-semibold uppercase tracking-widest text-red-500">
             Success Stories
-          </p>
-          <h2 className="text-3xl font-bold tracking-tight lg:text-4xl">
+          </span>
+          <h2 className="text-3xl font-bold tracking-tight text-white lg:text-4xl">
             Proven by Results
           </h2>
-          <p className="mx-auto max-w-2xl text-muted-foreground">
+          <p className="mx-auto max-w-2xl text-white/60">
             Projects that launched on OpenLaunch, hit every milestone, and delivered real value.
           </p>
         </div>
@@ -35,33 +35,33 @@ export function SuccessStories() {
           {stories.map((story) => (
             <div
               key={story.name}
-              className="flex flex-col overflow-hidden rounded-xl border border-border bg-card"
+              className="flex flex-col overflow-hidden rounded-xl bg-white shadow-md transition-shadow hover:shadow-lg hover:shadow-red-500/10"
             >
-              {/* Banner placeholder */}
-              <div className="flex h-[200px] items-center justify-center bg-muted">
-                <span className="text-sm text-muted-foreground">Banner</span>
+              {/* Banner */}
+              <div className="flex h-[200px] items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800">
+                <span className="text-sm text-white/40">Banner</span>
               </div>
 
               {/* Content */}
               <div className="flex flex-1 flex-col gap-4 p-6">
                 <div className="flex items-center gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+                  <div className="flex size-10 items-center justify-center rounded-full bg-red-500/10 text-sm font-bold text-red-500">
                     {story.name[0]}
                   </div>
-                  <h3 className="text-lg font-semibold">{story.name}</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">{story.name}</h3>
                 </div>
 
-                <p className="line-clamp-3 text-sm text-muted-foreground">
+                <p className="line-clamp-3 text-sm text-gray-500">
                   {story.description}
                 </p>
 
-                <div className="mt-auto grid grid-cols-2 gap-4 border-t border-border pt-4">
+                <div className="mt-auto grid grid-cols-2 gap-4 border-t border-gray-200 pt-4">
                   <div className="flex flex-col gap-1">
-                    <span className="text-xs text-muted-foreground">Total Committed</span>
-                    <span className="text-lg font-bold">{story.committed}</span>
+                    <span className="text-xs text-gray-500">Total Committed</span>
+                    <span className="text-lg font-bold text-gray-900">{story.committed}</span>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-xs text-muted-foreground">ATH Return</span>
+                    <span className="text-xs text-gray-500">ATH Return</span>
                     <span className="text-lg font-bold text-emerald-500">
                       +{story.athReturn}
                     </span>

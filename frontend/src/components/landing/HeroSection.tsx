@@ -1,39 +1,72 @@
 import Link from 'next/link'
-import { ShieldCheckIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { LiveLaunchCard } from './LiveLaunchCard'
+import { StatsBar } from './StatsBar'
+import type { IProjectListItem } from '@/types/project'
 
-export function HeroSection() {
+interface HeroSectionProps {
+  featuredProject: IProjectListItem | null
+  stats: {
+    projectCount: number
+    totalCommitted: string
+    investorCount: number
+    milestonesVerified: number
+  }
+}
+
+export function HeroSection({ featuredProject, stats }: HeroSectionProps) {
   return (
-    <section className="flex flex-col items-center gap-6 pt-[80px] pb-[60px] lg:pt-[120px] lg:pb-[80px] text-center px-4">
-      <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
-        <ShieldCheckIcon className="h-4 w-4" />
-        Milestone-Based Launchpad on Avalanche
+    <section className="relative isolate -mt-14 flex min-h-screen flex-col justify-between">
+      {/* Background */}
+      <div className="absolute inset-0 -z-10">
+        <img
+          src="/hero-bg.webp"
+          alt=""
+          className="size-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-[#070b14]" />
       </div>
 
-      <h1 className="text-4xl font-extrabold tracking-tight md:text-5xl lg:text-6xl">
-        EASY TO LAUNCH.{' '}
-        <span className="bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
-          HARD TO RUG.
-        </span>
-      </h1>
+      {/* Main content */}
+      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col items-start justify-center gap-10 px-6 pt-[100px] pb-10 lg:flex-row lg:items-center lg:gap-12 lg:pt-[120px]">
+        {/* Left: Headline */}
+        <div className="flex max-w-xl flex-1 flex-col gap-6">
+          <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-white md:text-5xl lg:text-6xl">
+            EASY TO LAUNCH.
+            <br />
+            <span className="bg-gradient-to-r from-red-500 to-red-400 bg-clip-text text-transparent">
+              IMPOSSIBLE TO RUG.
+            </span>
+          </h1>
 
-      <p className="max-w-2xl text-lg text-muted-foreground">
-        Funds are released milestone-by-milestone, verified by smart contracts.
-        Investors stay protected. Builders stay accountable.
-      </p>
+          <p className="text-lg leading-relaxed text-white/70">
+            Launch tokens on Avalanche with built-in milestone-based funding.
+            Investors stay protected. Builders stay accountable.
+          </p>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-        <Button asChild size="lg">
-          <Link href="/explore">Explore Projects</Link>
-        </Button>
-        <Button asChild variant="outline" size="lg">
-          <Link href="/launch">Launch Project</Link>
-        </Button>
+          <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
+            <Button asChild size="lg" className="bg-red-600 text-white hover:bg-red-700">
+              <Link href="/launch">Launch Project</Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="border-white/20 text-white hover:bg-white/10"
+            >
+              <Link href="/explore">Explore Projects</Link>
+            </Button>
+          </div>
+        </div>
+
+        {/* Right: Live Launch Card */}
+        {featuredProject && <LiveLaunchCard project={featuredProject} />}
       </div>
 
-      <p className="text-sm text-muted-foreground/70">
-        Built on Avalanche C-Chain · Smart-contract enforced · No middleman
-      </p>
+      {/* Bottom: Stats Bar */}
+      <div className="px-6 pb-8">
+        <StatsBar {...stats} />
+      </div>
     </section>
   )
 }

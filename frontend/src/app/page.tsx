@@ -3,14 +3,12 @@
 import { useFeaturedProjects, useProjectList } from '@/features/project/hooks'
 import { useNewContentSubscription } from '@/hooks/useWebSocket'
 import { HeroSection } from '@/components/landing/HeroSection'
-import { StatsBar } from '@/components/landing/StatsBar'
-import { FeaturedCarousel } from '@/components/landing/FeaturedCarousel'
+import { FeaturedProjectCard } from '@/components/landing/FeaturedProjectCard'
 import { HowItWorks } from '@/components/landing/HowItWorks'
 import { WhyOpenLaunch } from '@/components/landing/WhyOpenLaunch'
 import { SuccessStories } from '@/components/landing/SuccessStories'
 import { BottomCTA } from '@/components/landing/BottomCTA'
 import { SkeletonCard } from '@/components/common/SkeletonCard'
-import { EmptyState } from '@/components/common/EmptyState'
 
 export default function HomePage() {
   useNewContentSubscription()
@@ -38,36 +36,48 @@ export default function HomePage() {
         ? `$${(totalCommittedNum / 1_000).toFixed(1)}K`
         : `$${totalCommittedNum}`
 
-  return (
-    <div className="flex flex-col">
-      <HeroSection />
+  const featuredProjects = featured.data?.projects ?? []
+  const featuredProject = featuredProjects[0] ?? null
 
-      <StatsBar
-        projectCount={projectCount}
-        totalCommitted={totalCommitted}
-        investorCount={investorCount}
-        milestonesVerified={milestonesVerified}
+  return (
+    <div className="flex min-h-screen flex-col bg-[#070b14]">
+      <HeroSection
+        featuredProject={featuredProject}
+        stats={{ projectCount, totalCommitted, investorCount, milestonesVerified }}
       />
 
-      <div className="mx-auto w-full max-w-[90%] py-12 lg:max-w-[80%]">
-        {featured.isLoading ? (
-          <SkeletonCard />
-        ) : featured.isError ? (
-          <EmptyState
-            message="Something went wrong"
-            actionLabel="Try Again"
-            onAction={() => featured.refetch()}
-          />
-        ) : featured.data?.projects?.length ? (
-          <FeaturedCarousel projects={featured.data.projects} />
-        ) : null}
-      </div>
+      {/* Featured Projects Grid */}
+      {featuredProjects.length > 0 && (
+        <section className="mx-auto w-full max-w-7xl px-6 py-16">
+          <div className="flex flex-col gap-3 pb-8 text-center">
+            <span className="text-sm font-semibold uppercase tracking-widest text-red-500">
+              Featured
+            </span>
+            <h2 className="text-2xl font-bold text-white lg:text-3xl">
+              The #1 launchpad to launch your project on Avalanche.
+            </h2>
+          </div>
+          {featured.isLoading ? (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {Array.from({ length: 4 }, (_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {featuredProjects.slice(0, 4).map((p) => (
+                <FeaturedProjectCard key={p.project_info.project_id} project={p} />
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
-      <SuccessStories />
+      <WhyOpenLaunch />
 
       <HowItWorks />
 
-      <WhyOpenLaunch />
+      <SuccessStories />
 
       <BottomCTA />
     </div>

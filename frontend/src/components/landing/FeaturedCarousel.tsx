@@ -146,13 +146,6 @@ export function FeaturedCarousel({ projects }: FeaturedCarouselProps) {
       <div className={`${slideDir ? 'transition-transform duration-700 ease-in-out' : ''} ${getAnimClass()}`}>
         <FeaturedProjectCard
           project={projects[currentIndex]}
-          totalSlides={projects.length}
-          currentSlide={currentIndex}
-          onSlideChange={(i) => {
-            if (i > currentIndex) slideTo('left')
-            else if (i < currentIndex) slideTo('right')
-            else setCurrentIndex(i)
-          }}
         />
       </div>
 
@@ -170,9 +163,6 @@ export function FeaturedCarousel({ projects }: FeaturedCarouselProps) {
         >
           <FeaturedProjectCard
             project={projects[incomingIndex]}
-            totalSlides={projects.length}
-            currentSlide={incomingIndex}
-            onSlideChange={() => {}}
           />
         </div>
       )}
