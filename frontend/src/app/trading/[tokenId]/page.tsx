@@ -117,8 +117,8 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
             )}
           </div>
 
-          {/* Bottom 3-column grid: Trades | Holders | About */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Bottom grid: Trades | Holders */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="rounded-xl border border-border bg-card overflow-hidden">
               <div className="px-4 py-3 border-b border-border">
                 <span className="text-sm font-semibold">Trades</span>
@@ -136,59 +136,43 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
                 <HoldersTable holders={holdersData?.data ?? []} isLoading={holdersLoading} />
               </div>
             </div>
-
-            <div className="rounded-xl border border-border bg-card overflow-hidden">
-              <div className="px-4 py-3 border-b border-border">
-                <span className="text-sm font-semibold">About</span>
-              </div>
-              <div className="p-4 flex flex-col gap-3">
-                {token.token_info.description ? (
-                  <p className="text-sm whitespace-pre-wrap">{token.token_info.description}</p>
-                ) : (
-                  <p className="text-sm text-muted-foreground">No description</p>
-                )}
-                {(token.token_info.website || token.token_info.twitter || token.token_info.telegram) && (
-                  <div className="flex flex-wrap gap-3">
-                    {token.token_info.website && (
-                      <a
-                        href={token.token_info.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-sky-400 hover:underline"
-                      >
-                        Website
-                      </a>
-                    )}
-                    {token.token_info.twitter && (
-                      <a
-                        href={token.token_info.twitter}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-sky-400 hover:underline"
-                      >
-                        Twitter
-                      </a>
-                    )}
-                    {token.token_info.telegram && (
-                      <a
-                        href={token.token_info.telegram}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-sky-400 hover:underline"
-                      >
-                        Telegram
-                      </a>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
           </div>
         </div>
 
         {/* Sidebar */}
         <div className="w-full lg:w-80 shrink-0 flex flex-col gap-4">
           <TradePanel token={token} />
+          <div className="rounded-xl border border-border bg-card overflow-hidden">
+            <div className="px-4 py-3 border-b border-border">
+              <span className="text-sm font-semibold">About</span>
+            </div>
+            <div className="p-4 flex flex-col gap-3">
+              {token.token_info.description ? (
+                <p className="text-sm whitespace-pre-wrap">{token.token_info.description}</p>
+              ) : (
+                <p className="text-sm text-muted-foreground">No description</p>
+              )}
+              {(token.token_info.website || token.token_info.twitter || token.token_info.telegram) && (
+                <div className="flex flex-wrap gap-3">
+                  {token.token_info.website && (
+                    <a href={token.token_info.website} target="_blank" rel="noopener noreferrer" className="text-sm text-sky-400 hover:underline">
+                      Website
+                    </a>
+                  )}
+                  {token.token_info.twitter && (
+                    <a href={token.token_info.twitter} target="_blank" rel="noopener noreferrer" className="text-sm text-sky-400 hover:underline">
+                      Twitter
+                    </a>
+                  )}
+                  {token.token_info.telegram && (
+                    <a href={token.token_info.telegram} target="_blank" rel="noopener noreferrer" className="text-sm text-sky-400 hover:underline">
+                      Telegram
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
           <MilestoneStatusCard
             completed={token.market_info.milestone_completed}
             total={token.market_info.milestone_total}
