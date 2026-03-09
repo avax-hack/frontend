@@ -13,41 +13,50 @@ export default function ExplorePage() {
   const projects = data?.data ?? []
 
   return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-8 md:px-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold">Explore Projects</h1>
-        <p className="text-muted-foreground">
+    <div className="flex flex-col">
+      {/* Header */}
+      <div className="flex flex-col gap-3 pt-16 text-center lg:pt-20">
+        <p className="text-sm font-semibold uppercase tracking-widest text-primary">
+          Explore
+        </p>
+        <h1 className="text-3xl font-bold tracking-tight lg:text-4xl">
+          Explore Projects
+        </h1>
+        <p className="mx-auto max-w-2xl text-muted-foreground">
           Discover milestone-verified projects on Avalanche
         </p>
       </div>
 
-      {isLoading ? (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }, (_, i) => (
-            <SkeletonCard key={i} />
-          ))}
-        </div>
-      ) : isError ? (
-        <div className="flex flex-col items-center gap-4 py-12">
-          <p className="text-sm text-destructive">Something went wrong</p>
-          <Button variant="outline" onClick={() => refetch()}>
-            Try again
-          </Button>
-        </div>
-      ) : projects.length === 0 ? (
-        <EmptyState
-          message="No projects found"
-          description="Be the first to launch on OpenLaunch"
-          actionLabel="Launch a Project"
-          actionHref="/launch"
-        />
-      ) : (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => (
-            <ProjectCard key={project.project_info.project_id} project={project} />
-          ))}
-        </div>
-      )}
+      {/* Grid */}
+      <div className="mx-auto w-full max-w-7xl px-4 pb-16 pt-8 md:px-6 lg:pb-20">
+        {isLoading ? (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }, (_, i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </div>
+        ) : isError ? (
+          <div className="flex flex-col items-center gap-4 py-12">
+            <p className="text-sm text-destructive">Something went wrong</p>
+            <Button variant="outline" onClick={() => refetch()}>
+              Try again
+            </Button>
+          </div>
+        ) : projects.length === 0 ? (
+          <EmptyState
+            message="No projects found"
+            description="Be the first to launch on OpenLaunch"
+            actionLabel="Launch a Project"
+            actionHref="/launch"
+          />
+        ) : (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {projects.map((project) => (
+              <ProjectCard key={project.project_info.project_id} project={project} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
