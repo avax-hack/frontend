@@ -62,7 +62,7 @@ export function InvestPanel({ project }: InvestPanelProps) {
   const numericAmount = parseFloat(amount)
   const remainingUsdc = Math.max(
     0,
-    Number(market_info.target_raise) / 1e6 - Number(market_info.total_committed) / 1e6,
+    Number(market_info.target_raise) - Number(market_info.total_committed),
   )
   const usdcBalance = formattedBalance !== undefined ? parseFloat(formattedBalance) : Infinity
   const maxInvestable = Math.min(remainingUsdc, usdcBalance)

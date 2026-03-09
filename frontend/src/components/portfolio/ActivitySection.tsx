@@ -195,7 +195,7 @@ export function ActivitySection({
                           />
                         </TableCell>
                         <TableCell className="text-right">
-                          ${formatNumber(Number(swap.native_amount) / 1e6, 2)}
+                          ${formatNumber(Number(swap.native_amount), 2)}
                         </TableCell>
                         <TableCell className="text-right">
                           <a

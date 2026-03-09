@@ -18,7 +18,7 @@ function formatCompactUSD(value: number): string {
 
 export function MarketStats({ marketInfo }: MarketStatsProps) {
   const mcap = Number(marketInfo.total_supply) * Number(marketInfo.token_price)
-  const volume = Number(marketInfo.volume) / 1e6
+  const volume = Number(marketInfo.volume)
 
   const stats = [
     { label: 'Price', value: `$${formatNumber(Number(marketInfo.token_price), 6)}` },

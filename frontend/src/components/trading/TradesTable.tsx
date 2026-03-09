@@ -70,10 +70,10 @@ export function TradesTable({ swaps, isLoading }: TradesTableProps) {
               )}
             </TableCell>
             <TableCell className="text-right">
-              ${formatNumber(Number(swap.native_amount) / 1e6, 2)}
+              ${formatNumber(Number(swap.native_amount), 2)}
             </TableCell>
             <TableCell className="text-right">
-              {formatNumber(Number(swap.token_amount) / 1e18, 2)}
+              {formatNumber(Number(swap.token_amount), 2)}
             </TableCell>
             <TableCell>
               {truncateAddress(swap.account_info.account_id)}

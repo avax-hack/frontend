@@ -60,7 +60,7 @@ export function HoldingsTable({ tokens, isLoading }: HoldingsTableProps) {
         </TableHeader>
         <TableBody>
           {tokens.map((item) => {
-            const balance = Number(item.balance_info.balance) / 1e18
+            const balance = Number(item.balance_info.balance)
             const price = Number(item.balance_info.token_price)
             const value = balance * price
 
