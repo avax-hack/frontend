@@ -49,14 +49,14 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
         <div className="flex flex-col lg:flex-row gap-6">
           <div className="flex-1 min-w-0 flex flex-col gap-4">
             <Skeleton className="h-[400px] rounded-xl" />
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              <Skeleton className="h-[250px] rounded-xl" />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <Skeleton className="h-[250px] rounded-xl" />
               <Skeleton className="h-[250px] rounded-xl" />
             </div>
           </div>
           <div className="w-full lg:w-80 flex flex-col gap-4">
             <Skeleton className="h-[300px] rounded-xl" />
+            <Skeleton className="h-[140px] rounded-xl" />
             <Skeleton className="h-20 rounded-xl" />
             <Skeleton className="h-[160px] rounded-xl" />
           </div>
