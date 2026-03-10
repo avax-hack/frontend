@@ -11,7 +11,7 @@ import { useAccount } from 'wagmi'
 import { parseUnits, formatUnits } from 'viem'
 import { useSwap, useTokenBalance, useUsdcBalance, useQuote } from '@/features/contracts'
 import { IS_MOCK } from '@/lib/mock'
-import { SNOWTRACE_URL } from '@/lib/constants'
+
 import type { ITokenData } from '@/features/trading/types'
 import Link from 'next/link'
 
@@ -328,18 +328,6 @@ export function TradePanel({ token }: TradePanelProps) {
             ? `Buy ${token_info.symbol}`
             : `Sell ${token_info.symbol}`}
       </Button>
-
-      {/* Tx result */}
-      {swap.step === 'success' && swap.txHash && (
-        <a
-          href={`${SNOWTRACE_URL}/tx/${swap.txHash}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs text-center text-emerald-500 hover:underline"
-        >
-          View transaction on Snowtrace ↗
-        </a>
-      )}
 
       {swap.step === 'error' && swap.error && (
         <p className="text-xs text-center text-red-500">{swap.error}</p>
