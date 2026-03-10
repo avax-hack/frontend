@@ -42,12 +42,12 @@ function PortfolioContent() {
       </div>
 
       <div className="px-4 py-6 mx-auto max-w-7xl flex flex-col gap-8">
-      <h1 className="text-2xl font-bold">Portfolio</h1>
+      <h1 className="text-2xl font-bold text-white">Portfolio</h1>
 
       <PortfolioOverview data={summary} isLoading={summaryLoading} />
 
       <div className="flex flex-col gap-2">
-        <h2 className="text-lg font-bold">My Holdings</h2>
+        <h2 className="text-lg font-bold text-white">My Holdings</h2>
         <HoldingsTable
           tokens={holdTokens?.data}
           isLoading={holdingsLoading}

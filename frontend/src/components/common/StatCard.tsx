@@ -15,9 +15,9 @@ export function StatCard({ label, value, change, prefix, size = 'md' }: StatCard
 
   return (
     <Card className={cn('flex flex-col gap-1', paddings[size])}>
-      <span className="text-sm text-muted-foreground">{label}</span>
+      <span className="text-sm text-white/60">{label}</span>
       <div className="flex items-baseline gap-2">
-        <span className={cn('font-bold', valueSizes[size])}>
+        <span className={cn('font-bold text-white', valueSizes[size])}>
           {prefix}{value}
         </span>
         {change !== undefined && (

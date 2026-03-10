@@ -63,7 +63,7 @@ export function ActivitySection({
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-lg font-bold">Activity</h2>
+      <h2 className="text-lg font-bold text-white">Activity</h2>
 
       <div className="flex border-b border-border" role="tablist">
         {TABS.map((tab) => (
@@ -77,8 +77,8 @@ export function ActivitySection({
             aria-controls={`activity-panel-${tab.value}`}
             className={`rounded-none ${
               activeTab === tab.value
-                ? 'border-b-2 border-primary text-foreground'
-                : 'text-muted-foreground'
+                ? 'border-b-2 border-primary text-white'
+                : 'text-white/50'
             }`}
             onClick={() => setActiveTab(tab.value)}
           >
@@ -105,7 +105,7 @@ export function ActivitySection({
           {showIdo && idoHistory && idoHistory.length > 0 && (
             <div className="flex flex-col gap-2">
               {activeTab === 'all' && (
-                <h3 className="text-sm font-medium text-muted-foreground">IDO Participation</h3>
+                <h3 className="text-sm font-medium text-white/60">IDO Participation</h3>
               )}
               {idoHistory.map((item, index) => (
                 <Card key={`ido-${item.project_info.project_id}-${index}`} className="p-4">
@@ -123,9 +123,9 @@ export function ActivitySection({
                         </div>
                       )}
                       <div className="flex flex-col min-w-0">
-                        <span className="font-medium truncate">{item.project_info.name}</span>
+                        <span className="font-medium text-white truncate">{item.project_info.name}</span>
                         <div className="flex items-center gap-2">
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-xs text-white/50">
                             Invested: {formatTokenToUSD(item.invested_amount)}
                           </span>
                           <MilestoneDots
@@ -154,23 +154,23 @@ export function ActivitySection({
           {showTrades && swapHistory && swapHistory.length > 0 && (
             <div className="flex flex-col gap-2">
               {activeTab === 'all' && (
-                <h3 className="text-sm font-medium text-muted-foreground">Trades</h3>
+                <h3 className="text-sm font-medium text-white/60">Trades</h3>
               )}
               <Card className="overflow-hidden">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Time</TableHead>
-                      <TableHead>Token</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead className="text-right">Amount</TableHead>
-                      <TableHead className="text-right">TX</TableHead>
+                      <TableHead className="text-white/70">Time</TableHead>
+                      <TableHead className="text-white/70">Token</TableHead>
+                      <TableHead className="text-white/70">Type</TableHead>
+                      <TableHead className="text-right text-white/70">Amount</TableHead>
+                      <TableHead className="text-right text-white/70">TX</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {swapHistory.map((swap, index) => (
                       <TableRow key={`swap-${swap.transaction_hash}-${index}`}>
-                        <TableCell className="text-muted-foreground">
+                        <TableCell className="text-white/60">
                           {formatLaunchDate(swap.created_at)}
                         </TableCell>
                         <TableCell>
@@ -184,7 +184,7 @@ export function ActivitySection({
                             ) : (
                               <div className="size-5 rounded-full bg-secondary" />
                             )}
-                            <span>{swap.token_info.symbol}</span>
+                            <span className="text-white">{swap.token_info.symbol}</span>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -218,16 +218,16 @@ export function ActivitySection({
           {showRefunds && refundHistory && refundHistory.length > 0 && (
             <div className="flex flex-col gap-2">
               {activeTab === 'all' && (
-                <h3 className="text-sm font-medium text-muted-foreground">Refunds</h3>
+                <h3 className="text-sm font-medium text-white/60">Refunds</h3>
               )}
               {refundHistory.map((refund, index) => (
                 <Card key={`refund-${refund.transaction_hash}-${index}`} className="p-4">
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex flex-col min-w-0">
-                      <span className="font-medium truncate">
+                      <span className="font-medium text-white truncate">
                         {refund.project_info.name}
                       </span>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-2 text-xs text-white/50">
                         <span>Invested: {formatTokenToUSD(refund.original_investment)}</span>
                         <span>→</span>
                         <span>Refund: {formatTokenToUSD(refund.refund_amount)}</span>

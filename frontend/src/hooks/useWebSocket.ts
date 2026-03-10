@@ -24,6 +24,7 @@ interface TradeEvent {
   event_type: 'BUY' | 'SELL'
   usdc_amount: string
   token_amount: string
+  tx_hash?: string
 }
 
 interface PriceUpdateEvent {
@@ -81,7 +82,7 @@ export function useTradingSubscription(tokenId: string, chartResolution: ChartRe
             event_type: trade.event_type,
             native_amount: trade.usdc_amount,
             token_amount: trade.token_amount,
-            transaction_hash: '',
+            transaction_hash: trade.tx_hash ?? '',
             value: trade.usdc_amount,
             account_info: { account_id: trade.buyer, nickname: '', bio: '', image_uri: '' },
             created_at: Math.floor(Date.now() / 1000),

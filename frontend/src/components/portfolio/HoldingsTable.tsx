@@ -50,11 +50,11 @@ export function HoldingsTable({ tokens, isLoading }: HoldingsTableProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Token</TableHead>
-            <TableHead className="text-right">Balance</TableHead>
-            <TableHead className="text-right">Price</TableHead>
-            <TableHead className="text-right">Value</TableHead>
-            <TableHead className="text-right">Action</TableHead>
+            <TableHead className="text-white/70">Token</TableHead>
+            <TableHead className="text-right text-white/70">Balance</TableHead>
+            <TableHead className="text-right text-white/70">Price</TableHead>
+            <TableHead className="text-right text-white/70">Value</TableHead>
+            <TableHead className="text-right text-white/70">Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -79,8 +79,8 @@ export function HoldingsTable({ tokens, isLoading }: HoldingsTableProps) {
                       </div>
                     )}
                     <div className="flex flex-col">
-                      <span className="font-medium">{item.token_info.name}</span>
-                      <span className="text-xs text-muted-foreground">
+                      <span className="font-medium text-white">{item.token_info.name}</span>
+                      <span className="text-xs text-white/50">
                         {item.token_info.symbol}
                       </span>
                     </div>

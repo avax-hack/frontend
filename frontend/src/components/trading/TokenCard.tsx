@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { Card } from '@/components/ui/card'
 import { StatusBadge } from '@/components/common/StatusBadge'
-import { ProgressBar } from '@/components/common/ProgressBar'
+
 import { formatNumber, safeGetAddress } from '@/lib/utils'
 import type { ITokenData } from '@/features/trading/types'
 
@@ -78,8 +78,6 @@ export function TokenCard({ token }: TokenCardProps) {
             <span className="text-sm font-medium">{formatNumber(market_info.holder_count, 0)}</span>
           </div>
         </div>
-
-        <ProgressBar percent={market_info.bonding_percent} size="sm" showLabel />
       </Card>
     </>
   )
