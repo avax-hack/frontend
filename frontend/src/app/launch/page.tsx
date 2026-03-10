@@ -32,15 +32,18 @@ async function waitForProjectAndRedirect(
   const maxAttempts = 120 // ~2 min at 1s intervals
   for (let i = 0; i < maxAttempts; i++) {
     try {
-      await getProjectDetail(addr)
-      // Project exists in DB
-      reset()
-      router.push(`/projects/${addr}`)
-      return
+      const project = await getProjectDetail(addr)
+      if (project) {
+        // Project exists in DB
+        reset()
+        router.push(`/projects/${addr}`)
+        return
+      }
     } catch {
-      // Not yet — wait and retry
-      await new Promise((r) => setTimeout(r, 1000))
+      // Network error — retry
     }
+    // Not yet — wait and retry
+    await new Promise((r) => setTimeout(r, 1000))
   }
   // Fallback: redirect anyway after timeout
   reset()

@@ -52,10 +52,10 @@ export function TokenHeader({ token }: TokenHeaderProps) {
         <div className="size-8 rounded-full bg-secondary" aria-hidden="true" />
       )}
 
-      <span className="text-lg font-bold">{token_info.name}</span>
-      <span className="text-sm text-muted-foreground">${token_info.symbol}</span>
+      <span className="text-lg font-bold text-white">{token_info.name}</span>
+      <span className="text-sm text-white/50">${token_info.symbol}</span>
 
-      <span className="text-xs text-muted-foreground">
+      <span className="text-xs text-white/40">
         {truncateAddress(token_info.token_id)}
       </span>
       <Button

@@ -30,7 +30,7 @@ export function HoldersTable({ holders, isLoading }: HoldersTableProps) {
 
   if (holders.length === 0) {
     return (
-      <div className="p-8 text-center text-muted-foreground">
+      <div className="p-8 text-center text-white/50">
         No holders yet
       </div>
     )
@@ -40,19 +40,19 @@ export function HoldersTable({ holders, isLoading }: HoldersTableProps) {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>#</TableHead>
-          <TableHead>Address</TableHead>
-          <TableHead className="text-right">Balance</TableHead>
+          <TableHead className="text-white/70">#</TableHead>
+          <TableHead className="text-white/70">Address</TableHead>
+          <TableHead className="text-right text-white/70">Balance</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {holders.map((holder, i) => (
           <TableRow key={holder.account_info.account_id}>
-            <TableCell>{i + 1}</TableCell>
-            <TableCell>
+            <TableCell className="text-white/60">{i + 1}</TableCell>
+            <TableCell className="text-white">
               {truncateAddress(holder.account_info.account_id)}
             </TableCell>
-            <TableCell className="text-right">
+            <TableCell className="text-right text-white">
               {formatTokenAmount(holder.balance)}
             </TableCell>
           </TableRow>

@@ -107,7 +107,7 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
     <main className="dark-form relative -mt-[var(--header-h)] min-h-screen pt-[var(--header-h)] [--header-h:65px]">
       <div className="absolute inset-0 -z-10">
         <img src="/trading-bg.webp" alt="" className="size-full object-cover" />
-        <div className="absolute inset-0 bg-[#070b14]/80 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-[#070b14]/85" />
       </div>
     <div className="px-4 py-6 mx-auto max-w-7xl flex flex-col gap-4">
       {/* Full-width header */}
@@ -139,7 +139,7 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="rounded-xl border border-border bg-card overflow-hidden">
               <div className="px-4 py-3 border-b border-border">
-                <span className="text-sm font-semibold">Trades</span>
+                <span className="text-sm font-semibold text-white">Trades</span>
               </div>
               <div className="max-h-[400px] overflow-y-auto">
                 <TradesTable swaps={swapData?.data ?? []} isLoading={swapsLoading} />
@@ -148,7 +148,7 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
 
             <div className="rounded-xl border border-border bg-card overflow-hidden">
               <div className="px-4 py-3 border-b border-border">
-                <span className="text-sm font-semibold">Holders</span>
+                <span className="text-sm font-semibold text-white">Holders</span>
               </div>
               <div className="max-h-[400px] overflow-y-auto">
                 <HoldersTable holders={holdersData?.data ?? []} isLoading={holdersLoading} />
@@ -162,13 +162,13 @@ export default function TokenDetailPage({ params }: TokenDetailPageProps) {
           <TradePanel token={token} />
           <div className="rounded-xl border border-border bg-card overflow-hidden">
             <div className="px-4 py-3 border-b border-border">
-              <span className="text-sm font-semibold">About</span>
+              <span className="text-sm font-semibold text-white">About</span>
             </div>
             <div className="p-4 flex flex-col gap-3">
               {token.token_info.description ? (
-                <p className="text-sm whitespace-pre-wrap">{token.token_info.description}</p>
+                <p className="text-sm text-white whitespace-pre-wrap">{token.token_info.description}</p>
               ) : (
-                <p className="text-sm text-muted-foreground">No description</p>
+                <p className="text-sm text-white/50">No description</p>
               )}
               {(token.token_info.website || token.token_info.twitter || token.token_info.telegram) && (
                 <div className="flex flex-wrap gap-3">

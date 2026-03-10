@@ -40,7 +40,7 @@ export function TradesTable({ swaps, isLoading }: TradesTableProps) {
 
   if (swaps.length === 0) {
     return (
-      <div className="p-8 text-center text-muted-foreground">
+      <div className="p-8 text-center text-white/50">
         No trades yet
       </div>
     )
@@ -50,18 +50,18 @@ export function TradesTable({ swaps, isLoading }: TradesTableProps) {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Time</TableHead>
-          <TableHead>Type</TableHead>
-          <TableHead className="text-right">USDC</TableHead>
-          <TableHead className="text-right">Tokens</TableHead>
-          <TableHead>Wallet</TableHead>
-          <TableHead>TX</TableHead>
+          <TableHead className="text-white/70">Time</TableHead>
+          <TableHead className="text-white/70">Type</TableHead>
+          <TableHead className="text-right text-white/70">USDC</TableHead>
+          <TableHead className="text-right text-white/70">Tokens</TableHead>
+          <TableHead className="text-white/70">Wallet</TableHead>
+          <TableHead className="text-white/70">TX</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {swaps.map((swap) => (
           <TableRow key={swap.transaction_hash}>
-            <TableCell>{formatRelativeTime(swap.created_at)}</TableCell>
+            <TableCell className="text-white/60">{formatRelativeTime(swap.created_at)}</TableCell>
             <TableCell>
               {swap.event_type === 'BUY' ? (
                 <span className="text-emerald-400">Buy</span>
@@ -69,13 +69,13 @@ export function TradesTable({ swaps, isLoading }: TradesTableProps) {
                 <span className="text-red-400">Sell</span>
               )}
             </TableCell>
-            <TableCell className="text-right">
+            <TableCell className="text-right text-white">
               ${formatNumber(Number(swap.native_amount), 2)}
             </TableCell>
-            <TableCell className="text-right">
+            <TableCell className="text-right text-white">
               {formatNumber(Number(swap.token_amount), 2)}
             </TableCell>
-            <TableCell>
+            <TableCell className="text-white">
               {truncateAddress(swap.account_info.account_id)}
             </TableCell>
             <TableCell>

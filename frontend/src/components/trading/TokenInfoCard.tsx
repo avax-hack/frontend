@@ -29,15 +29,15 @@ export function TokenInfoCard({ token }: TokenInfoCardProps) {
         ) : (
           <div className="size-6 rounded-full bg-secondary" aria-hidden="true" />
         )}
-        <span className="text-sm font-semibold">{token_info.name}</span>
-        <span className="text-xs text-muted-foreground">${token_info.symbol}</span>
+        <span className="text-sm font-semibold text-white">{token_info.name}</span>
+        <span className="text-xs text-white/50">${token_info.symbol}</span>
       </div>
 
       <div className="flex flex-col gap-2">
         {rows.map((row) => (
           <div key={row.label} className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">{row.label}</span>
-            <span className="text-xs font-medium">{row.value}</span>
+            <span className="text-xs text-white/60">{row.label}</span>
+            <span className="text-xs font-medium text-white">{row.value}</span>
           </div>
         ))}
       </div>

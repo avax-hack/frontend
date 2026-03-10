@@ -28,6 +28,7 @@ export function ChartIntervalSelector({
           key={interval.value}
           size="sm"
           variant={value === interval.value ? 'secondary' : 'ghost'}
+          className={value === interval.value ? 'text-white' : 'text-white/50 hover:text-white'}
           role="radio"
           aria-checked={value === interval.value}
           onClick={() => onChange(interval.value)}

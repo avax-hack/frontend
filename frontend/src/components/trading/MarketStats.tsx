@@ -35,8 +35,8 @@ export function MarketStats({ marketInfo }: MarketStatsProps) {
           key={stat.label}
           className="rounded-lg border border-border bg-card px-4 py-3 flex flex-col gap-1"
         >
-          <span className="text-xs text-muted-foreground">{stat.label}</span>
-          <span className="text-sm font-semibold">{stat.value}</span>
+          <span className="text-xs text-white/60">{stat.label}</span>
+          <span className="text-sm font-semibold text-white">{stat.value}</span>
         </div>
       ))}
     </div>

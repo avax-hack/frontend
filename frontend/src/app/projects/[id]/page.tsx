@@ -105,9 +105,9 @@ function ProjectDetailSkeleton() {
 function ProjectNotFound() {
   return (
     <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-4 py-24 text-center md:px-6">
-      <SearchXIcon className="size-12 text-muted-foreground" aria-hidden="true" />
-      <h1 className="text-2xl font-bold">Project Not Found</h1>
-      <p className="text-sm text-muted-foreground">
+      <SearchXIcon className="size-12 text-white/50" aria-hidden="true" />
+      <h1 className="text-2xl font-bold text-white">Project Not Found</h1>
+      <p className="text-sm text-white/60">
         The project you&apos;re looking for doesn&apos;t exist or may have been removed.
       </p>
       <Button asChild variant="outline">
@@ -211,9 +211,9 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
   } catch {
     return (
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-4 py-24 text-center md:px-6">
-        <SearchXIcon className="size-12 text-muted-foreground" aria-hidden="true" />
-        <h1 className="text-2xl font-bold">Invalid Address</h1>
-        <p className="text-sm text-muted-foreground">
+        <SearchXIcon className="size-12 text-white/50" aria-hidden="true" />
+        <h1 className="text-2xl font-bold text-white">Invalid Address</h1>
+        <p className="text-sm text-white/60">
           The project address in the URL is not valid.
         </p>
         <Button asChild variant="outline">
