@@ -4,6 +4,7 @@ export type { IAccountInfo } from '@/types/common'
 
 // Import for local use
 import type { IAccountInfo } from '@/types/common'
+import type { ITokenData } from '@/types/token'
 
 // Chart data
 export interface IChartBar {
@@ -44,6 +45,11 @@ export interface ITokenHolder {
 export interface ITokenHolderListData {
   data: ITokenHolder[]
   total_count: number
+}
+
+// Trending
+export interface ITrendingData {
+  tokens: ITokenData[]
 }
 
 // Union types for API params

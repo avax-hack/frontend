@@ -2,6 +2,7 @@ import { httpGet, ApiError } from '@/lib/api'
 import type {
   ITokenData,
   ITokenListData,
+  ITrendingData,
   ITradingChartData,
   ITokenSwapHistoryData,
   ITokenHolderListData,
@@ -21,6 +22,10 @@ export function getTokenList(
   if (params?.is_ido !== undefined) searchParams.set('is_ido', String(params.is_ido))
   const query = searchParams.toString()
   return httpGet<ITokenListData>(`/order/${sortType}${query ? `?${query}` : ''}`)
+}
+
+export function getTrendingTokens(): Promise<ITrendingData> {
+  return httpGet<ITrendingData>('/trend')
 }
 
 export async function getTokenDetail(tokenId: string): Promise<ITokenData | null> {
