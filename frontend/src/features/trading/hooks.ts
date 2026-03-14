@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { tradingKeys } from './query-keys'
-import { getTokenList, getTokenDetail, getChartData, getSwapHistory, getTokenHolders } from './services'
+import { getTokenList, getTokenDetail, getChartData, getSwapHistory, getTokenHolders, getTrendingTokens } from './services'
 import type { SortType, ChartResolution } from './types'
 
 export function useTokenList(
@@ -12,6 +12,14 @@ export function useTokenList(
   return useQuery({
     queryKey: tradingKeys.list(sortType ?? 'creation_time_desc', params),
     queryFn: () => getTokenList(sortType ?? 'creation_time_desc', params),
+  })
+}
+
+export function useTrendingTokens() {
+  return useQuery({
+    queryKey: tradingKeys.trend(),
+    queryFn: getTrendingTokens,
+    staleTime: 30_000,
   })
 }
 

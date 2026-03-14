@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react'
 import { useTokenList } from '@/features/trading/hooks'
 import { useNewContentSubscription } from '@/hooks/useWebSocket'
 import type { SortType, TokenCategory } from '@/features/trading/types'
-import { TokenCard, SortFilter, CategoryFilter, SearchBar } from '@/components/trading'
+import { TokenCard, SortFilter, CategoryFilter, SearchBar, LiveTicker, TrendingScroll } from '@/components/trading'
 import { SkeletonCard } from '@/components/common/SkeletonCard'
 import { EmptyState } from '@/components/common/EmptyState'
 
@@ -33,6 +33,9 @@ export default function TradingPage() {
         <div className="absolute inset-0 bg-[#070b14]/80 backdrop-blur-[2px]" />
       </div>
     <div className="flex flex-col gap-6 px-4 py-6 mx-auto max-w-7xl">
+      <LiveTicker />
+      <TrendingScroll />
+
       <h1 className="text-2xl font-bold">Trading</h1>
 
       <SearchBar value={search} onChange={handleSearchChange} />
