@@ -37,7 +37,7 @@ export function HeroSection({ featuredProject, isLoading, stats }: HeroSectionPr
             EASY TO LAUNCH.
             <br />
             <span className="bg-gradient-to-r from-red-500 to-red-400 bg-clip-text text-transparent">
-              IMPOSSIBLE TO RUG.
+              HARD TO RUG.
             </span>
           </h1>
 
