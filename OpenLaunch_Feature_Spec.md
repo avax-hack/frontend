@@ -33,13 +33,10 @@
 | # | Feature | Description | Priority | Owner | Check |
 |---|---------|-------------|----------|-------|-------|
 | L-1 | Hero Section | "EASY TO LAUNCH. HARD TO RUG." + subtitle text | P0 | F | [ ] |
-| L-2 | Featured Carousel | 2-5 featured project slides (5s auto-rotation) | P0 | Both | [ ] |
-| L-3 | Carousel Card Content | Logo, name, badges (Funding/Milestone), description, Target, Committed, Milestone Progress | P0 | B | [ ] |
-| L-4 | Active Projects Grid | 3-column project cards (latest 6) | P0 | Both | [ ] |
-| L-5 | Project Card | Logo, name (ticker), tagline, Launched/Target/Funded% | P0 | B | [ ] |
-| L-6 | Funded% Color | 75%+ green, 40-74% default, <40% gray | P1 | F | [ ] |
-| L-7 | View All Projects | Navigate to /explore | P0 | F | [ ] |
-| L-8 | Carousel Pause on Hover | Stop auto-rotation on mouse hover | P2 | F | [ ] |
+| L-2 | Featured Projects Grid | 4-column grid of featured projects (logo, name, stats) | P0 | Both | [ ] |
+| L-3 | Featured Card Content | Logo, name, badges (Funding/Milestone), description, Target, Committed, Milestone Progress | P0 | B | [ ] |
+| L-4 | Project Card | Logo, name (ticker), description, Launched/Target/Funded% | P0 | B | [ ] |
+| L-5 | Funded% Color | 75%+ green, 40-74% default, <40% gray | P1 | F | [ ] |
 
 ---
 
@@ -47,7 +44,7 @@
 
 | # | Feature | Description | Priority | Owner | Check |
 |---|---------|-------------|----------|-------|-------|
-| D-1 | Project Hero | Logo, name, ticker, tagline, status badge, chain badge | P0 | Both | [ ] |
+| D-1 | Project Hero | Logo, name, ticker, status badge, chain badge | P0 | Both | [ ] |
 | D-2 | Funding Stats | Target Raise, Total Committed, Investor count | P0 | B | [ ] |
 | D-3 | Funding Progress Bar | Percentage display + amount label ("62% - $312,450 raised") | P0 | F | [ ] |
 | D-4 | Milestone Roadmap | Horizontal timeline, 4-stage nodes, status-specific icons/colors | P0 | Both | [ ] |
@@ -70,7 +67,7 @@
 | # | Feature | Description | Priority | Owner | Check |
 |---|---------|-------------|----------|-------|-------|
 | CR-1 | Step Indicator | 3 steps (Project Info → Milestones → Review & Launch) | P0 | F | [ ] |
-| CR-2 | Step 1: Project Info | name, ticker, tagline, description, logo, links, target, supply | P0 | F | [ ] |
+| CR-2 | Step 1: Project Info | name, ticker, description, logo, links, target, supply | P0 | F | [ ] |
 | CR-3 | Rich Editor | Full Description markdown editing (B/I/U/link/list/image) | P1 | F | [ ] |
 | CR-4 | Logo Upload | Drag & drop, PNG/JPG, max 5MB, preview | P0 | Both | [ ] |
 | CR-5 | Ticker Validation | Real-time server validation on input (debounce 500ms) | P0 | Both | [ ] |
@@ -87,7 +84,6 @@
 |-------|-------|
 | name | Required, 2-50 chars |
 | ticker | Required, 2-10 chars, uppercase alphanumeric, server duplicate check |
-| tagline | Required, 5-120 chars |
 | description | Required, 20+ chars, markdown |
 | logo | Required, PNG/JPG, max 5MB |
 | target_raise | Required, >= $1,000 |
@@ -262,7 +258,6 @@ interface IProjectInfo {
   symbol: string               // ticker
   image_uri: string            // logo
   description: string | null
-  tagline: string
   category: string             // "defi" | "infra" | "ai" | "gaming" | "social" | "meme"
   creator: IAccountInfo
   website: string | null
@@ -417,7 +412,6 @@ Response 200:  // IProjectData
     "name": "NovaDex",
     "symbol": "NOVD",
     "image_uri": "https://storage.../novadex.png",
-    "tagline": "Decentralized trading platform of the future.",
     "description": "## About NovaDex\n\nNovaDex is...",
     "category": "defi",
     "creator": {
@@ -549,7 +543,6 @@ Body:
 {
   "name": "TokenX Finance",
   "symbol": "TKX",
-  "tagline": "Next-Gen Decentralized Indexing Protocol.",
   "description": "**TokenX** aims to revolutionize...",
   "image_uri": "https://storage.../logo.png",
   "website": "https://tokenx.io",
@@ -1089,10 +1082,9 @@ Response 200:  // IBuilderStatsData
 Image upload (logo, banner)
 
 ```
-Raw bytes + Content-Type header
+Content-Type: multipart/form-data
 
-Headers: { "Content-Type": "image/png" }  // or image/jpeg
-Body: <raw bytes>
+Body: FormData { file: <File> }  // PNG or JPEG
 
 Response 200:
 { "image_uri": "https://storage.../logo_abc123.png" }
@@ -1103,8 +1095,9 @@ Response 200:
 Milestone evidence file upload
 
 ```
-Headers: { "Content-Type": "application/pdf" }  // or application/zip
-Body: <raw bytes>
+Content-Type: multipart/form-data
+
+Body: FormData { file: <File> }  // PDF or ZIP
 
 Response 200:
 {
